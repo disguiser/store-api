@@ -1,0 +1,80 @@
+package com.snow.storeapi.controller;
+
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.snow.storeapi.entity.User;
+import com.snow.storeapi.entity.Vip;
+import com.snow.storeapi.service.IVipService;
+import com.snow.storeapi.util.JwtUtils;
+import com.snow.storeapi.util.ResponseUtil;
+import com.snow.storeapi.util.StringUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * <p>
+ *  前端控制器
+ * </p>
+ *
+ * @author zhou
+ * @since 2018-10-19
+ */
+@RestController
+@RequestMapping("/vip")
+public class VipController {
+
+    private static final Logger logger = LoggerFactory.getLogger(VipController.class);
+
+    @Autowired
+    private IVipService vipService;
+
+    @GetMapping()
+    public Map list(
+            @RequestParam(value = "vipName", required = false)String vipName,
+            @RequestParam(value = "telephone", required = false)String telephone,
+            @RequestParam(value = "pageNum", defaultValue = "1")Integer pageNum,
+            @RequestParam(value = "limit", defaultValue = "10")Integer limit
+    ) {
+        IPage<Vip> page = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(pageNum, limit);
+        QueryWrapper<Vip> queryWrapper = new QueryWrapper<>();
+        if (!StringUtil.isEmpty(vipName)) {
+            queryWrapper.eq("vip_name", vipName);
+        }
+        if (!StringUtil.isEmpty(telephone)) {
+            queryWrapper.eq("telephone", telephone);
+        }
+        IPage<Vip> vips = vipService.page(page, queryWrapper);
+        return ResponseUtil.pageRes(vips);
+    }
+
+    @PostMapping()
+    public Map<String, Integer> create(@Valid @RequestBody Vip vip, HttpServletRequest request) {
+        User user = JwtUtils.getSub(request);
+        vip.setDeptId(user.getDeptId());
+        vip.setDeptName(user.getDeptName());
+        vipService.save(vip);
+        return new HashMap<String,Integer>(){{put("vipId", vip.getVipId());}};
+    }
+
+    @PutMapping()
+    public void update(@Valid @RequestBody Vip vip, HttpServletRequest request) {
+        User user = JwtUtils.getSub(request);
+        vipService.update(vip, new QueryWrapper<Vip>().eq("deptId", user.getDeptId()));
+    }
+
+    @DeleteMapping()
+    public void delete(HttpServletRequest request, @RequestParam(value = "vipId")Integer vipId) {
+        User user = JwtUtils.getSub(request);
+        vipService.remove(new QueryWrapper<Vip>()
+                .eq("vipId", vipId)
+                .eq("deptId", user.getDeptId()));
+    }
+}

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.snow.storeapi.mapper.VipMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.snow.storeapi.entity.Vip">
+        <id column="vip_id" property="vipId" />
+        <result column="vip_name" property="vipName" />
+        <result column="telephone" property="telephone" />
+        <result column="birthday" property="birthday" />
+        <result column="balance" property="balance" />
+        <result column="dept_id" property="deptId" />
+        <result column="dept_name" property="deptName" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        vip_id, vip_name, telephone, birthday, balance, dept_id, dept_name
+    </sql>
+
+</mapper>
