@@ -29,15 +29,15 @@ public class UserController {
             @ApiImplicitParam(name = "password", value = "密码", required = true ,dataType = "string")
     })*/
     @PostMapping(value = "/login")
-    public ResponseEntity userLogin(@RequestBody User req){
+    public ResponseEntity userLogin(@RequestBody User req) {
         User user = userService.selectByLoginUser(req.getLoginUser());
         if (user != null){
             if (user.getPassword().equals(req.getPassword())){
                 Map<String, Object> sub = new HashMap<>();
-//                sub.put("userId", user.getUserId().toString());
-//                sub.put("userName", user.getUserName());
-//                sub.put("depts", user.getDepts());
-                String token = JwtUtils.createJWT("1", JSON.toJSONString(user), SystemConstant.JWT_TTL);
+                sub.put("userId", user.getUserId().toString());
+                sub.put("userName", user.getUserName());
+                sub.put("depts", user.getDeptName());
+                String token = JwtUtils.createJWT(JSON.toJSONString(sub), SystemConstant.JWT_TTL);
                 Map<String, Object> res = new HashMap<>();
                 res.put("userId", user.getUserId());
                 res.put("userName", user.getUserName());

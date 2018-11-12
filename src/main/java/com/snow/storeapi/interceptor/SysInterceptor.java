@@ -8,7 +8,6 @@ import com.snow.storeapi.entity.R;
 import com.snow.storeapi.util.JwtUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
 import org.springframework.web.method.HandlerMethod;
@@ -31,6 +30,7 @@ public class SysInterceptor implements HandlerInterceptor {
 
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
+        /*
         if (handler instanceof HandlerMethod) {
             String authHeader = request.getHeader("token");
             if (StringUtils.isEmpty(authHeader)) {
@@ -66,6 +66,8 @@ public class SysInterceptor implements HandlerInterceptor {
         } else {
             return true;
         }
+        */
+        return true;
     }
 
     public void print(HttpServletResponse response, Object message) {

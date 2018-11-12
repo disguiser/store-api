@@ -11,7 +11,6 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
-import java.util.Map;
 
 /**
  * jwt加密和解密的工具类
@@ -19,19 +18,18 @@ import java.util.Map;
 public class JwtUtils {
 	/**
 	 * 签发JWT
-	 * @param id
 	 * @param subject 可以是JSON数据 尽可能少
 	 * @param ttlMillis
 	 * @return  String
 	 *
 	 */
-	public static String createJWT(String id, String subject, long ttlMillis) {
-		SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
+	public static String createJWT(String subject, long ttlMillis) {
+		SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS512;
 		long nowMillis = System.currentTimeMillis();
 		Date now = new Date(nowMillis);
 		SecretKey secretKey = generalKey();
+//		byte[] secretKey = SystemConstant.JWT_SECERT.getBytes("UTF-8");
 		JwtBuilder builder = Jwts.builder()
-				.setId(id)
 				.setSubject(subject)   // 主题
 				.setIssuer("瑞雪")     // 签发者
 				.setIssuedAt(now)      // 签发时间
