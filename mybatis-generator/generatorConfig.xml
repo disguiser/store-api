@@ -24,7 +24,7 @@
                          targetProject="src/main/java"/>
 
 
-    <table tableName="app_vip" domainObjectName="Vip" enableCountByExample="false"
+    <table tableName="vip_info" domainObjectName="VipInfo" enableCountByExample="false"
            enableUpdateByExample="false" enableDeleteByExample="false"
            selectByExampleQueryId="false" enableSelectByExample="false">
       <!--<property name="enableSelectByExample" value="true"/>-->
@@ -36,7 +36,7 @@
        -->
       <!--<ignoreColumn column="TRANSACTION_LOG_ID" delimitedColumnName=""/>-->
 
-      <generatedKey column="vip_id" sqlStatement="MySql" identity="true"/>
+      <generatedKey column="id" sqlStatement="MySql" identity="true"/>
       <!--<columnOverride javaType="java.lang.String" column="username"/>-->
       <!--<columnOverride javaType="java.lang.String" column="passwd"/>-->
     </table>

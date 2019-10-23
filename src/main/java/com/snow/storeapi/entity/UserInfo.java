@@ -10,10 +10,10 @@ import java.util.List;
 @Data
 @Accessors(chain = true)
 @TableName("user_info")
-public class User {
+public class UserInfo {
     private Integer id;
 
-    private String userName;
+    private String name;
 
     private String loginUser;
 
@@ -24,6 +24,8 @@ public class User {
     private Integer deptId;
 
     private String deptName;
+
     @TableField(exist = false)
-    private List<Role> roles;
+    private String roleId;
+    private String roleName;
 }

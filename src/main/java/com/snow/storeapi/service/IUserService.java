@@ -1,8 +1,7 @@
 package com.snow.storeapi.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.snow.storeapi.entity.User;
+import com.snow.storeapi.entity.UserInfo;
 
-public interface IUserService extends IService<User> {
-    User selectByLoginUser(String loginUser);
+public interface IUserService extends IService<UserInfo> {
 }

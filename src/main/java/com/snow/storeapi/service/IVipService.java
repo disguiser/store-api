@@ -11,5 +11,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @author zhou
  * @since 2018-10-19
  */
-public interface IVipInfoService extends IService<VipInfo> {
+public interface IVipService extends IService<VipInfo> {
 }

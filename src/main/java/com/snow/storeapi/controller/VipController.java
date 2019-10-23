@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.snow.storeapi.entity.UserInfo;
 import com.snow.storeapi.entity.VipInfo;
-import com.snow.storeapi.service.IVipInfoService;
+import com.snow.storeapi.service.IVipService;
 import com.snow.storeapi.util.JwtUtils;
 import com.snow.storeapi.util.ResponseUtil;
 import com.snow.storeapi.util.StringUtil;
@@ -28,13 +28,13 @@ import java.util.Map;
  * @since 2018-10-19
  */
 @RestController
-@RequestMapping("/vipInfo")
-public class VipInfoController {
+@RequestMapping("/vip")
+public class VipController {
 
-    private static final Logger logger = LoggerFactory.getLogger(VipInfoController.class);
+    private static final Logger logger = LoggerFactory.getLogger(VipController.class);
 
     @Autowired
-    private IVipInfoService vipInfoService;
+    private IVipService vipInfoService;
 
     @GetMapping()
     public Map list(

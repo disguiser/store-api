@@ -3,7 +3,7 @@
 <mapper namespace="com.snow.storeapi.mapper.VipMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.snow.storeapi.entity.Vip">
+    <resultMap id="BaseResultMap" type="com.snow.storeapi.entity.VipInfo">
         <id column="vip_id" property="vipId" />
         <result column="vip_name" property="vipName" />
         <result column="telephone" property="telephone" />

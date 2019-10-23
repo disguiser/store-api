@@ -1,9 +1,11 @@
 package com.snow.storeapi.entity;
 
 import java.math.BigDecimal;
+
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+
 import java.io.Serializable;
 
 import com.snow.storeapi.enums.SexEnum;
@@ -26,7 +28,7 @@ import javax.validation.constraints.Pattern;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("vip_info")
-public class Vip implements Serializable {
+public class VipInfo implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -48,5 +50,9 @@ public class Vip implements Serializable {
     private Integer vipDiscount;
 
     private BigDecimal balance;
+
+    private Integer deptId;
+
+    private String deptName;
 
 }

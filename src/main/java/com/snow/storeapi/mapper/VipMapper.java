@@ -1,6 +1,6 @@
 package com.snow.storeapi.mapper;
 
-import com.snow.storeapi.entity.Vip;
+import com.snow.storeapi.entity.VipInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
@@ -11,6 +11,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @author zhou
  * @since 2018-10-19
  */
-public interface VipMapper extends BaseMapper<Vip> {
+public interface VipMapper extends BaseMapper<VipInfo> {
 
 }
