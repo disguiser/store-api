@@ -9,9 +9,9 @@ import java.util.List;
 
 @Data
 @Accessors(chain = true)
-@TableName("sys_user")
+@TableName("user_info")
 public class User {
-    private Integer userId;
+    private Integer id;
 
     private String userName;
 

@@ -25,29 +25,28 @@ import javax.validation.constraints.Pattern;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("app_vip")
+@TableName("vip_info")
 public class Vip implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId(value = "vip_id", type = IdType.AUTO)
-    private Integer vipId;
+    @TableId(value = "id", type = IdType.AUTO)
+    private Integer id;
     @NotNull
-    private String vipName;
+    private String name;
 
-    private SexEnum sex;
     @NotNull
     @Pattern(regexp = "^[0-9]{11}$")
-    private String telephone;
-    @Pattern(regexp = "^[1-2][0-9][0-9][0-9]-[0-1]{0,1}[0-9]-[0-3]{0,1}[0-9]$")
+    private String phone;
+
     private String birthday;
 
+    private String certNo;
+
+    private Integer birthDiscount;
+
+    private Integer vipDiscount;
+
     private BigDecimal balance;
-
-    private Integer score;
-
-    private Integer deptId;
-
-    private String deptName;
 
 }
