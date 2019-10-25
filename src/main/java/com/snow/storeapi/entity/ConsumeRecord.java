@@ -8,15 +8,20 @@ import lombok.NonNull;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 @Data
 @Accessors(chain = true)
-@TableName("dept_info")
-public class Dept implements Serializable {
-    private static final long serialVersionUID = -4531867696279117971L;
+@TableName("charge_record")
+public class ConsumeRecord implements Serializable {
+    private static final long serialVersionUID = -8539565840972649434L;
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     @NonNull
-    private String name;
+    private Integer vipId;
+
+    @NonNull
+    private BigDecimal consumeAmount;
+
 }

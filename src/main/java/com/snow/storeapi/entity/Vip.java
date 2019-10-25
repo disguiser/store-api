@@ -34,6 +34,7 @@ public class Vip implements Serializable {
 
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
+
     @NotNull
     private String name;
 
@@ -41,6 +42,7 @@ public class Vip implements Serializable {
     @Pattern(regexp = "^[0-9]{11}$")
     private String phone;
 
+    @NotNull
     private String birthday;
 
     private String certNo;

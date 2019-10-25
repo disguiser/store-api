@@ -30,7 +30,6 @@ public class SysInterceptor implements HandlerInterceptor {
 
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
-        /*
         if (handler instanceof HandlerMethod) {
             String authHeader = request.getHeader("token");
             if (StringUtils.isEmpty(authHeader)) {
@@ -66,8 +65,6 @@ public class SysInterceptor implements HandlerInterceptor {
         } else {
             return true;
         }
-        */
-        return true;
     }
 
     public void print(HttpServletResponse response, Object message) {
