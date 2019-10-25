@@ -3,7 +3,7 @@ package com.snow.storeapi.util;
 import com.alibaba.fastjson.JSON;
 import com.snow.storeapi.constant.SystemConstant;
 import com.snow.storeapi.entity.CheckResult;
-import com.snow.storeapi.entity.UserInfo;
+import com.snow.storeapi.entity.User;
 import io.jsonwebtoken.*;
 import org.bouncycastle.util.encoders.Base64;
 
@@ -91,11 +91,11 @@ public class JwtUtils {
 	 * @param request
 	 * @return
 	 */
-	public static UserInfo getSub(HttpServletRequest request) {
+	public static User getSub(HttpServletRequest request) {
 		String token = request.getHeader("token");
 		try {
 			String subString = parseJWT(token).getSubject();
-			return JSON.parseObject(subString, UserInfo.class);
+			return JSON.parseObject(subString, User.class);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;

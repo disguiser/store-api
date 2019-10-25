@@ -24,7 +24,7 @@
                          targetProject="src/main/java"/>
 
 
-    <table tableName="vip_info" domainObjectName="VipInfo" enableCountByExample="false"
+    <table tableName="vip_info" domainObjectName="Vip" enableCountByExample="false"
            enableUpdateByExample="false" enableDeleteByExample="false"
            selectByExampleQueryId="false" enableSelectByExample="false">
       <!--<property name="enableSelectByExample" value="true"/>-->

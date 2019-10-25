@@ -3,7 +3,7 @@ package com.snow.storeapi;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.snow.storeapi.entity.VipInfo;
+import com.snow.storeapi.entity.Vip;
 import com.snow.storeapi.service.IVipService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,8 +21,8 @@ public class VipMapperTest {
 
 //    @Test
     public void testSelect() {
-        Page<VipInfo> page = new Page<>(1, 2);
-        IPage<VipInfo> vips = vipService.page(page, new QueryWrapper<VipInfo>().eq("dept_id", 101));
+        Page<Vip> page = new Page<>(1, 2);
+        IPage<Vip> vips = vipService.page(page, new QueryWrapper<Vip>().eq("dept_id", 101));
         System.out.println("总条数 ------> " + vips.getTotal());
         System.out.println("当前页数 ------> " + vips.getCurrent());
         System.out.println("当前每页显示数 ------> " + vips.getSize());
@@ -30,7 +30,7 @@ public class VipMapperTest {
     }
 //    @Test
     public void testInsert() {
-        VipInfo vipInfo = new VipInfo();
+        Vip vipInfo = new Vip();
         vipInfo.setBalance(new BigDecimal(100));
         vipInfo.setBirthday("2011-01-01");
         vipInfo.setDeptId(101);
@@ -44,6 +44,6 @@ public class VipMapperTest {
     }
     @Test
     public void testDel() {
-        vipService.remove(new QueryWrapper<VipInfo>().eq("vip_name", "test"));
+        vipService.remove(new QueryWrapper<Vip>().eq("vip_name", "test"));
     }
 }

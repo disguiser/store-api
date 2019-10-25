@@ -1,6 +1,6 @@
 package com.snow.storeapi.service;
 
-import com.snow.storeapi.entity.VipInfo;
+import com.snow.storeapi.entity.Vip;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
@@ -11,5 +11,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @author zhou
  * @since 2018-10-19
  */
-public interface IVipService extends IService<VipInfo> {
+public interface IVipService extends IService<Vip> {
 }

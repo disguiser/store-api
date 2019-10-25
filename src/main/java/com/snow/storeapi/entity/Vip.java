@@ -27,8 +27,8 @@ import javax.validation.constraints.Pattern;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("vip_info")
-public class VipInfo implements Serializable {
+@TableName("vip")
+public class Vip implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

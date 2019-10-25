@@ -9,11 +9,11 @@ import java.util.List;
 
 @Data
 @Accessors(chain = true)
-@TableName("user_info")
-public class UserInfo {
+@TableName("user")
+public class User {
     private Integer id;
 
-    private String name;
+    private String userName;
 
     private String accountName;
 
@@ -25,7 +25,5 @@ public class UserInfo {
 
     private String deptName;
 
-    @TableField(exist = false)
-    private String roleId;
-    private String roleName;
+    private String role;
 }

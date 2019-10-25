@@ -3,8 +3,8 @@ package com.snow.storeapi.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.snow.storeapi.entity.UserInfo;
-import com.snow.storeapi.entity.VipInfo;
+import com.snow.storeapi.entity.User;
+import com.snow.storeapi.entity.Vip;
 import com.snow.storeapi.service.IVipService;
 import com.snow.storeapi.util.JwtUtils;
 import com.snow.storeapi.util.ResponseUtil;
@@ -43,21 +43,21 @@ public class VipController {
             @RequestParam(value = "pageNum", defaultValue = "1")Integer pageNum,
             @RequestParam(value = "limit", defaultValue = "10")Integer limit
     ) {
-        IPage<VipInfo> page = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(pageNum, limit);
-        QueryWrapper<VipInfo> queryWrapper = new QueryWrapper<>();
+        IPage<Vip> page = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(pageNum, limit);
+        QueryWrapper<Vip> queryWrapper = new QueryWrapper<>();
         if (!StringUtil.isEmpty(name)) {
             queryWrapper.eq("name", name);
         }
         if (!StringUtil.isEmpty(phone)) {
             queryWrapper.eq("phone", phone);
         }
-        IPage<VipInfo> vipInfos = vipInfoService.page(page, queryWrapper);
+        IPage<Vip> vipInfos = vipInfoService.page(page, queryWrapper);
         return ResponseUtil.pageRes(vipInfos);
 }
 
     @PostMapping()
-    public Map<String, Integer> create(@Valid @RequestBody VipInfo vipInfo, HttpServletRequest request) {
-        UserInfo userInfo = JwtUtils.getSub(request);
+    public Map<String, Integer> create(@Valid @RequestBody Vip vipInfo, HttpServletRequest request) {
+        User userInfo = JwtUtils.getSub(request);
         vipInfo.setDeptId(userInfo.getDeptId());
         vipInfo.setDeptName(userInfo.getDeptName());
         vipInfoService.save(vipInfo);
@@ -65,15 +65,15 @@ public class VipController {
     }
 
     @PutMapping()
-    public void update(@Valid @RequestBody VipInfo vipInfo, HttpServletRequest request) {
-        UserInfo userInfo = JwtUtils.getSub(request);
-        vipInfoService.update(vipInfo, new QueryWrapper<VipInfo>().eq("deptId", userInfo.getDeptId()));
+    public void update(@Valid @RequestBody Vip vipInfo, HttpServletRequest request) {
+        User userInfo = JwtUtils.getSub(request);
+        vipInfoService.update(vipInfo, new QueryWrapper<Vip>().eq("deptId", userInfo.getDeptId()));
     }
 
     @DeleteMapping()
     public void delete(HttpServletRequest request, @RequestParam(value = "vipInfoId")Integer vipInfoId) {
-        UserInfo userInfo = JwtUtils.getSub(request);
-        vipInfoService.remove(new QueryWrapper<VipInfo>()
+        User userInfo = JwtUtils.getSub(request);
+        vipInfoService.remove(new QueryWrapper<Vip>()
                 .eq("vipInfoId", vipInfoId)
                 .eq("deptId", userInfo.getDeptId()));
     }
