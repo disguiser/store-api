@@ -45,9 +45,9 @@ public class VipInfo implements Serializable {
 
     private String certNo;
 
-    private Integer birthDiscount;
+    private BigDecimal birthDiscount;
 
-    private Integer vipDiscount;
+    private BigDecimal vipDiscount;
 
     private BigDecimal balance;
 

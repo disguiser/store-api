@@ -4,19 +4,19 @@
   <resultMap id="BaseResultMap" type="com.snow.storeapi.entity.UserInfo">
     <id column="user_id" jdbcType="INTEGER" property="userId" />
     <result column="user_name" jdbcType="VARCHAR" property="userName" />
-    <result column="login_user" jdbcType="VARCHAR" property="loginUser" />
+    <result column="account_name" jdbcType="VARCHAR" property="accountName" />
     <result column="password" jdbcType="VARCHAR" property="password" />
     <result column="dept_id" jdbcType="INTEGER" property="deptId" />
     <result column="dept_name" jdbcType="INTEGER" property="deptName" />
     <result column="avatar" jdbcType="VARCHAR" property="avatar" />
   </resultMap>
   <sql id="Base_Column_List">
-    user_id, user_name, login_user, password, dept_id, dept_name, avatar
+    user_id, user_name, account_name, password, dept_id, dept_name, avatar
   </sql>
-  <select id="selectByLoginUser" parameterType="java.lang.String" resultMap="BaseResultMap">
+  <select id="selectByAccountName" parameterType="java.lang.String" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
     from sys_user
-    where login_user = #{loginUser,jdbcType=VARCHAR}
+    where account_name = #{accountName,jdbcType=VARCHAR}
   </select>
 </mapper>

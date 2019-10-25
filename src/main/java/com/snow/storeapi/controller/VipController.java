@@ -53,7 +53,7 @@ public class VipController {
         }
         IPage<VipInfo> vipInfos = vipInfoService.page(page, queryWrapper);
         return ResponseUtil.pageRes(vipInfos);
-    }
+}
 
     @PostMapping()
     public Map<String, Integer> create(@Valid @RequestBody VipInfo vipInfo, HttpServletRequest request) {

@@ -5,6 +5,6 @@ import com.snow.storeapi.entity.UserInfo;
 
 public interface UserMapper extends BaseMapper<UserInfo> {
 
-    UserInfo selectByLoginUser(String loginUser);
+    UserInfo selectByAccountName(String accountName);
 
 }

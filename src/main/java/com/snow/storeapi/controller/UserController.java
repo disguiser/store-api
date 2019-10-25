@@ -31,7 +31,7 @@ public class UserController {
     @PostMapping(value = "/login")
     public ResponseEntity userLogin(@RequestBody UserInfo req) {
         QueryWrapper<UserInfo> queryWrapper = new QueryWrapper();
-        queryWrapper.eq("login_user",req.getLoginUser());
+        queryWrapper.eq("account_name",req.getAccountName());
         UserInfo userInfo = userService.getOne(queryWrapper);
         if (userInfo != null){
             if (userInfo.getPassword().equals(req.getPassword())){

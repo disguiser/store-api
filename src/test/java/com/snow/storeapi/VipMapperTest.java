@@ -37,8 +37,8 @@ public class VipMapperTest {
         vipInfo.setPhone("18758222222");
         vipInfo.setDeptName("女装");
         vipInfo.setName("test");
-        vipInfo.setBirthDiscount(70);
-        vipInfo.setVipDiscount(90);
+        vipInfo.setBirthDiscount(new BigDecimal(70));
+        vipInfo.setVipDiscount(new BigDecimal(90));
         vipService.save(vipInfo);
         System.out.println(vipInfo);
     }
