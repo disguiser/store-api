@@ -59,7 +59,7 @@ public class DeptController {
 
     @ApiOperation("删除部门")
     @DeleteMapping("/delete")
-    public void delete(@RequestParam(value = "deptId")Integer deptId) {
-        deptService.removeById(deptId);
+    public void delete(@RequestParam(value = "id")Integer id) {
+        deptService.removeById(id);
     }
 }

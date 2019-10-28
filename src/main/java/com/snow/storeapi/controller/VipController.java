@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -55,10 +56,36 @@ public class VipController {
         if (!StringUtil.isEmpty(phone)) {
             queryWrapper.eq("phone", phone);
         }
-        queryWrapper.eq("deptId", user.getDeptId());
+        //不是老板,只能查自己门店下的
+        /*if(!"".equals(user.getRole())) {
+            queryWrapper.eq("dept_id", user.getDeptId());
+        }*/
         IPage<Vip> vips = vipService.page(page, queryWrapper);
         return ResponseUtil.pageRes(vips);
-}
+    }
+
+    @ApiOperation("会员列表查询_无分页")
+    @GetMapping("/listNoPage")
+    public Map listNoPage(
+            @RequestParam(value = "name", required = false)String name,
+            @RequestParam(value = "phone", required = false)String phone,
+            HttpServletRequest request
+    ) {
+        User user = JwtUtils.getSub(request);
+        QueryWrapper<Vip> queryWrapper = new QueryWrapper<>();
+        if (!StringUtil.isEmpty(name)) {
+            queryWrapper.eq("name", name);
+        }
+        if (!StringUtil.isEmpty(phone)) {
+            queryWrapper.eq("phone", phone);
+        }
+        //不是老板,只能查自己门店下的
+        /*if(!"".equals(user.getRole())) {
+            queryWrapper.eq("dept_id", user.getDeptId());
+        }*/
+        List<Vip> vips = vipService.list(queryWrapper);
+        return ResponseUtil.listRes(vips);
+    }
 
     @ApiOperation("添加会员")
     @PostMapping("/add")
@@ -79,8 +106,8 @@ public class VipController {
 
     @ApiOperation("删除会员")
     @DeleteMapping("/delete")
-    public void delete(@RequestParam(value = "vipId")Integer vipId) {
-        vipService.removeById(vipId);
+    public void delete(@RequestParam(value = "id")Integer id) {
+        vipService.removeById(id);
     }
 
 }

@@ -27,4 +27,6 @@ public class ChargeRecord implements Serializable {
     private BigDecimal chargeAmount;
 
     private BigDecimal giveAmount;
+
+    private Integer creator;
 }

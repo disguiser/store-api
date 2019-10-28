@@ -24,4 +24,5 @@ public class ConsumeRecord implements Serializable {
     @NonNull
     private BigDecimal consumeAmount;
 
+    private Integer creator;
 }

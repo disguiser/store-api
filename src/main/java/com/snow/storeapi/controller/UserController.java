@@ -65,7 +65,7 @@ public class UserController {
     @GetMapping("/list")
     public Map list(
             @RequestParam(value = "name", required = false)String name,
-            @RequestParam(value = "loginUser", required = false)String loginUser,
+            @RequestParam(value = "accountName", required = false)String accountName,
             @RequestParam(value = "pageNum", defaultValue = "1")Integer pageNum,
             @RequestParam(value = "limit", defaultValue = "10")Integer limit,
             HttpServletRequest request
@@ -76,10 +76,13 @@ public class UserController {
         if (!StringUtil.isEmpty(name)) {
             queryWrapper.eq("name", name);
         }
-        if (!StringUtil.isEmpty(loginUser)) {
-            queryWrapper.eq("loginUser", loginUser);
+        if (!StringUtil.isEmpty(accountName)) {
+            queryWrapper.eq("account_name", accountName);
         }
-        queryWrapper.eq("deptId", userInfo.getDeptId());
+        //不是老板,只能查自己门店下的
+        /*if(!"".equals(userInfo.getRole())) {
+            queryWrapper.eq("dept_id", userInfo.getDeptId());
+        }*/
         IPage<User> usrInfos = userService.page(page, queryWrapper);
         return ResponseUtil.pageRes(usrInfos);
     }
@@ -96,8 +99,8 @@ public class UserController {
 
     @ApiOperation("删除用户")
     @DeleteMapping("/delete")
-    public void delete(@RequestParam(value = "userId")Integer userId) {
-        userService.removeById(userId);
+    public void delete(@RequestParam(value = "id")Integer id) {
+        userService.removeById(id);
     }
 
     @ApiOperation("修改密码")
