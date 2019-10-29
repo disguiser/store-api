@@ -2,10 +2,10 @@ package com.snow.storeapi.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.snow.storeapi.entity.ChargeRecord;
+import com.snow.storeapi.entity.ConsumeRecord;
 import com.snow.storeapi.entity.User;
 import com.snow.storeapi.entity.Vip;
-import com.snow.storeapi.service.IChargeRecordService;
+import com.snow.storeapi.service.IConsumeRecordService;
 import com.snow.storeapi.service.IVipService;
 import com.snow.storeapi.util.JwtUtils;
 import com.snow.storeapi.util.ResponseUtil;
@@ -21,16 +21,16 @@ import java.math.BigDecimal;
 import java.util.Map;
 
 /**
- * 充值记录
+ * 消费记录
  */
 @RestController
-@RequestMapping("/chargeRecord")
-public class ChargeRecordController {
+@RequestMapping("/consumeRecord")
+public class ConsumeRecordController {
 
-    private static final Logger logger = LoggerFactory.getLogger(ChargeRecordController.class);
+    private static final Logger logger = LoggerFactory.getLogger(ConsumeRecordController.class);
     
     @Autowired
-    private IChargeRecordService chargeRecordService;
+    private IConsumeRecordService consumeRecordService;
 
     @Autowired
     private IVipService vipService;
@@ -43,8 +43,8 @@ public class ChargeRecordController {
             @RequestParam(value = "limit", defaultValue = "10")Integer limit,
             HttpServletRequest request
     ) {
-        IPage<ChargeRecord> page = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(pageNum, limit);
-        QueryWrapper<ChargeRecord> queryWrapper = new QueryWrapper<>();
+        IPage<ConsumeRecord> page = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(pageNum, limit);
+        QueryWrapper<ConsumeRecord> queryWrapper = new QueryWrapper<>();
         User user = JwtUtils.getSub(request);
         //不是老板,只能查自己门店下的
         /*if(!"".equals(user.getRole())) {
@@ -53,29 +53,29 @@ public class ChargeRecordController {
         if (vipId != null) {
             queryWrapper.eq("vip_id", vipId);
         }*/
-        IPage<ChargeRecord> chargeRecords = chargeRecordService.page(page, queryWrapper);
-        return ResponseUtil.pageRes(chargeRecords);
+        IPage<ConsumeRecord> consumeRecords = consumeRecordService.page(page, queryWrapper);
+        return ResponseUtil.pageRes(consumeRecords);
     }
 
     @ApiOperation("添加")
     @PostMapping("/add")
-    public int create(@Valid @RequestBody ChargeRecord chargeRecord,
+    public int create(@Valid @RequestBody ConsumeRecord consumeRecord,
                       HttpServletRequest request) {
         User user = JwtUtils.getSub(request);
-        chargeRecord.setCreator(user.getId());
-        chargeRecordService.save(chargeRecord);
-        Vip vip = vipService.getById(chargeRecord.getVipId());
+        consumeRecord.setCreator(user.getId());
+        consumeRecordService.save(consumeRecord);
+        Vip vip = vipService.getById(consumeRecord.getVipId());
         BigDecimal balance = vip.getBalance();
-        BigDecimal newBalance = balance.add(chargeRecord.getChargeAmount()).add(chargeRecord.getGiveAmount());
+        BigDecimal newBalance = balance.subtract(consumeRecord.getConsumeAmount());
         vip.setBalance(newBalance);
         vipService.updateById(vip);
-        return chargeRecord.getId();
+        return consumeRecord.getId();
     }
 
 
     @ApiOperation("删除")
     @DeleteMapping("/delete")
     public void delete(@RequestParam(value = "id")Integer id) {
-        chargeRecordService.removeById(id);
+        consumeRecordService.removeById(id);
     }
 }
