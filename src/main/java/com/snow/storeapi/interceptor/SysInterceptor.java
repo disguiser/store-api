@@ -73,10 +73,9 @@ public class SysInterceptor implements HandlerInterceptor {
     public void print(HttpServletResponse response, Object message) {
         try {
 //            response.setStatus(HttpStatus.BAD_REQUEST.value());
-            response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
+            response.setContentType("application/json;charset=UTF-8");
             response.setHeader("Cache-Control", "no-cache, must-revalidate");
             response.addHeader("Access-Control-Allow-Origin", "*");
-            response.setContentType("application/json; charset=utf-8");
             response.setCharacterEncoding("UTF-8");
             PrintWriter writer = response.getWriter();
             writer.write(JSON.toJSONString(message));

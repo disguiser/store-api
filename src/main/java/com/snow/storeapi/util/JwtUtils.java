@@ -5,11 +5,10 @@ import com.snow.storeapi.constant.SystemConstant;
 import com.snow.storeapi.entity.CheckResult;
 import com.snow.storeapi.entity.User;
 import io.jsonwebtoken.*;
-import org.bouncycastle.util.encoders.Base64;
+import io.jsonwebtoken.security.Keys;
 
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
+import java.security.Key;
 import java.util.Date;
 
 /**
@@ -24,16 +23,15 @@ public class JwtUtils {
 	 *
 	 */
 	public static String createJWT(String subject, long ttlMillis) {
-		SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS512;
 		long nowMillis = System.currentTimeMillis();
 		Date now = new Date(nowMillis);
-		SecretKey secretKey = generalKey();
+		Key key = generalKey();
 //		byte[] secretKey = SystemConstant.JWT_SECERT.getBytes("UTF-8");
 		JwtBuilder builder = Jwts.builder()
 				.setSubject(subject)   // 主题
 				.setIssuer("瑞雪")     // 签发者
 				.setIssuedAt(now)      // 签发时间
-				.signWith(signatureAlgorithm, secretKey); // 签名算法以及密匙
+				.signWith(key, SignatureAlgorithm.HS256); // 签名算法以及密匙
 		if (ttlMillis >= 0) {
 			long expMillis = nowMillis + ttlMillis;
 			Date expDate = new Date(expMillis);
@@ -56,7 +54,7 @@ public class JwtUtils {
 		} catch (ExpiredJwtException e) {
 			checkResult.setErrCode(SystemConstant.JWT_ERRCODE_EXPIRE);
 			checkResult.setSuccess(false);
-		} catch (SignatureException e) {
+		} catch (JwtException e) {
 			checkResult.setErrCode(SystemConstant.JWT_ERRCODE_FAIL);
 			checkResult.setSuccess(false);
 		} catch (Exception e) {
@@ -65,11 +63,12 @@ public class JwtUtils {
 		}
 		return checkResult;
 	}
-	public static SecretKey generalKey() {
-		byte[] encodedKey = Base64.decode(SystemConstant.JWT_SECERT);
-	    SecretKey key = new SecretKeySpec(encodedKey, 0, encodedKey.length, "AES");
-	    return key;
-	}
+	public static Key generalKey() {
+		byte[] encodedKey = SystemConstant.JWT_SECERT.getBytes();
+//	    Key key = new SecretKeySpec(encodedKey, 0, encodedKey.length, "AES");
+        Key key = Keys.hmacShaKeyFor(encodedKey);
+        return key;
+    }
 	
 	/**
 	 * 
@@ -79,9 +78,9 @@ public class JwtUtils {
 	 * @throws Exception
 	 */
 	public static Claims parseJWT(String jwt) throws Exception {
-		SecretKey secretKey = generalKey();
+        Key key = generalKey();
 		return Jwts.parser()
-			.setSigningKey(secretKey)
+			.setSigningKey(key)
 			.parseClaimsJws(jwt)
 			.getBody();
 	}
@@ -104,15 +103,15 @@ public class JwtUtils {
 
 	public static void main(String[] args) throws InterruptedException {
 		//小明失效 10s
-//		String sc = createJWT("1","小明", 3000);
-//		System.out.println(sc);
-//		System.out.println(validateJWT(sc).getErrCode());
+		String sc = createJWT("{'a':'1'}", 30000);
+        System.out.println(sc);
+//        Thread.sleep(3000);
+		System.out.println(validateJWT(sc).getErrCode());
 //		System.out.println(validateJWT(sc).getClaims().getId());
-//		//Thread.sleep(3000);
-//		System.out.println(validateJWT(sc).getClaims());
-		String token = "eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIxIiwic3ViIjoie1wib3BOYW1lXCI6XCLns7vnu5_nrqHnkIblkZhcIixcImRlcGFydElkXCI6XCI4MDFcIixcIm9wQ29kZVwiOlwiODg4XCJ9IiwiaXNzIjoi55Ge6ZuqIiwiaWF0IjoxNTM2OTEyNjM1LCJleHAiOjE1Mzc1MTc0MzV9.s6-oVwkrswfa9xR055io28YcqS5JeqlfSJlmyb3aRZM";
+		System.out.println(validateJWT(sc).getClaims());
+//		String token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ7J2EnOicxJ30iLCJpc3MiOiLnkZ7pm6oiLCJpYXQiOjE1NzIyNDEyMzgsImV4cCI6MTU3MjI0MTI0MX0.IaYWAwKh5ONteHxHnMiLh5cWuiHKIlPcuT-SF4_LYIe4_1dRAZ4G4VXX-L-9Y9TDJ2c7-qqArji7emIiAppylw";
 		try {
-			System.out.println(parseJWT(token).getSubject());
+			System.out.println(parseJWT(sc).getSubject());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
