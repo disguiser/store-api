@@ -36,10 +36,10 @@ public class ConsumeRecordController {
     private IVipService vipService;
 
     @ApiOperation("列表查询")
-    @GetMapping("/list")
+    @GetMapping("/findByPage")
     public Map list(
             @RequestParam(value = "key", required = false)String key,
-            @RequestParam(value = "pageNum", defaultValue = "1")Integer pageNum,
+            @RequestParam(value = "page", defaultValue = "1")Integer pageNum,
             @RequestParam(value = "limit", defaultValue = "10")Integer limit,
             HttpServletRequest request
     ) {

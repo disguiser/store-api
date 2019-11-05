@@ -8,9 +8,11 @@ import java.util.HashMap;
 
 public class test {
     public static void main(String[] args) {
-        byte[] encodedKey = Base64.decode(SystemConstant.JWT_SECERT);
-        byte[] a = SystemConstant.JWT_SECERT.getBytes();
-        System.out.println(encodedKey);
+//        byte[] encodedKey = Base64.decode(SystemConstant.JWT_SECERT);
+//        byte[] a = SystemConstant.JWT_SECERT.getBytes();
+//        System.out.println(encodedKey);
+//        System.out.println(a);
+        var a = "bearer 123".substring(7);
         System.out.println(a);
     }
 }

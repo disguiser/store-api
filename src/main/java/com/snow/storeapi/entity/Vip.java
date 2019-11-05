@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 import com.snow.storeapi.enums.SexEnum;
 import lombok.Data;
@@ -43,13 +44,16 @@ public class Vip implements Serializable {
     private String phone;
 
     @NotNull
+    @Pattern(regexp = "^[1-2][0-9][0-9][0-9]-[0-1]{0,1}[0-9]-[0-3]{0,1}[0-9]$")
     private String birthday;
 
     private String certNo;
 
-    private BigDecimal birthDiscount;
+    @NotNull
+    private Integer birthDiscount;
 
-    private BigDecimal vipDiscount;
+    @NotNull
+    private Integer vipDiscount;
 
     private BigDecimal balance;
 
@@ -57,4 +61,7 @@ public class Vip implements Serializable {
 
     private String deptName;
 
+    private LocalDateTime createTime;
+
+    private LocalDateTime modifyTime;
 }

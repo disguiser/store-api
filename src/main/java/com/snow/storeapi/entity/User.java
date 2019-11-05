@@ -39,4 +39,7 @@ public class User implements Serializable {
 
     @NotNull
     private String role;
+
+    @NotNull
+    private String status;
 }

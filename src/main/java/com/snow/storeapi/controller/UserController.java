@@ -62,11 +62,11 @@ public class UserController {
     }
 
     @ApiOperation("用户列表查询")
-    @GetMapping("/list")
+    @GetMapping("/findByPage")
     public Map list(
             @RequestParam(value = "name", required = false)String name,
             @RequestParam(value = "accountName", required = false)String accountName,
-            @RequestParam(value = "pageNum", defaultValue = "1")Integer pageNum,
+            @RequestParam(value = "page", defaultValue = "1")Integer pageNum,
             @RequestParam(value = "limit", defaultValue = "10")Integer limit,
             HttpServletRequest request
     ) {

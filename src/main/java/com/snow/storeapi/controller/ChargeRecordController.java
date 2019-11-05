@@ -2,6 +2,7 @@ package com.snow.storeapi.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.snow.storeapi.entity.ChargeRecord;
 import com.snow.storeapi.entity.User;
 import com.snow.storeapi.entity.Vip;
@@ -9,6 +10,7 @@ import com.snow.storeapi.service.IChargeRecordService;
 import com.snow.storeapi.service.IVipService;
 import com.snow.storeapi.util.JwtUtils;
 import com.snow.storeapi.util.ResponseUtil;
+import com.snow.storeapi.util.StringUtil;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,15 +38,22 @@ public class ChargeRecordController {
     private IVipService vipService;
 
     @ApiOperation("列表查询")
-    @GetMapping("/list")
+    @GetMapping("/findByPage")
     public Map list(
-            @RequestParam(value = "key", required = false)String key,
-            @RequestParam(value = "pageNum", defaultValue = "1")Integer pageNum,
+            @RequestParam(value = "vipId", required = false)String vipId,
+            @RequestParam(value = "createDate", required = false)String createDate,
+            @RequestParam(value = "page", defaultValue = "1")Integer pageNum,
             @RequestParam(value = "limit", defaultValue = "10")Integer limit,
             HttpServletRequest request
     ) {
-        IPage<ChargeRecord> page = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(pageNum, limit);
+        IPage<ChargeRecord> page = new Page<>(pageNum, limit);
         QueryWrapper<ChargeRecord> queryWrapper = new QueryWrapper<>();
+        if (!StringUtil.isEmpty(vipId)) {
+            queryWrapper.eq("vip_id", vipId);
+        }
+        if (!StringUtil.isEmpty(createDate)) {
+            queryWrapper.like("create_time", createDate);
+        }
         User user = JwtUtils.getSub(request);
         //不是老板,只能查自己门店下的
         /*if(!"".equals(user.getRole())) {
@@ -58,7 +67,7 @@ public class ChargeRecordController {
     }
 
     @ApiOperation("添加")
-    @PostMapping("/add")
+    @PutMapping("/create")
     public int create(@Valid @RequestBody ChargeRecord chargeRecord,
                       HttpServletRequest request) {
         User user = JwtUtils.getSub(request);

@@ -31,7 +31,7 @@ public class SysInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
         if (handler instanceof HandlerMethod) {
-            String authHeader = request.getHeader("token");
+            String authHeader = request.getHeader("Authorization");
             if (StringUtils.isEmpty(authHeader)) {
                 logger.info("验证失败");
                 response.setStatus(SystemConstant.JWT_ERRCODE_NULL);
@@ -39,7 +39,7 @@ public class SysInterceptor implements HandlerInterceptor {
                 return false;
             } else {
                 //验证JWT的签名，返回CheckResult对象
-                CheckResult checkResult = JwtUtils.validateJWT(authHeader);
+                CheckResult checkResult = JwtUtils.validateJWT(authHeader.substring(7));
                 if (checkResult.isSuccess()) {
                     return true;
                 } else {
@@ -75,9 +75,8 @@ public class SysInterceptor implements HandlerInterceptor {
             response.addHeader("Access-Control-Allow-Origin", "*");
             response.setCharacterEncoding("UTF-8");
             PrintWriter writer = response.getWriter();
-            writer.write(JSON.toJSONString(message));
+            writer.print(JSON.toJSONString(message));
             writer.flush();
-            writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

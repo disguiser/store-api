@@ -91,9 +91,9 @@ public class JwtUtils {
 	 * @return
 	 */
 	public static User getSub(HttpServletRequest request) {
-		String token = request.getHeader("token");
+		String token = request.getHeader("Authorization");
 		try {
-			String subString = parseJWT(token).getSubject();
+			String subString = parseJWT(token.substring(7)).getSubject();
 			return JSON.parseObject(subString, User.class);
 		} catch (Exception e) {
 			e.printStackTrace();

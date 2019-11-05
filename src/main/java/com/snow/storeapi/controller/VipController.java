@@ -3,6 +3,7 @@ package com.snow.storeapi.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.snow.storeapi.entity.User;
 import com.snow.storeapi.entity.Vip;
 import com.snow.storeapi.service.IVipService;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.HashMap;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -39,16 +40,16 @@ public class VipController {
     private IVipService vipService;
 
     @ApiOperation("会员列表查询")
-    @GetMapping("/list")
+    @GetMapping("/findByPage")
     public Map list(
             @RequestParam(value = "name", required = false)String name,
             @RequestParam(value = "phone", required = false)String phone,
-            @RequestParam(value = "pageNum", defaultValue = "1")Integer pageNum,
+            @RequestParam(value = "page", defaultValue = "1")Integer pageNum,
             @RequestParam(value = "limit", defaultValue = "10")Integer limit,
             HttpServletRequest request
     ) {
         User user = JwtUtils.getSub(request);
-        IPage<Vip> page = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(pageNum, limit);
+        IPage<Vip> page = new Page<>(pageNum, limit);
         QueryWrapper<Vip> queryWrapper = new QueryWrapper<>();
         if (!StringUtil.isEmpty(name)) {
             queryWrapper.eq("name", name);
@@ -56,6 +57,7 @@ public class VipController {
         if (!StringUtil.isEmpty(phone)) {
             queryWrapper.eq("phone", phone);
         }
+        queryWrapper.orderByDesc(true, "create_time");
         //不是老板,只能查自己门店下的
         /*if(!"".equals(user.getRole())) {
             queryWrapper.eq("dept_id", user.getDeptId());
@@ -88,7 +90,7 @@ public class VipController {
     }
 
     @ApiOperation("添加会员")
-    @PostMapping("/add")
+    @PutMapping("/create")
     public int create(@Valid @RequestBody Vip vip, HttpServletRequest request) {
         User user = JwtUtils.getSub(request);
         vip.setDeptId(user.getDeptId());
@@ -98,16 +100,17 @@ public class VipController {
     }
 
     @ApiOperation("修改会员")
-    @PutMapping("/update")
+    @PatchMapping("/update")
     public void update(@Valid @RequestBody Vip vip) {
+        vip.setModifyTime(LocalDateTime.now());
         vipService.updateById(vip);
     }
 
 
     @ApiOperation("删除会员")
     @DeleteMapping("/delete")
-    public void delete(@RequestParam(value = "id")Integer id) {
-        vipService.removeById(id);
+    public void delete(@RequestBody List<Integer> ids) {
+        vipService.removeByIds(ids);
     }
 
 }
