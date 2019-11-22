@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Api(value = "UserController",  tags="用户管理")
@@ -83,6 +84,7 @@ public class UserController {
         /*if(!"".equals(userInfo.getRole())) {
             queryWrapper.eq("dept_id", userInfo.getDeptId());
         }*/
+        queryWrapper.orderByDesc("modify_time");
         IPage<User> usrInfos = userService.page(page, queryWrapper);
         return ResponseUtil.pageRes(usrInfos);
     }
@@ -97,10 +99,10 @@ public class UserController {
         return user.getId();
     }
 
-    @ApiOperation("删除用户")
+    @ApiOperation("批量删除用户")
     @DeleteMapping("/delete")
-    public void delete(@RequestParam(value = "id")Integer id) {
-        userService.removeById(id);
+    public void delete(@RequestParam(value = "ids") List<Integer> ids) {
+        userService.removeByIds(ids);
     }
 
     @ApiOperation("修改密码")

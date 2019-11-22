@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -62,6 +63,7 @@ public class ChargeRecordController {
         if (vipId != null) {
             queryWrapper.eq("vip_id", vipId);
         }*/
+        queryWrapper.orderByDesc("create_time");
         IPage<ChargeRecord> chargeRecords = chargeRecordService.page(page, queryWrapper);
         return ResponseUtil.pageRes(chargeRecords);
     }
@@ -81,10 +83,9 @@ public class ChargeRecordController {
         return chargeRecord.getId();
     }
 
-
-    @ApiOperation("删除")
+    @ApiOperation("批量删除")
     @DeleteMapping("/delete")
-    public void delete(@RequestParam(value = "id")Integer id) {
-        chargeRecordService.removeById(id);
+    public void delete(@RequestParam(value = "ids") List<Integer> ids) {
+        chargeRecordService.removeByIds(ids);
     }
 }

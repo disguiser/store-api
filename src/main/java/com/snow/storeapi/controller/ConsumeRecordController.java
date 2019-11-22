@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -53,6 +54,7 @@ public class ConsumeRecordController {
         if (vipId != null) {
             queryWrapper.eq("vip_id", vipId);
         }*/
+        queryWrapper.orderByDesc("create_time");
         IPage<ConsumeRecord> consumeRecords = consumeRecordService.page(page, queryWrapper);
         return ResponseUtil.pageRes(consumeRecords);
     }
@@ -72,10 +74,9 @@ public class ConsumeRecordController {
         return consumeRecord.getId();
     }
 
-
-    @ApiOperation("删除")
+    @ApiOperation("批量删除")
     @DeleteMapping("/delete")
-    public void delete(@RequestParam(value = "id")Integer id) {
-        consumeRecordService.removeById(id);
+    public void delete(@RequestParam(value = "ids") List<Integer> ids) {
+        consumeRecordService.removeByIds(ids);
     }
 }

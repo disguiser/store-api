@@ -62,6 +62,7 @@ public class VipController {
         /*if(!"".equals(user.getRole())) {
             queryWrapper.eq("dept_id", user.getDeptId());
         }*/
+        queryWrapper.orderByDesc("modify_time");
         IPage<Vip> vips = vipService.page(page, queryWrapper);
         return ResponseUtil.pageRes(vips);
     }
@@ -85,6 +86,7 @@ public class VipController {
         /*if(!"".equals(user.getRole())) {
             queryWrapper.eq("dept_id", user.getDeptId());
         }*/
+        queryWrapper.orderByDesc("modify_time");
         List<Vip> vips = vipService.list(queryWrapper);
         return ResponseUtil.listRes(vips);
     }
@@ -107,10 +109,11 @@ public class VipController {
     }
 
 
-    @ApiOperation("删除会员")
+    @ApiOperation("批量删除会员")
     @DeleteMapping("/delete")
     public void delete(@RequestBody List<Integer> ids) {
         vipService.removeByIds(ids);
     }
+
 
 }
