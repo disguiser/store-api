@@ -9,10 +9,11 @@ import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Data
 @Accessors(chain = true)
-@TableName("charge_record")
+@TableName("consume_record")
 public class ConsumeRecord implements Serializable {
     private static final long serialVersionUID = -8539565840972649434L;
     @TableId(value = "id", type = IdType.AUTO)
@@ -25,4 +26,6 @@ public class ConsumeRecord implements Serializable {
     private BigDecimal consumeAmount;
 
     private Integer creator;
+
+    private LocalDateTime createTime;
 }

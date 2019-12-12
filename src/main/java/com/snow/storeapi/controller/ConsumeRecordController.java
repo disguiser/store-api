@@ -9,10 +9,12 @@ import com.snow.storeapi.service.IConsumeRecordService;
 import com.snow.storeapi.service.IVipService;
 import com.snow.storeapi.util.JwtUtils;
 import com.snow.storeapi.util.ResponseUtil;
+import com.snow.storeapi.util.StringUtil;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -39,16 +41,23 @@ public class ConsumeRecordController {
     @ApiOperation("列表查询")
     @GetMapping("/findByPage")
     public Map list(
-            @RequestParam(value = "key", required = false)String key,
+            @RequestParam(value = "vipId", required = false)String vipId,
+            @RequestParam(value = "createDate", required = false)String createDate,
             @RequestParam(value = "page", defaultValue = "1")Integer pageNum,
             @RequestParam(value = "limit", defaultValue = "10")Integer limit,
             HttpServletRequest request
     ) {
         IPage<ConsumeRecord> page = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(pageNum, limit);
         QueryWrapper<ConsumeRecord> queryWrapper = new QueryWrapper<>();
-        User user = JwtUtils.getSub(request);
+        if (!StringUtil.isEmpty(vipId)) {
+            queryWrapper.eq("vip_id", vipId);
+        }
+        if (!StringUtil.isEmpty(createDate)) {
+            queryWrapper.like("create_time", createDate);
+        }
         //不是老板,只能查自己门店下的
-        /*if(!"".equals(user.getRole())) {
+        /*User user = JwtUtils.getSub(request);
+        if(!"".equals(user.getRole())) {
             queryWrapper.eq("dept_id", user.getDeptId());
         }
         if (vipId != null) {
@@ -60,7 +69,8 @@ public class ConsumeRecordController {
     }
 
     @ApiOperation("添加")
-    @PostMapping("/add")
+    @PutMapping("/create")
+    @Transactional
     public int create(@Valid @RequestBody ConsumeRecord consumeRecord,
                       HttpServletRequest request) {
         User user = JwtUtils.getSub(request);

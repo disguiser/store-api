@@ -15,6 +15,7 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -55,9 +56,9 @@ public class ChargeRecordController {
         if (!StringUtil.isEmpty(createDate)) {
             queryWrapper.like("create_time", createDate);
         }
-        User user = JwtUtils.getSub(request);
+        /*User user = JwtUtils.getSub(request);
         //不是老板,只能查自己门店下的
-        /*if(!"".equals(user.getRole())) {
+        if(!"".equals(user.getRole())) {
             queryWrapper.eq("dept_id", user.getDeptId());
         }
         if (vipId != null) {
@@ -70,6 +71,7 @@ public class ChargeRecordController {
 
     @ApiOperation("添加")
     @PutMapping("/create")
+    @Transactional
     public int create(@Valid @RequestBody ChargeRecord chargeRecord,
                       HttpServletRequest request) {
         User user = JwtUtils.getSub(request);
