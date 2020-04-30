@@ -90,7 +90,7 @@ public class UserController {
     }
 
     @ApiOperation("添加用户")
-    @PostMapping("/add")
+    @PutMapping("/create")
     public int addUser(@RequestBody User user, HttpServletRequest request){
         User req = JwtUtils.getSub(request);
         user.setDeptId(req.getDeptId());

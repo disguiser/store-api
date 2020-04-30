@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.snow.storeapi.mapper.OrderMapper">
+  <select id="getOrderDataById" resultType="map">
+    SELECT
+        g.sku,
+        g.`name`,
+        g.color,
+        g.size,
+        og.amount,
+        g.sale_price AS salePrice,
+        g.discount,
+        o.buyer,
+        u.user_name AS inputUser
+    FROM
+        `order` o
+        INNER JOIN order_goods og ON o.id = og.order_id
+        LEFT JOIN goods g ON og.goods_id = g.id
+        LEFT JOIN `user` u ON o.input_user = u.id
+        WHERE o.id = #{orderId}
+  </select>
+
+    <select id="getDistinctSku" resultType="string">
+        SELECT
+            DISTINCT g.sku
+        FROM
+            `order` o
+            INNER JOIN order_goods og ON o.id = og.order_id
+            LEFT JOIN goods g ON og.goods_id = g.id
+            LEFT JOIN `user` u ON o.input_user = u.id
+            WHERE o.id = #{orderId}
+    </select>
+</mapper>
