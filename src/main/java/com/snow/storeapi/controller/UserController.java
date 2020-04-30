@@ -114,4 +114,23 @@ public class UserController {
         userInfo.setPassword(password);
         userService.updateById(userInfo);
     }
+
+    @ApiOperation("更新用户")
+    @PatchMapping("/update/{id}")
+    public void update(@PathVariable Integer id,@RequestBody User user){
+        userService.updateById(user);
+    }
+
+    @ApiOperation("校验登录名唯一性")
+    @GetMapping("/checkAccountNameUinque/{accountName}")
+    public Boolean checkAccountNameUinque(@PathVariable String accountName){
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("account_name",accountName);
+        int count = userService.count(queryWrapper);
+        if(count > 0){
+            return false;
+        }
+        return true;
+    }
+
 }

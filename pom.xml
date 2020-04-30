@@ -110,6 +110,15 @@
             <artifactId>bcprov-jdk15on</artifactId>
             <version>1.64</version>
         </dependency>
+
+		<!--腾讯云cos-->
+
+		<!--腾讯cos-->
+		<dependency>
+			<groupId>com.qcloud</groupId>
+			<artifactId>cos_api</artifactId>
+			<version>5.5.7</version>
+		</dependency>
 	</dependencies>
 
 	<build>
