@@ -11,10 +11,13 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,22 +34,20 @@ public class StockController {
     private IStockService stockService;
 
 
-    @ApiOperation("列表查询")
-    @GetMapping("/findByPage")
-    public Map list(
-            @RequestParam(value = "color", required = false)String color,
-            @RequestParam(value = "page", defaultValue = "1")Integer pageNum,
-            @RequestParam(value = "limit", defaultValue = "10")Integer limit
-    ) {
-        IPage<Stock> page = new Page<>(pageNum, limit);
-        QueryWrapper<Stock> queryWrapper = new QueryWrapper<>();
-        if (!StringUtil.isEmpty(color)) {
-            queryWrapper.eq("color", color);
+    @ApiOperation("list查询")
+    @GetMapping("/findAll/{goodsId}")
+    public ResponseEntity list(@PathVariable Integer goodsId) {
+        if (goodsId == null){
+            Map<String, Object> res = new HashMap<>();
+            res.put("msg","商品id不能为空！");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
         }
+        QueryWrapper<Stock> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("goods_id", goodsId);
         queryWrapper.eq("deleted",0);
         queryWrapper.orderByDesc("create_time");
-        IPage<Stock> stocks = stockService.page(page, queryWrapper);
-        return ResponseUtil.pageRes(stocks);
+        List<Stock> stocks = stockService.list(queryWrapper);
+        return ResponseEntity.ok(stocks);
     }
 
     @ApiOperation("添加")

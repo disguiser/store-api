@@ -53,6 +53,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,Order> implements 
         result.put("list",after);
         result.put("total",total);
         result.put("totalMoney",totalMoney);
-        return R.ok(result);
+        return result;
     }
 }

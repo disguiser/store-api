@@ -15,6 +15,8 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -82,11 +84,14 @@ public class OrderController {
 
     @ApiOperation("出货单数据")
     @GetMapping("getOrderDataById")
-    public Map getOrderDataById(@RequestParam(value = "id")Integer id){
+    public ResponseEntity getOrderDataById(@RequestParam(value = "id")Integer id){
         Order order = orderService.getById(id);
         if(order == null){
-            return R.error("未查到下单信息！");
+            Map<String, Object> res = new HashMap<>();
+            //return R.error("未查到下单信息！");
+            res.put("msg","未查到下单信息！");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
         }
-        return orderService.getOrderDataById(id);
+        return ResponseEntity.ok(orderService.getOrderDataById(id));
     }
 }

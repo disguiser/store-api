@@ -24,13 +24,7 @@ public class Goods implements Serializable {
     @NonNull
     private String name;
 
-    private String color;
-
-    private String size;
-
     private String imgUrl;
-
-    private BigDecimal currentStock;
 
     @NonNull
     private BigDecimal salePrice;
