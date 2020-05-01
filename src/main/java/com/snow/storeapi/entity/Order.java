@@ -23,7 +23,7 @@ public class Order implements Serializable {
     private Integer id;
 
     @NonNull
-    private Integer total;
+    private BigDecimal total;
 
     private BigDecimal totalMoney;
 

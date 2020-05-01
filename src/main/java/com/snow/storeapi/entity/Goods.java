@@ -24,14 +24,15 @@ public class Goods implements Serializable {
     @NonNull
     private String name;
 
-    private String colorGroup;
+    private String color;
 
-    private String sizeGroup;
+    private String size;
 
     private String imgUrl;
 
     private BigDecimal currentStock;
 
+    @NonNull
     private BigDecimal salePrice;
 
     private BigDecimal costPrice;
@@ -41,4 +42,10 @@ public class Goods implements Serializable {
     private LocalDateTime modifyTime;
 
     private LocalDateTime createTime;
+
+    private Integer deleted;
+
+    public Goods() {
+
+    }
 }

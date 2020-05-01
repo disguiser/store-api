@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.snow.storeapi.constant.SystemConstant;
+import com.snow.storeapi.entity.R;
 import com.snow.storeapi.entity.User;
 import com.snow.storeapi.service.IUserService;
 import com.snow.storeapi.util.JwtUtils;
@@ -105,20 +106,23 @@ public class UserController {
         userService.removeByIds(ids);
     }
 
-    @ApiOperation("修改密码")
-    @PutMapping("/updatePassword")
-    public void updatePassword(@RequestParam(value = "newPassword") String password, HttpServletRequest request) {
-        User user = JwtUtils.getSub(request);
-        User userInfo = new User();
-        userInfo.setId(user.getId());
-        userInfo.setPassword(password);
-        userService.updateById(userInfo);
-    }
 
     @ApiOperation("更新用户")
     @PatchMapping("/update/{id}")
-    public void update(@PathVariable Integer id,@RequestBody User user){
+    public ResponseEntity update(@PathVariable Integer id,@RequestBody User user){
+        Map<String, Object> res = new HashMap<>();
+        if(!StringUtil.isEmpty(user.getNewPassword())){
+            //校验旧密码是否一致
+            User u = userService.getById(id);
+            if(u.getPassword().equals(user.getOldPassword())) {
+                user.setPassword(user.getNewPassword());
+            }else {
+                res.put("msg","旧密码不正确!");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+            }
+        }
         userService.updateById(user);
+        return ResponseEntity.ok(res);
     }
 
     @ApiOperation("校验登录名唯一性")

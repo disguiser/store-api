@@ -5,10 +5,9 @@ import com.snow.storeapi.entity.R;
 import com.snow.storeapi.util.COSUtil;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
@@ -36,18 +35,21 @@ public class FileController {
     private String FILE_HOST;
 
     @ApiOperation("上传文件")
-    @PostMapping("/upload")
-    public Map upload(@RequestParam("file") MultipartFile multipartFile,@RequestParam("folder")String folder){
+    @PostMapping("/upload/{folder}")
+    public ResponseEntity upload(@RequestParam("file") MultipartFile multipartFile, @PathVariable String folder){
+        Map<String, Object> res = new HashMap<>();
         String uploadUrl = null;
         if(multipartFile == null || multipartFile.isEmpty()){
-            return R.error("文件不能为空");
+            res.put("msg","文件不能为空!");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
         }
 
         String fileName = multipartFile.getOriginalFilename();
         long size = multipartFile.getSize();
         //图片大小限制为10M
         if(size > 10971520){
-            return R.error("文件大小不能超过10M");
+            res.put("msg","文件大小不能超过10M!");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
         }
         try {
             //上传到腾讯云COS
@@ -59,9 +61,10 @@ public class FileController {
                 uploadUrl = COSUtil.upload(inputStream, newServerName, bucketName, FILE_HOST, SECRET_ID, SECRET_KEY);
             }
         }catch (Exception e){
-            return R.error("上传失败，请重新上传");
+            res.put("msg","上传失败，请重新上传!");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
         }
-        return R.ok(uploadUrl);
+        return ResponseEntity.ok(uploadUrl);
     }
 
 }

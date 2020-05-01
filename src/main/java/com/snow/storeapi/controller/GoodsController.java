@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -49,6 +50,7 @@ public class GoodsController {
         if (!StringUtil.isEmpty(name)) {
             queryWrapper.eq("name", name);
         }
+        queryWrapper.eq("deleted",0);
         queryWrapper.orderByDesc("create_time");
         IPage<Goods> goodss = goodsService.page(page, queryWrapper);
         return ResponseUtil.pageRes(goodss);
@@ -64,7 +66,16 @@ public class GoodsController {
     @ApiOperation("批量删除")
     @DeleteMapping("/delete")
     public void delete(@RequestBody List<Integer> ids) {
-        goodsService.removeByIds(ids);
+        //goodsService.removeByIds(ids);
+        //逻辑删除
+        List<Goods> goodsList = new ArrayList<>(ids.size());
+        ids.forEach(id->{
+            Goods goods = new Goods();
+            goods.setId(id);
+            goods.setDeleted(1);
+            goodsList.add(goods);
+        });
+        goodsService.updateBatchById(goodsList);
     }
 
     @ApiOperation("更新")

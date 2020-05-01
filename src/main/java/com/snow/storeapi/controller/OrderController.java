@@ -11,9 +11,7 @@ import com.snow.storeapi.service.IGoodsService;
 import com.snow.storeapi.service.IOrderGoodsService;
 import com.snow.storeapi.service.IOrderService;
 import com.snow.storeapi.util.ResponseUtil;
-import com.snow.storeapi.util.StringUtil;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.models.auth.In;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -63,15 +62,31 @@ public class OrderController {
             OrderGoods orderGoods = new OrderGoods();
             orderGoods.setGoodsId(goods.get("goodsId"));
             orderGoods.setOrderId(order.getId());
-            orderGoods.setAmount(goods.get("amount"));
+            orderGoods.setAmount(new BigDecimal(goods.get("amount")));
             orderGoodsService.save(orderGoods);
+            //更新商品现有库存
+            Goods goods1 = goodsService.getById(goods.get("goodsId"));
+            goods1.setCurrentStock(goods1.getCurrentStock().subtract(orderGoods.getAmount()));
+            goodsService.updateById(goods1);
         }
         return order.getId();
     }
 
-    @ApiOperation("批量删除")
+    @ApiOperation("批量删除/作废")
     @DeleteMapping("/delete")
     public void delete(@RequestParam(value = "ids") List<Integer> ids) {
+        Collection<Order> orderCollection = orderService.listByIds(ids);
+        //更新商品表的库存
+        orderCollection.forEach(order -> {
+            QueryWrapper<OrderGoods> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("order_id",order.getId());
+            List<OrderGoods> orderGoodsList = orderGoodsService.list(queryWrapper);
+            orderGoodsList.forEach(orderGoods -> {
+                Goods goods = goodsService.getById(orderGoods.getGoodsId());
+                goods.setCurrentStock(goods.getCurrentStock().add(orderGoods.getAmount()));
+                goodsService.updateById(goods);
+            });
+        });
         orderService.removeByIds(ids);
     }
 

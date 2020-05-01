@@ -42,4 +42,11 @@ public class User implements Serializable {
 
     @NotNull
     private String status;
+
+    @TableField(exist = false)
+    private String newPassword;
+
+
+    @TableField(exist = false)
+    private String oldPassword;
 }
