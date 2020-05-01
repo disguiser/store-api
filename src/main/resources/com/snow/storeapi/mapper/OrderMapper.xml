@@ -5,8 +5,8 @@
     SELECT
         g.sku,
         g.`name`,
-        g.color,
-        g.size,
+        s.color,
+        s.size,
         og.amount,
         g.sale_price AS salePrice,
         g.discount,
@@ -15,7 +15,8 @@
     FROM
         `order` o
         INNER JOIN order_goods og ON o.id = og.order_id
-        LEFT JOIN goods g ON og.goods_id = g.id
+		LEFT JOIN stock s on s.id = og.stock_id
+        LEFT JOIN goods g ON s.goods_id = g.id
         LEFT JOIN `user` u ON o.input_user = u.id
         WHERE o.id = #{orderId}
   </select>
@@ -26,7 +27,8 @@
         FROM
             `order` o
             INNER JOIN order_goods og ON o.id = og.order_id
-            LEFT JOIN goods g ON og.goods_id = g.id
+            LEFT JOIN stock s on s.id = og.stock_id
+            LEFT JOIN goods g ON s.goods_id = g.id
             LEFT JOIN `user` u ON o.input_user = u.id
             WHERE o.id = #{orderId}
     </select>

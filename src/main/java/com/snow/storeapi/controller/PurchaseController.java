@@ -7,6 +7,7 @@ import com.snow.storeapi.entity.Goods;
 import com.snow.storeapi.entity.Purchase;
 import com.snow.storeapi.service.IGoodsService;
 import com.snow.storeapi.service.IPurchaseService;
+import com.snow.storeapi.service.IStockService;
 import com.snow.storeapi.util.ResponseUtil;
 import com.snow.storeapi.util.StringUtil;
 import io.swagger.annotations.ApiOperation;
@@ -33,7 +34,7 @@ public class PurchaseController {
     private IPurchaseService purchaseService;
 
     @Autowired
-    private IGoodsService goodsService;
+    private IStockService stockService;
 
 
     @ApiOperation("列表查询")
@@ -53,10 +54,8 @@ public class PurchaseController {
     @PutMapping("/create")
     public int create(@Valid @RequestBody Purchase purchase) {
         purchaseService.save(purchase);
-        //更新商品表的库存
-        Goods goods = goodsService.getById(purchase.getGoodsId());
-        goods.setCurrentStock(goods.getCurrentStock().add(purchase.getPurchaseAmount()));
-        goodsService.updateById(goods);
+        //更新商品的库存 todo
+
         return purchase.getId();
     }
 
@@ -64,11 +63,9 @@ public class PurchaseController {
     @DeleteMapping("/delete")
     public void delete(@RequestBody List<Integer> ids) {
         Collection<Purchase> purchaseList = purchaseService.listByIds(ids);
-        //更新商品表的库存
+        //更新商品表的库存 todo
         purchaseList.forEach(purchase -> {
-            Goods goods = goodsService.getById(purchase.getGoodsId());
-            goods.setCurrentStock(goods.getCurrentStock().subtract(purchase.getPurchaseAmount()));
-            goodsService.updateById(goods);
+
         });
         purchaseService.removeByIds(ids);
     }

@@ -58,16 +58,13 @@ public class OrderController {
     @Transactional
     public int create(@Valid @RequestBody Order order) {
         orderService.save(order);
-        for(Map<String,Integer> goods : order.getGoodsList()){
+        for(Map<String,Integer> stock : order.getStockList()){
             OrderGoods orderGoods = new OrderGoods();
-            orderGoods.setGoodsId(goods.get("goodsId"));
+            orderGoods.setStockId(stock.get("stockId"));
             orderGoods.setOrderId(order.getId());
-            orderGoods.setAmount(new BigDecimal(goods.get("amount")));
+            orderGoods.setAmount(new BigDecimal(stock.get("amount")));
             orderGoodsService.save(orderGoods);
-            //更新商品现有库存
-            Goods goods1 = goodsService.getById(goods.get("goodsId"));
-            goods1.setCurrentStock(goods1.getCurrentStock().subtract(orderGoods.getAmount()));
-            goodsService.updateById(goods1);
+            //更新商品现有库存 todo
         }
         return order.getId();
     }
@@ -76,16 +73,9 @@ public class OrderController {
     @DeleteMapping("/delete")
     public void delete(@RequestParam(value = "ids") List<Integer> ids) {
         Collection<Order> orderCollection = orderService.listByIds(ids);
-        //更新商品表的库存
+        //更新商品表的库存 todo
         orderCollection.forEach(order -> {
-            QueryWrapper<OrderGoods> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("order_id",order.getId());
-            List<OrderGoods> orderGoodsList = orderGoodsService.list(queryWrapper);
-            orderGoodsList.forEach(orderGoods -> {
-                Goods goods = goodsService.getById(orderGoods.getGoodsId());
-                goods.setCurrentStock(goods.getCurrentStock().add(orderGoods.getAmount()));
-                goodsService.updateById(goods);
-            });
+
         });
         orderService.removeByIds(ids);
     }

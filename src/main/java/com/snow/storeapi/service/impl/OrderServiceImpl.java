@@ -39,8 +39,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,Order> implements 
                     p.remove("size");
                     p.remove("amount");
                     p.put(map.get("size").toString(),map.get("amount"));
-                    int amount = (int)map.get("amount");
-                    sumTotal.addAndGet(amount);
+                    BigDecimal amount = new BigDecimal(map.get("amount").toString());
+                    sumTotal.addAndGet(amount.intValue());
                 }
             });
             p.put("sumTotal",sumTotal);
