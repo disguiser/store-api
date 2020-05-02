@@ -54,19 +54,12 @@ public class PurchaseController {
     @PutMapping("/create")
     public int create(@Valid @RequestBody Purchase purchase) {
         purchaseService.save(purchase);
-        //更新商品的库存 todo
-
         return purchase.getId();
     }
 
     @ApiOperation("批量删除")
     @DeleteMapping("/delete")
     public void delete(@RequestBody List<Integer> ids) {
-        Collection<Purchase> purchaseList = purchaseService.listByIds(ids);
-        //更新商品表的库存 todo
-        purchaseList.forEach(purchase -> {
-
-        });
         purchaseService.removeByIds(ids);
     }
 

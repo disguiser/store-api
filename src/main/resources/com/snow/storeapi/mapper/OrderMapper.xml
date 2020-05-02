@@ -1,6 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.snow.storeapi.mapper.OrderMapper">
+    <select id="findByPage" resultType="map">
+        SELECT
+        o.id,
+        o.total,
+        o.total_money AS totalMoney,
+        c.`name`,
+        c.address,
+        c.mobile,
+        c.open_id AS openId,
+        o.order_time AS orderTime,
+        u.user_name AS inputUser
+        FROM
+        `order` o
+        LEFT JOIN customer c ON o.customer_id = c.id
+        LEFT JOIN `user` u ON o.input_user = u.id
+        WHERE
+        1 = 1
+        <trim>
+            <if test="address != null">
+                AND c.address LIKE CONCAT(CONCAT('%', #{address}), '%')
+            </if>
+            <if test="startDate != null">
+                AND o.order_time <![CDATA[>= ]]> #{startDate}
+            </if>
+            <if test="endDate != null">
+                AND o.order_time <![CDATA[<= ]]> #{endDate}
+            </if>
+        </trim>
+        ORDER BY
+        o.order_time DESC
+        LIMIT #{start},#{end}
+    </select>
+
+    <select id="getDetailByOrderId" resultType="map">
+        SELECT
+            g.sku,
+            g.`name`,
+            s.color,
+            s.size,
+            og.amount,
+            og.sale_price AS salePrice
+        FROM
+            order_goods og
+            LEFT JOIN stock s ON og.stock_id = s.id
+            LEFT JOIN goods g ON s.goods_id = g.id
+            where og.order_id = #{orderId}
+    </select>
+
   <select id="getOrderDataById" resultType="map">
     SELECT
         g.sku,
@@ -8,9 +56,11 @@
         s.color,
         s.size,
         og.amount,
-        g.sale_price AS salePrice,
+        og.sale_price AS salePrice,
         g.discount,
-        o.buyer,
+        c.`name` as customerName,
+        c.address as customerAddress,
+        c.mobile as customerMoblie,
         u.user_name AS inputUser
     FROM
         `order` o
@@ -18,18 +68,20 @@
 		LEFT JOIN stock s on s.id = og.stock_id
         LEFT JOIN goods g ON s.goods_id = g.id
         LEFT JOIN `user` u ON o.input_user = u.id
+        LEFT JOIN customer c on o.customer_id  = c.id
         WHERE o.id = #{orderId}
   </select>
 
-    <select id="getDistinctSku" resultType="string">
-        SELECT
-            DISTINCT g.sku
+    <select id="getGroupBy" resultType="map">
+        SELECT g.sku,g.name,s.color
         FROM
             `order` o
             INNER JOIN order_goods og ON o.id = og.order_id
-            LEFT JOIN stock s on s.id = og.stock_id
+            LEFT JOIN stock s ON s.id = og.stock_id
             LEFT JOIN goods g ON s.goods_id = g.id
             LEFT JOIN `user` u ON o.input_user = u.id
+            LEFT JOIN customer c ON o.customer_id = c.id
             WHERE o.id = #{orderId}
+	    GROUP BY g.sku,g.name,s.color
     </select>
 </mapper>

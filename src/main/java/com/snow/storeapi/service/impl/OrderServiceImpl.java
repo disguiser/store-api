@@ -10,6 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,19 +26,49 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,Order> implements 
     private OrderMapper orderMapper;
 
     @Override
+    public List<Map<String, Object>> findByPage(Integer page,Integer limit,Map<String,Object> map) {
+        int start = (page - 1) * limit;
+        int end = limit;
+        String address = null;
+        LocalDateTime startDate = null;
+        LocalDateTime endDate = null;
+        if (map != null || map.size() > 0){
+            if (map.containsKey("address") && map.get("address") != null) {
+                address = map.get("address").toString();
+            }
+            DateTimeFormatter dtf =  DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            if (map.containsKey("startDate") && map.get("startDate") != null) {
+                startDate =LocalDateTime.ofEpochSecond(Long.valueOf(map.get("startDate").toString())/1000,0, ZoneOffset.ofHours(8));
+            }
+            if (map.containsKey("endDate") && map.get("endDate") != null) {
+                endDate =LocalDateTime.ofEpochSecond(Long.valueOf(map.get("endDate").toString())/1000,0, ZoneOffset.ofHours(8));
+            }
+        }
+        return orderMapper.findByPage(start,end,address,startDate,endDate);
+    }
+
+    @Override
+    public List<Map<String, Object>> getDetailByOrderId(Integer orderId) {
+        return orderMapper.getDetailByOrderId(orderId);
+    }
+
+    @Override
     public Map getOrderDataById(Integer orderId) {
+        Order order = orderMapper.selectById(orderId);
         List<Map<String, Object>> list = orderMapper.getOrderDataById(orderId);
-        List<String> skuList = orderMapper.getDistinctSku(orderId);
+        List<Map<String,String>> groupByList = orderMapper.getGroupBy(orderId);
         List<Map<String,Object>> after = new ArrayList<>();
         Map<String,Object> result = new HashMap<>();
         AtomicInteger total = new AtomicInteger();
         AtomicDouble totalMoney = new AtomicDouble();
-        skuList.forEach(sku->{
+        //唯一值 sku+name+color
+        groupByList.forEach(groupBy->{
             Map<String,Object> p = new HashMap();
-            p.put("sku",sku);
             AtomicInteger sumTotal = new AtomicInteger();
             list.forEach(map->{
-                if(sku.equals(map.get("sku"))){
+                if(groupBy.get("sku").equals(map.get("sku")) &&
+                        groupBy.get("name").equals(map.get("name")) &&
+                        groupBy.get("color").equals(map.get("color"))){
                     p.putAll(map);
                     p.remove("size");
                     p.remove("amount");
@@ -51,8 +85,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,Order> implements 
             after.add(p);
         });
         result.put("list",after);
-        result.put("total",total);
-        result.put("totalMoney",totalMoney);
+        result.put("total",order.getTotal());
+        result.put("totalMoney",order.getTotalMoney());
         return result;
     }
 }

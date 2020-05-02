@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.*;
 
 /**
@@ -37,22 +38,22 @@ public class OrderController {
     private IOrderService orderService;
 
     @Autowired
-    private IGoodsService goodsService;
-
-    @Autowired
     private IOrderGoodsService orderGoodsService;
 
     @ApiOperation("列表查询")
-    @GetMapping("/findByPage")
+    @PostMapping("/findByPage")
     public Map list(
             @RequestParam(value = "page", defaultValue = "1")Integer pageNum,
-            @RequestParam(value = "limit", defaultValue = "10")Integer limit
+            @RequestParam(value = "limit", defaultValue = "10")Integer limit,
+            @RequestBody Map map
     ) {
-        IPage<Order> page = new Page<>(pageNum, limit);
-        QueryWrapper<Order> queryWrapper = new QueryWrapper<>();
-        queryWrapper.orderByDesc("order_time");
-        IPage<Order> orders = orderService.page(page, queryWrapper);
-        return ResponseUtil.pageRes(orders);
+        return ResponseUtil.listRes(orderService.findByPage(pageNum,limit,map));
+    }
+
+    @ApiOperation("根据订单id查询详情")
+    @GetMapping("/getDetailByOrderId/{orderId}")
+    public Map getDetailByOrderId(@PathVariable Integer orderId){
+        return ResponseUtil.listRes(orderService.getDetailByOrderId(orderId));
     }
 
     @ApiOperation("添加")
@@ -83,8 +84,8 @@ public class OrderController {
     }
 
     @ApiOperation("出货单数据")
-    @GetMapping("getOrderDataById")
-    public ResponseEntity getOrderDataById(@RequestParam(value = "id")Integer id){
+    @GetMapping("getOrderDataById/{id}")
+    public ResponseEntity getOrderDataById(@PathVariable Integer id){
         Order order = orderService.getById(id);
         if(order == null){
             Map<String, Object> res = new HashMap<>();

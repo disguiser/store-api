@@ -19,7 +19,7 @@ public class Purchase implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
-    private Integer goodsId;
+    private Integer stockId;
 
     private BigDecimal purchaseAmount;
 

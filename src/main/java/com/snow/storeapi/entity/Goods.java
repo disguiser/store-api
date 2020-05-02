@@ -1,6 +1,7 @@
 package com.snow.storeapi.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -10,6 +11,7 @@ import lombok.experimental.Accessors;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Accessors(chain = true)
@@ -38,6 +40,9 @@ public class Goods implements Serializable {
     private LocalDateTime createTime;
 
     private Integer deleted;
+
+    @TableField(exist = false)
+    private List<Stock> stocks;
 
     public Goods() {
 

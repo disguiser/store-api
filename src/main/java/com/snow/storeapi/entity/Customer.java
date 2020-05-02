@@ -16,24 +16,18 @@ import java.util.Map;
 
 @Data
 @Accessors(chain = true)
-@TableName("`order`")
-public class Order implements Serializable {
-    private static final long serialVersionUID = 1562076273226551547L;
+@TableName("customer")
+public class Customer implements Serializable {
+    private static final long serialVersionUID = 3598460335048159623L;
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
-    @NonNull
-    private BigDecimal total;
+    private String name;
 
-    private BigDecimal totalMoney;
+    private String mobile;
 
-    private LocalDateTime OrderTime;
+    private String address;
 
-    @NonNull
-    private int customerId;
+    private String openId;
 
-    private Integer inputUser;
-
-    @TableField(exist = false)
-    private List<Map<String,Integer>> stockList;
 }
