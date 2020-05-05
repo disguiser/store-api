@@ -64,7 +64,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,Order> implements 
         //唯一值 sku+name+color
         groupByList.forEach(groupBy->{
             Map<String,Object> p = new HashMap();
-            AtomicInteger sumTotal = new AtomicInteger();
+            AtomicInteger subtotal = new AtomicInteger();
+            AtomicDouble subtotalMoney = new AtomicDouble();
             list.forEach(map->{
                 if(groupBy.get("sku").equals(map.get("sku")) &&
                         groupBy.get("name").equals(map.get("name")) &&
@@ -74,14 +75,15 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,Order> implements 
                     p.remove("amount");
                     p.put(map.get("size").toString(),map.get("amount"));
                     BigDecimal amount = new BigDecimal(map.get("amount").toString());
-                    sumTotal.addAndGet(amount.intValue());
+                    subtotal.addAndGet(amount.intValue());
+                    subtotalMoney.addAndGet(new BigDecimal(map.get("sumtotalMoney").toString()).doubleValue());
                 }
             });
-            p.put("sumTotal",sumTotal);
-            BigDecimal sumTotalMoney = new BigDecimal(String.valueOf(sumTotal)).multiply(new BigDecimal(p.get("salePrice").toString()));
-            p.put("sumTotalMoney",sumTotalMoney.toString());
-            total.addAndGet(sumTotal.intValue());
-            totalMoney.addAndGet(sumTotalMoney.doubleValue());
+            p.put("subtotal",subtotal);
+            //BigDecimal sumTotalMoney = new BigDecimal(String.valueOf(subtotal)).multiply(new BigDecimal(p.get("salePrice").toString()));
+            p.put("subtotalMoney",subtotalMoney);
+            total.addAndGet(subtotal.intValue());
+            totalMoney.addAndGet(subtotalMoney.doubleValue());
             after.add(p);
         });
         result.put("list",after);

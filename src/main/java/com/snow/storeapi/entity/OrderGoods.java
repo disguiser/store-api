@@ -27,4 +27,6 @@ public class OrderGoods implements Serializable {
     private BigDecimal amount;
 
     private BigDecimal salePrice;
+
+    private BigDecimal subtotalMoney;
 }

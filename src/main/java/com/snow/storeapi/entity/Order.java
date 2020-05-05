@@ -29,7 +29,6 @@ public class Order implements Serializable {
 
     private LocalDateTime OrderTime;
 
-    @NonNull
     private int customerId;
 
     private Integer inputUser;

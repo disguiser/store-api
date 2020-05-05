@@ -3,13 +3,8 @@ package com.snow.storeapi.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.snow.storeapi.entity.Goods;
-import com.snow.storeapi.entity.Order;
-import com.snow.storeapi.entity.OrderGoods;
-import com.snow.storeapi.entity.R;
-import com.snow.storeapi.service.IGoodsService;
-import com.snow.storeapi.service.IOrderGoodsService;
-import com.snow.storeapi.service.IOrderService;
+import com.snow.storeapi.entity.*;
+import com.snow.storeapi.service.*;
 import com.snow.storeapi.util.ResponseUtil;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -40,6 +35,9 @@ public class OrderController {
     @Autowired
     private IOrderGoodsService orderGoodsService;
 
+    @Autowired
+    private IStockService stockService;
+
     @ApiOperation("列表查询")
     @PostMapping("/findByPage")
     public Map list(
@@ -58,16 +56,22 @@ public class OrderController {
 
     @ApiOperation("添加")
     @PutMapping("/create")
-    @Transactional
-    public int create(@Valid @RequestBody Order order) {
+    @Transactional(rollbackFor = Exception.class)
+    public int create(@Valid @RequestBody Order order, User user) {
+        order.setInputUser(user.getId());
         orderService.save(order);
-        for(Map<String,Integer> stock : order.getStockList()){
+        for(Map<String,Integer> map : order.getStockList()){
             OrderGoods orderGoods = new OrderGoods();
-            orderGoods.setStockId(stock.get("stockId"));
+            orderGoods.setStockId(map.get("stockId"));
             orderGoods.setOrderId(order.getId());
-            orderGoods.setAmount(new BigDecimal(stock.get("amount")));
+            orderGoods.setAmount(new BigDecimal(map.get("amount")));
+            orderGoods.setSubtotalMoney(new BigDecimal(map.get("subtotalMoney")));
             orderGoodsService.save(orderGoods);
-            //更新商品现有库存 todo
+            //更新商品现有库存
+            Stock stock = new Stock();
+            stock.setId(map.get("stockId"));
+            stock.setCurrentStock(new BigDecimal(map.get("currentStock")).subtract(new BigDecimal(map.get("amount"))));
+            stockService.updateById(stock);
         }
         return order.getId();
     }
@@ -89,7 +93,6 @@ public class OrderController {
         Order order = orderService.getById(id);
         if(order == null){
             Map<String, Object> res = new HashMap<>();
-            //return R.error("未查到下单信息！");
             res.put("msg","未查到下单信息！");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
         }

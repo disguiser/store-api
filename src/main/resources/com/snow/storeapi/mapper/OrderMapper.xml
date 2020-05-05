@@ -57,6 +57,7 @@
         s.size,
         og.amount,
         og.sale_price AS salePrice,
+        og.subtotal_money as subtotalMoney,
         g.discount,
         c.`name` as customerName,
         c.address as customerAddress,
