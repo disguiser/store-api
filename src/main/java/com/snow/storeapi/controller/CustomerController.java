@@ -30,19 +30,16 @@ public class CustomerController {
     @ApiOperation("客户列表查询")
     @GetMapping("/findByPage")
     public Map list(
-            @RequestParam(value = "name", required = false)String name,
-            @RequestParam(value = "address", required = false)String address,
+            @RequestParam(value = "searchText", required = false)String searchText,
             @RequestParam(value = "page", defaultValue = "1")Integer pageNum,
             @RequestParam(value = "limit", defaultValue = "10")Integer limit
     ) {
         IPage<Customer> page = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(pageNum, limit);
         QueryWrapper<Customer> queryWrapper = new QueryWrapper<>();
-        if (!StringUtil.isEmpty(name)) {
-            queryWrapper.like("name", name);
+        if (!StringUtil.isEmpty(searchText)) {
+            queryWrapper.like("name", searchText).or().like("address", searchText);
         }
-        if (!StringUtil.isEmpty(address)) {
-            queryWrapper.like("address", address);
-        }
+        queryWrapper.orderByAsc("name");
         IPage<Customer> customers = customerService.page(page, queryWrapper);
         return ResponseUtil.pageRes(customers);
     }
