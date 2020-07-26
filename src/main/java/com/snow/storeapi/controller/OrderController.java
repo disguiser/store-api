@@ -1,5 +1,6 @@
 package com.snow.storeapi.controller;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -55,36 +56,48 @@ public class OrderController {
     }
 
     @ApiOperation("添加")
-    @PutMapping("/create")
+    @PostMapping("/create")
     @Transactional(rollbackFor = Exception.class)
     public int create(@Valid @RequestBody Order order, User user) {
         order.setInputUser(user.getId());
         orderService.save(order);
-        for(Map<String,Integer> map : order.getStockList()){
+        for(Map<String, Object> map : order.getStockList()){
             OrderGoods orderGoods = new OrderGoods();
-            orderGoods.setStockId(map.get("stockId"));
+            orderGoods.setStockId((Integer) map.get("stockId"));
             orderGoods.setOrderId(order.getId());
-            orderGoods.setAmount(new BigDecimal(map.get("amount")));
-            orderGoods.setSubtotalMoney(new BigDecimal(map.get("subtotalMoney")));
+            orderGoods.setAmount(new BigDecimal((Integer) map.get("amount")));
+            orderGoods.setSubtotalMoney(new BigDecimal((Integer) map.get("subtotalMoney")));
             orderGoodsService.save(orderGoods);
             //更新商品现有库存
             Stock stock = new Stock();
-            stock.setId(map.get("stockId"));
-            stock.setCurrentStock(new BigDecimal(map.get("currentStock")).subtract(new BigDecimal(map.get("amount"))));
+            stock.setId((Integer) map.get("stockId"));
+            stock.setCurrentStock(new BigDecimal((Integer) map.get("currentStock")).subtract(new BigDecimal((Integer) map.get("amount"))));
             stockService.updateById(stock);
         }
         return order.getId();
     }
 
     @ApiOperation("批量删除/作废")
-    @DeleteMapping("/delete")
-    public void delete(@RequestParam(value = "ids") List<Integer> ids) {
-        Collection<Order> orderCollection = orderService.listByIds(ids);
-        //更新商品表的库存 todo
-        orderCollection.forEach(order -> {
-
-        });
-        orderService.removeByIds(ids);
+    @DeleteMapping("/delete/{id}")
+    @Transactional(rollbackFor = Exception.class)
+    public void delete(@PathVariable Integer id) {
+        //更新商品表的库存 & 删除明细表
+        QueryWrapper<OrderGoods> wrapper = new QueryWrapper<>();
+        wrapper.eq("order_id",id);
+        List<OrderGoods> list = orderGoodsService.list(wrapper);
+        if(list != null && list.size() > 0){
+            list.forEach(orderGoods -> {
+                Stock current = stockService.getById(orderGoods.getStockId());
+                if(current != null) {
+                    Stock stock = new Stock();
+                    stock.setId(orderGoods.getStockId());
+                    stock.setCurrentStock(current.getCurrentStock().add(orderGoods.getAmount()));
+                    stockService.updateById(stock);
+                }
+            });
+        }
+        orderGoodsService.remove(wrapper);
+        orderService.removeById(id);
     }
 
     @ApiOperation("出货单数据")

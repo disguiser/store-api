@@ -11,6 +11,7 @@ import com.snow.storeapi.service.IVipService;
 import com.snow.storeapi.util.JwtUtils;
 import com.snow.storeapi.util.ResponseUtil;
 import com.snow.storeapi.util.StringUtil;
+import com.snow.storeapi.util.TransformCamelUtil;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +52,7 @@ public class GoodsController {
     public Map list(
             @RequestParam(value = "name", required = false)String name,
             @RequestParam(value = "sku", required = false)String sku,
+            @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "page", defaultValue = "1")Integer pageNum,
             @RequestParam(value = "limit", defaultValue = "10")Integer limit
     ) {
@@ -62,6 +64,15 @@ public class GoodsController {
         if (!StringUtil.isEmpty(sku)) {
             queryWrapper.like("sku", sku);
         }
+        if (StringUtil.isEmpty(sort)) {
+            queryWrapper.orderByAsc("name");
+        } else {
+            if (sort.startsWith("-")) {
+                queryWrapper.orderByDesc(TransformCamelUtil.underline(sort.substring(1)));
+            } else {
+                queryWrapper.orderByAsc(TransformCamelUtil.underline(sort));
+            }
+        }
         queryWrapper.eq("deleted",0);
         queryWrapper.orderByDesc("create_time");
         IPage<Goods> goodss = goodsService.page(page, queryWrapper);
@@ -69,7 +80,7 @@ public class GoodsController {
     }
 
     @ApiOperation("添加")
-    @PutMapping("/create")
+    @PostMapping("/create")
     @Transactional(rollbackFor = Exception.class)
     public int create(@Valid @RequestBody Goods goods) {
         if(goods.getId() == null){

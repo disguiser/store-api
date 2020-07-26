@@ -34,5 +34,5 @@ public class Order implements Serializable {
     private Integer inputUser;
 
     @TableField(exist = false)
-    private List<Map<String,Integer>> stockList;
+    private List<Map<String, Object>> stockList;
 }
