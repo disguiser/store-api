@@ -11,7 +11,7 @@
     </commentGenerator>
     <!-- oracle URL、username、password -->
     <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-                    connectionURL="jdbc:mysql://localhost:3306/shanxi?useUnicode=true&amp;characterEncoding=UTF-8&amp;serverTimezone=UTC&amp;verifyServerCertificate=false&amp;useSSL=false"
+                    connectionURL="jdbc:mysql://111.231.55.85:3306/shanxi?useUnicode=true&amp;characterEncoding=UTF-8&amp;serverTimezone=UTC&amp;verifyServerCertificate=false&amp;useSSL=false"
                     userId="root"
                     password="123456"/>
     <javaTypeResolver>

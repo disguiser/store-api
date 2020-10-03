@@ -9,9 +9,9 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @SpringBootApplication
 @MapperScan({"com.snow.storeapi.mapper"})
 @EnableWebMvc
-public class StoreApiApplication extends SpringBootServletInitializer {
+public class Application extends SpringBootServletInitializer {
 
 	public static void main(String[] args) {
-		SpringApplication.run(StoreApiApplication.class, args);
+		SpringApplication.run(Application.class, args);
 	}
 }

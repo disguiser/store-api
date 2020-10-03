@@ -15,11 +15,11 @@ import java.math.BigDecimal;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class VipMapperTest {
+public class VipServiceTest {
     @Autowired
     private IVipService vipService;
 
-//    @Test
+    @Test
     public void testSelect() {
         Page<Vip> page = new Page<>(1, 2);
         IPage<Vip> vips = vipService.page(page, new QueryWrapper<Vip>().eq("dept_id", 101));

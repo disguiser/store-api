@@ -1,10 +1,9 @@
 package com.snow.storeapi;
 
-import com.snow.storeapi.constant.SystemConstant;
-import org.bouncycastle.util.encoders.Base64;
+import com.alibaba.fastjson.JSONArray;
+import com.snow.storeapi.entity.DictItem;
 
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.List;
 
 public class test {
     public static void main(String[] args) {
@@ -12,7 +11,7 @@ public class test {
 //        byte[] a = SystemConstant.JWT_SECERT.getBytes();
 //        System.out.println(encodedKey);
 //        System.out.println(a);
-        var a = "bearer 123".substring(7);
-        System.out.println(a);
+        String a = "-deptName";
+        System.out.println();
     }
 }
