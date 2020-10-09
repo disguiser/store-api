@@ -44,6 +44,6 @@ public class VipServiceTest {
     }
     @Test
     public void testDel() {
-        vipService.remove(new QueryWrapper<Vip>().eq("vip_name", "test"));
+        vipService.remove(new QueryWrapper<Vip>().eq("name", "test"));
     }
 }
