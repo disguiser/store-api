@@ -125,6 +125,17 @@ public class UserController {
         return ResponseEntity.ok(res);
     }
 
+    @ApiOperation("更新用户头像")
+    @PatchMapping("/update-avatar/{id}")
+    public ResponseEntity updateAvatar(@PathVariable Integer id, @RequestBody User user){
+        Map<String, Object> res = new HashMap<>();
+        var _user = new User();
+        _user.setId(id);
+        _user.setAvatar(user.getAvatar());
+        userService.updateById(_user);
+        return ResponseEntity.ok(res);
+    }
+
     @ApiOperation("校验登录名唯一性")
     @GetMapping("/checkAccountNameUinque/{accountName}")
     public Boolean checkAccountNameUinque(@PathVariable String accountName){

@@ -9,6 +9,7 @@ import lombok.experimental.Accessors;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -42,6 +43,10 @@ public class User implements Serializable {
 
     @NotNull
     private String status;
+
+    private LocalDateTime modifyTime;
+
+    private LocalDateTime createTime;
 
     @TableField(exist = false)
     private String newPassword;

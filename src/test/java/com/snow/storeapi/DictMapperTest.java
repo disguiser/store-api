@@ -37,16 +37,10 @@ public class DictMapperTest {
     }
 
     @Test
-    public void testUpdate() {
-        var dictitem = new DictItem();
-        dictitem.setItemCode("Waiter");
-        dictitem.setItemName("服务员");
-        var dictItems = new ArrayList<DictItem>();
-        dictItems.add(dictitem);
-        Dict dict = new Dict();
-        dict.setDictName("权限");
+    public void testUpdateById() {
+        var dict = new Dict();
         dict.setId(1);
-        dict.setData(dictItems);
+        dict.setIfUseCode(false);
         dictMapper.updateById(dict);
     }
 

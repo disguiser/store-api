@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.snow.storeapi.mapper.UserMapper">
   <resultMap id="BaseResultMap" type="com.snow.storeapi.entity.User">
-    <id column="user_id" jdbcType="INTEGER" property="userId" />
+    <id column="id" jdbcType="INTEGER" property="id" />
     <result column="user_name" jdbcType="VARCHAR" property="userName" />
     <result column="account_name" jdbcType="VARCHAR" property="accountName" />
     <result column="password" jdbcType="VARCHAR" property="password" />
@@ -11,12 +11,12 @@
     <result column="avatar" jdbcType="VARCHAR" property="avatar" />
   </resultMap>
   <sql id="Base_Column_List">
-    user_id, user_name, account_name, password, dept_id, dept_name, avatar
+    id, user_name, account_name, password, dept_id, dept_name, avatar
   </sql>
   <select id="selectByAccountName" parameterType="java.lang.String" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    from sys_user
+    from user
     where account_name = #{accountName,jdbcType=VARCHAR}
   </select>
 </mapper>

@@ -33,4 +33,10 @@ public class ResponseUtil {
         map.put("items", list);
         return map;
     }
+
+    public static Map stringRes(Object str) {
+        var map = new HashMap<String, String>();
+        map.put("result", str.toString());
+        return map;
+    }
 }

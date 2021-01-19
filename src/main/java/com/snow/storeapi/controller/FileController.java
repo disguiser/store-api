@@ -1,7 +1,6 @@
 package com.snow.storeapi.controller;
 
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
-import com.snow.storeapi.entity.R;
+import cn.hutool.core.util.StrUtil;
 import com.snow.storeapi.util.COSUtil;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Value;
@@ -53,7 +52,7 @@ public class FileController {
         }
         try {
             //上传到腾讯云COS
-            if (StringUtils.isNotEmpty(fileName)) {
+            if (StrUtil.isNotEmpty(fileName)) {
                 String serverName = UUID.randomUUID().toString().replace("-", "");
                 InputStream inputStream = multipartFile.getInputStream();
                 String newServerName = COSUtil.changeFileName(fileName, serverName);
@@ -64,7 +63,8 @@ public class FileController {
             res.put("msg","上传失败，请重新上传!");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
         }
-        return ResponseEntity.ok(uploadUrl);
+        res.put("result", uploadUrl);
+        return ResponseEntity.ok(res);
     }
 
 }
