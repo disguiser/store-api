@@ -16,7 +16,7 @@ public class WebAppConfigurer implements WebMvcConfigurer {
 	public void addInterceptors(InterceptorRegistry registry) {
 		String[] patterns = new String[] { "/login","/*.html","/swagger-resources/**"};
 		registry.addInterceptor(new SysInterceptor())
-                .excludePathPatterns("/demo/login")
+                .excludePathPatterns("/user/sendPhoneCode/**")
 				.excludePathPatterns("/user/login")
                 .excludePathPatterns("/*.html")
                 .excludePathPatterns("/swagger-resources/**")

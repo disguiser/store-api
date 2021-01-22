@@ -48,13 +48,16 @@ public class User implements Serializable {
 
     private LocalDateTime createTime;
 
-    @NotNull
-    private String phoneNumber;
-
     @TableField(exist = false)
     private String newPassword;
 
-
     @TableField(exist = false)
     private String oldPassword;
+
+    @NotNull
+    private String phoneNumber;
+
+    private String phoneCode;
+
+    private LocalDateTime codeExpTime;
 }

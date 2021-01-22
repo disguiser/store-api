@@ -12,11 +12,10 @@ public class StoreApiApplicationTests {
 
 	@Test
 	public void contextLoads() {
-		String sign = "周明帅的网站";
-		Integer templateId = 851052;
-		String[] phoneNumbers={"18868804337","18758327028"};
-		String[] params ={"123456","10"};
-
+		var sign = "周明帅的网站";
+		var templateId = "851052";
+		var phoneNumbers= new String[]{"18868804337","18758327028"};
+		var params = new String[]{"123456","10"};
+		SMSUtil.sendMessage(templateId, sign, phoneNumbers, params);
 	}
-
 }
