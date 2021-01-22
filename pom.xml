@@ -23,6 +23,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>11</java.version>
+		<!--<tencent.qcloudsms.version>1.0.6</tencent.qcloudsms.version>-->
 	</properties>
 
 	<dependencies>
@@ -137,6 +138,19 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+
+		<!-- 腾讯云API https://github.com/TencentCloud/tencentcloud-sdk-java -->
+		<dependency>
+			<groupId>com.tencentcloudapi</groupId>
+			<artifactId>tencentcloud-sdk-java</artifactId>
+			<version>3.1.201</version>
+		</dependency>
+
+		<!--<dependency>
+			<groupId>com.github.qcloudsms</groupId>
+			<artifactId>qcloudsms</artifactId>
+			<version>${tencent.qcloudsms.version}</version>
+		</dependency>-->
 	</dependencies>
 
 	<build>

@@ -21,10 +21,10 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/file")
 public class FileController {
-    @Value("${COS.SECRET_ID}")
+    @Value("${TENCENTCLOUD.SECRET_ID}")
     private String SECRET_ID;
 
-    @Value("${COS.SECRET_KEY}")
+    @Value("${TENCENTCLOUD.SECRET_KEY}")
     private String SECRET_KEY;
 
     @Value("${COS.bucketName}")
