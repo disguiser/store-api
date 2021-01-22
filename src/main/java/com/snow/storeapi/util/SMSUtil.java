@@ -48,6 +48,14 @@ public class SMSUtil {
         SMSUtil.secretKey = secretKey;
     }
 
+    /**
+     * 根据模板，（批量）发送短信
+     * @param templateId 模板ID
+     * @param sign 签名
+     * @param phoneNumberSet 收件人手机号
+     * @param templateParamSet 参数
+     * @return
+     */
     public static JSONObject sendMessage(String templateId, String sign, String[] phoneNumberSet,String[] templateParamSet){
         log.info("发送短信参数，templateId={}，sign={}，phoneNumberSet={}，templateParamSet={}",templateId,sign,phoneNumberSet.toString(),templateParamSet.toString());
         JSONObject result = new JSONObject();
