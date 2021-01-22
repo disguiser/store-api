@@ -96,9 +96,8 @@ public class UserController {
             var codeExpTime = DateTimeCalculatorUtil.plusMinutes(LocalDateTime.now(), 20);
             var sign = "周明帅的网站";
             var templateId = "851052";
-            var phoneNumbers = new String[]{phoneNumber};
             var params = new String[]{phoneCode,"20"};
-            SMSUtil.sendMessage(templateId, sign, phoneNumbers, params);
+            SMSUtil.sendMessage(templateId, sign, phoneNumber, params);
             userService.updateById(
                     userInfo
                         .setPhoneCode(phoneCode)

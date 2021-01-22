@@ -14,8 +14,8 @@ public class StoreApiApplicationTests {
 	public void contextLoads() {
 		var sign = "周明帅的网站";
 		var templateId = "851052";
-		var phoneNumbers= new String[]{"18868804337","18758327028"};
+		var phoneNumber="18758327028";
 		var params = new String[]{"123456","10"};
-		SMSUtil.sendMessage(templateId, sign, phoneNumbers, params);
+		SMSUtil.sendMessage(templateId, sign, phoneNumber, params);
 	}
 }

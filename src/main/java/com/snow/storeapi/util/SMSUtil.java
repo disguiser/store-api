@@ -52,12 +52,12 @@ public class SMSUtil {
      * 根据模板，（批量）发送短信
      * @param templateId 模板ID
      * @param sign 签名
-     * @param phoneNumberSet 收件人手机号
+     * @param phoneNumber 收件人手机号
      * @param templateParamSet 参数
      * @return
      */
-    public static JSONObject sendMessage(String templateId, String sign, String[] phoneNumberSet,String[] templateParamSet){
-        log.info("发送短信参数，templateId={}，sign={}，phoneNumberSet={}，templateParamSet={}",templateId,sign,phoneNumberSet.toString(),templateParamSet.toString());
+    public static JSONObject sendMessage(String templateId, String sign, String phoneNumber,String[] templateParamSet){
+        log.info("发送短信参数，templateId={}，sign={}，phoneNumberSet={}，templateParamSet={}",templateId,sign,phoneNumber,templateParamSet.toString());
         JSONObject result = new JSONObject();
         try{
             Credential cred = new Credential(secretId, secretKey);
@@ -71,6 +71,9 @@ public class SMSUtil {
             SmsClient client = new SmsClient(cred, "", clientProfile);
 
             SendSmsRequest req = new SendSmsRequest();
+
+            //格式为+[国家或地区码][手机号]
+            String[] phoneNumberSet = new String[]{"+86"+phoneNumber};
             req.setPhoneNumberSet(phoneNumberSet);
 
 
@@ -87,7 +90,7 @@ public class SMSUtil {
             StringBuilder sb = new StringBuilder();
             SendStatusSet.stream().forEach(o -> {
                 JSONObject object = (JSONObject)o;
-                if(!"OK".equals(object.getString("Code"))){
+                if(!"Ok".equals(object.getString("Code"))){
                     sb.append("手机号码:"+object.getString("PhoneNumber")
                             +"发送失败，Code:"+object.getString("Code")
                             +"，Message:"+object.getString("Message")+"；");
