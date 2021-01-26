@@ -39,8 +39,8 @@ public class UserController {
     @PostMapping(value = "/login")
     public ResponseEntity userLogin(@RequestBody User req) {
         QueryWrapper<User> queryWrapper = new QueryWrapper();
-        var accountName = req.getAccountName().trim();
-        var phoneNumber = req.getPhoneNumber().trim();
+        var accountName = req.getAccountName();
+        var phoneNumber = req.getPhoneNumber();
         if (!StrUtil.isEmpty(accountName)) {
             queryWrapper.eq("account_name", accountName);
         } else if (!StrUtil.isEmpty(phoneNumber)) {
@@ -50,13 +50,13 @@ public class UserController {
         }
         User userInfo = userService.getOne(queryWrapper);
         if (userInfo != null){
-            if (!StrUtil.isEmpty(accountName) && !userInfo.getPassword().equals(req.getPassword().trim())){
+            if (!StrUtil.isEmpty(accountName) && !userInfo.getPassword().equals(req.getPassword())){
                 Map<String, Object> res = new HashMap<>();
                 res.put("msg","密码不正确!");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
             }
-            if (!StrUtil.isEmpty(phoneNumber) &&
-                !userInfo.getPhoneCode().equals(req.getPhoneCode().trim()) &&
+            if (StrUtil.isEmpty(phoneNumber) ||
+                !userInfo.getPhoneCode().equals(req.getPhoneCode()) ||
                 userInfo.getCodeExpTime().isBefore(LocalDateTime.now())
             ) {
                 Map<String, Object> res = new HashMap<>();

@@ -10,7 +10,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest
 public class StoreApiApplicationTests {
 
-	@Test
+//	@Test
 	public void contextLoads() {
 		var sign = "周明帅的网站";
 		var templateId = "851052";
