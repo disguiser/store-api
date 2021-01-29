@@ -46,7 +46,7 @@ public class FileController {
         String fileName = multipartFile.getOriginalFilename();
         long size = multipartFile.getSize();
         //图片大小限制为10M
-        if(size > 10971520){
+        if(size > 5 * 1024 * 1024){
             res.put("msg","文件大小不能超过10M!");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
         }

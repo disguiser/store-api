@@ -55,9 +55,10 @@ public class UserController {
                 res.put("msg","密码不正确!");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
             }
-            if (StrUtil.isEmpty(phoneNumber) ||
-                !userInfo.getPhoneCode().equals(req.getPhoneCode()) ||
-                userInfo.getCodeExpTime().isBefore(LocalDateTime.now())
+            System.out.println(!StrUtil.isEmpty(phoneNumber));
+            if (!StrUtil.isEmpty(phoneNumber) &&
+                (!userInfo.getPhoneCode().equals(req.getPhoneCode()) ||
+                userInfo.getCodeExpTime().isBefore(LocalDateTime.now()))
             ) {
                 Map<String, Object> res = new HashMap<>();
                 res.put("msg","验证码不正确或已失效!");

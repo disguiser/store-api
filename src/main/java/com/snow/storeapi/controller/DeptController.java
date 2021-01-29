@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.websocket.server.PathParam;
 import java.util.Map;
 
 /**
@@ -28,9 +29,9 @@ public class DeptController {
     private IDeptService deptService;
 
     @ApiOperation("部门列表查询")
-    @GetMapping("/list")
+    @GetMapping("/findByPage")
     public Map list(
-            @RequestParam(value = "deptName", required = false)String deptName,
+            @RequestParam(value = "name", required = false)String deptName,
             @RequestParam(value = "pageNum", defaultValue = "1")Integer pageNum,
             @RequestParam(value = "limit", defaultValue = "10")Integer limit
     ) {
@@ -44,7 +45,7 @@ public class DeptController {
     }
 
     @ApiOperation("添加部门")
-    @PostMapping("/add")
+    @PostMapping("/create")
     public int create(@Valid @RequestBody Dept dept) {
         deptService.save(dept);
         return dept.getId();
@@ -59,7 +60,7 @@ public class DeptController {
 
     @ApiOperation("删除部门")
     @DeleteMapping("/delete")
-    public void delete(@RequestParam(value = "id")Integer id) {
+    public void delete(@PathVariable Integer id) {
         deptService.removeById(id);
     }
 }
