@@ -23,4 +23,6 @@ public class Dept implements Serializable {
     @NonNull
     private String name;
 
+    public Dept() {
+    }
 }

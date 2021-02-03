@@ -52,14 +52,14 @@ public class DeptController {
     }
 
     @ApiOperation("修改部门")
-    @PutMapping("/update")
+    @PatchMapping("/update")
     public void update(@Valid @RequestBody Dept dept) {
         deptService.updateById(dept);
     }
 
 
     @ApiOperation("删除部门")
-    @DeleteMapping("/delete")
+    @DeleteMapping("/delete/{id}")
     public void delete(@PathVariable Integer id) {
         deptService.removeById(id);
     }

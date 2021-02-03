@@ -3,7 +3,7 @@ package com.snow.storeapi.exception;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@RestControllerAdvice
+//@RestControllerAdvice
 public class GlobalException {
     @ExceptionHandler(value = Exception.class) // 捕获的异常类型
     public Object globalException(Exception ex) {
