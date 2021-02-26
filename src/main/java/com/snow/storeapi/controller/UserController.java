@@ -65,9 +65,9 @@ public class UserController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
             }
             Map<String, Object> sub = new HashMap<>();
-            sub.put("userId", userInfo.getId().toString());
+            sub.put("id", userInfo.getId().toString());
             sub.put("userName", userInfo.getUserName());
-            sub.put("depts", userInfo.getDeptName());
+            sub.put("deptName", userInfo.getDeptName());
             String token = JwtUtils.createJWT(JSON.toJSONString(sub), SystemConstant.JWT_TTL);
             Map<String, Object> res = new HashMap<>();
             res.put("userId", userInfo.getId());
@@ -142,9 +142,9 @@ public class UserController {
     @ApiOperation("添加用户")
     @PutMapping("/create")
     public int addUser(@RequestBody User user, HttpServletRequest request){
-        User req = JwtUtils.getSub(request);
-        user.setDeptId(req.getDeptId());
-        user.setDeptName(req.getDeptName());
+//        User req = JwtUtils.getSub(request);
+//        user.setDeptId(req.getDeptId());
+//        user.setDeptName(req.getDeptName());
         userService.save(user);
         return user.getId();
     }

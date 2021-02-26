@@ -19,7 +19,7 @@ public class VipServiceTest {
     @Autowired
     private IVipService vipService;
 
-    @Test
+//    @Test
     public void testSelect() {
         Page<Vip> page = new Page<>(1, 2);
         IPage<Vip> vips = vipService.page(page, new QueryWrapper<Vip>().eq("dept_id", 101));
@@ -39,10 +39,8 @@ public class VipServiceTest {
         vipInfo.setName("test");
         vipInfo.setBirthDiscount(70);
         vipInfo.setVipDiscount(90);
-        vipService.save(vipInfo);
-        System.out.println(vipInfo);
     }
-    @Test
+//    @Test
     public void testDel() {
         vipService.remove(new QueryWrapper<Vip>().eq("name", "test"));
     }

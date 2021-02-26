@@ -24,7 +24,7 @@ import java.util.Map;
 
 /**
  * <p>
- *  前端控制器
+ * 前端控制器
  * </p>
  *
  * @author zhou
@@ -42,10 +42,10 @@ public class VipController {
     @ApiOperation("会员列表查询")
     @GetMapping("/findByPage")
     public Map list(
-            @RequestParam(value = "name", required = false)String name,
-            @RequestParam(value = "phone", required = false)String phone,
-            @RequestParam(value = "page", defaultValue = "1")Integer pageNum,
-            @RequestParam(value = "limit", defaultValue = "10")Integer limit,
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "phone", required = false) String phone,
+            @RequestParam(value = "page", defaultValue = "1") Integer pageNum,
+            @RequestParam(value = "limit", defaultValue = "10") Integer limit,
             HttpServletRequest request
     ) {
         User user = JwtUtils.getSub(request);
@@ -70,8 +70,8 @@ public class VipController {
     @ApiOperation("会员列表查询_无分页")
     @GetMapping("/listNoPage")
     public Map listNoPage(
-            @RequestParam(value = "name", required = false)String name,
-            @RequestParam(value = "phone", required = false)String phone,
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "phone", required = false) String phone,
             HttpServletRequest request
     ) {
         User user = JwtUtils.getSub(request);

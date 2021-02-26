@@ -24,9 +24,11 @@ public class OrderGoods implements Serializable {
 
     private Integer stockId;
 
-    private BigDecimal amount;
+    private Integer amount;
 
     private BigDecimal salePrice;
 
     private BigDecimal subtotalMoney;
+
+    private Integer deleted;
 }

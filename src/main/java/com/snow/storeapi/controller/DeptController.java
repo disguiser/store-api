@@ -1,20 +1,18 @@
 package com.snow.storeapi.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.snow.storeapi.entity.Dept;
 import com.snow.storeapi.service.IDeptService;
-import com.snow.storeapi.util.ResponseUtil;
-import com.snow.storeapi.util.StringUtil;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.websocket.server.PathParam;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 部门controller
@@ -29,19 +27,12 @@ public class DeptController {
     private IDeptService deptService;
 
     @ApiOperation("部门列表查询")
-    @GetMapping("/findByPage")
-    public Map list(
-            @RequestParam(value = "name", required = false)String deptName,
-            @RequestParam(value = "pageNum", defaultValue = "1")Integer pageNum,
-            @RequestParam(value = "limit", defaultValue = "10")Integer limit
+    @GetMapping("/find-all")
+    public List list(
+            @RequestParam(value = "name", required = false)String deptName
     ) {
-        IPage<Dept> page = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(pageNum, limit);
-        QueryWrapper<Dept> queryWrapper = new QueryWrapper<>();
-        if (!StringUtil.isEmpty(deptName)) {
-            queryWrapper.eq("name", deptName);
-        }
-        IPage<Dept> depts = deptService.page(page, queryWrapper);
-        return ResponseUtil.pageRes(depts);
+        List<Dept> depts = deptService.list(new QueryWrapper<Dept>().orderByDesc("modify_time"));
+        return depts;
     }
 
     @ApiOperation("添加部门")
@@ -53,7 +44,9 @@ public class DeptController {
 
     @ApiOperation("修改部门")
     @PatchMapping("/update")
+    @Transactional
     public void update(@Valid @RequestBody Dept dept) {
+        dept.setModifyTime(LocalDateTime.now());
         deptService.updateById(dept);
     }
 

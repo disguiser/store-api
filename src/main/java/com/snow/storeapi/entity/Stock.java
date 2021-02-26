@@ -5,11 +5,9 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-import lombok.NonNull;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -20,18 +18,26 @@ public class Stock implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
+    private Integer deptId;
+
     private Integer goodsId;
 
     private String color;
 
     private String size;
 
-    private BigDecimal currentStock;
+    private Integer currentStock;
+
+    private LocalDateTime modifyTime;
+
+    private LocalDateTime createTime;
+
+    private Integer inputUser;
 
     private Integer deleted;
 
     @TableField(exist = false)
-    private BigDecimal amount;
+    private Integer amount;
 
     public Stock() {
 

@@ -17,7 +17,7 @@ public class UserServiceTest {
     @Autowired
     private IUserService userService;
 
-    @Test
+//    @Test
     public void testSelect() {
         Page<User> page = new Page<>(1, 2);
         IPage<User> users = userService.page(page, new QueryWrapper<User>().eq("role", "Boss"));
@@ -26,7 +26,7 @@ public class UserServiceTest {
         System.out.println("当前每页显示数 ------> " + users.getSize());
         System.out.println(users.getRecords());
     }
-    @Test
+//    @Test
     public void testInsert() {
         User userInfo = new User();
         userInfo.setAccountName("test");
@@ -37,7 +37,7 @@ public class UserServiceTest {
         userService.save(userInfo);
         System.out.println(userInfo);
     }
-    @Test
+//    @Test
     public void testDel() {
         userService.remove(new QueryWrapper<User>().eq("user_name", "test"));
     }

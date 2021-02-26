@@ -23,7 +23,7 @@ public class Order implements Serializable {
     private Integer id;
 
     @NonNull
-    private BigDecimal total;
+    private Integer total;
 
     private BigDecimal totalMoney;
 
@@ -35,4 +35,9 @@ public class Order implements Serializable {
 
     @TableField(exist = false)
     private List<Map<String, Object>> stockList;
+
+    private Integer deleted;
+
+    public Order() {
+    }
 }

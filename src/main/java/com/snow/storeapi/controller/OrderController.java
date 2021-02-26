@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.snow.storeapi.entity.*;
 import com.snow.storeapi.service.*;
+import com.snow.storeapi.util.JwtUtils;
 import com.snow.storeapi.util.ResponseUtil;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -16,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -58,26 +60,31 @@ public class OrderController {
     @ApiOperation("添加")
     @PostMapping("/create")
     @Transactional(rollbackFor = Exception.class)
-    public int create(@Valid @RequestBody Order order, User user) {
+    public int create(@Valid @RequestBody Order order, HttpServletRequest request) {
+        User user = JwtUtils.getSub(request);
         order.setInputUser(user.getId());
         orderService.save(order);
+        var orderGoodsList = new ArrayList<OrderGoods>();
+        var stockList = new ArrayList<Stock>();
         for(Map<String, Object> map : order.getStockList()){
             OrderGoods orderGoods = new OrderGoods();
             orderGoods.setStockId((Integer) map.get("stockId"));
             orderGoods.setOrderId(order.getId());
-            orderGoods.setAmount(new BigDecimal((Integer) map.get("amount")));
+            orderGoods.setAmount((Integer) map.get("amount"));
             orderGoods.setSubtotalMoney(new BigDecimal((Integer) map.get("subtotalMoney")));
-            orderGoodsService.save(orderGoods);
+            orderGoodsList.add(orderGoods);
             //更新商品现有库存
             Stock stock = new Stock();
             stock.setId((Integer) map.get("stockId"));
-            stock.setCurrentStock(new BigDecimal((Integer) map.get("currentStock")).subtract(new BigDecimal((Integer) map.get("amount"))));
-            stockService.updateById(stock);
+            stock.setCurrentStock((Integer) map.get("currentStock") - (Integer) map.get("amount"));
+            stockList.add(stock);
         }
+        stockService.updateBatchById(stockList);
+        orderGoodsService.saveBatch(orderGoodsList);
         return order.getId();
     }
 
-    @ApiOperation("批量删除/作废")
+    @ApiOperation("批量删除")
     @DeleteMapping("/delete/{id}")
     @Transactional(rollbackFor = Exception.class)
     public void delete(@PathVariable Integer id) {
@@ -86,14 +93,16 @@ public class OrderController {
         wrapper.eq("order_id",id);
         List<OrderGoods> list = orderGoodsService.list(wrapper);
         if(list != null && list.size() > 0){
+            var stockList = new ArrayList<Stock>();
             list.forEach(orderGoods -> {
                 Stock current = stockService.getById(orderGoods.getStockId());
                 if(current != null) {
                     Stock stock = new Stock();
                     stock.setId(orderGoods.getStockId());
-                    stock.setCurrentStock(current.getCurrentStock().add(orderGoods.getAmount()));
-                    stockService.updateById(stock);
+                    stock.setCurrentStock(current.getCurrentStock() + orderGoods.getAmount());
+                    stockList.add(stock);
                 }
+                stockService.updateBatchById(stockList);
             });
         }
         orderGoodsService.remove(wrapper);

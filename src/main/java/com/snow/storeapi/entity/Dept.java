@@ -9,6 +9,7 @@ import lombok.NonNull;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Data
 @Accessors(chain = true)
@@ -22,6 +23,14 @@ public class Dept implements Serializable {
 
     @NonNull
     private String name;
+
+    private Integer stockCount;
+
+    private Integer goodsCount;
+
+    private LocalDateTime createTime;
+
+    private LocalDateTime modifyTime;
 
     public Dept() {
     }

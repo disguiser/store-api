@@ -3,11 +3,12 @@ package com.snow.storeapi.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.snow.storeapi.entity.*;
+import com.snow.storeapi.entity.Goods;
+import com.snow.storeapi.entity.Stock;
+import com.snow.storeapi.entity.User;
 import com.snow.storeapi.service.IGoodsService;
 import com.snow.storeapi.service.IPurchaseService;
 import com.snow.storeapi.service.IStockService;
-import com.snow.storeapi.service.IVipService;
 import com.snow.storeapi.util.JwtUtils;
 import com.snow.storeapi.util.ResponseUtil;
 import com.snow.storeapi.util.StringUtil;
@@ -23,9 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 /**
@@ -65,7 +64,7 @@ public class GoodsController {
             queryWrapper.like("sku", sku);
         }
         if (StringUtil.isEmpty(sort)) {
-            queryWrapper.orderByAsc("name");
+            queryWrapper.orderByDesc("create_time");
         } else {
             if (sort.startsWith("-")) {
                 queryWrapper.orderByDesc(TransformCamelUtil.underline(sort.substring(1)));
@@ -73,65 +72,58 @@ public class GoodsController {
                 queryWrapper.orderByAsc(TransformCamelUtil.underline(sort));
             }
         }
-        queryWrapper.eq("deleted",0);
-        queryWrapper.orderByDesc("create_time");
         IPage<Goods> goodss = goodsService.page(page, queryWrapper);
         return ResponseUtil.pageRes(goodss);
     }
 
     @ApiOperation("添加")
     @PostMapping("/create")
-    @Transactional(rollbackFor = Exception.class)
-    public int create(@Valid @RequestBody Goods goods) {
+    public int create(@Valid @RequestBody Goods goods, HttpServletRequest request) {
+        User user = JwtUtils.getSub(request);
+        goods.setInputUser(user.getId());
         if(goods.getId() == null){
             goodsService.save(goods);
         }
-        goods.getStocks().forEach(stock -> {
-            stock.setGoodsId(goods.getId());
-            //对stock表操作
-            //根据颜色和尺码查询，库存表中是否存在
-            QueryWrapper<Stock> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("color",stock.getColor());
-            queryWrapper.eq("size",stock.getSize());
-            queryWrapper.eq("goods_id",stock.getGoodsId());
-            Stock s = stockService.getOne(queryWrapper);
-            if (s == null){
-                //没有库存
-                stock.setCurrentStock(stock.getAmount());
-                stockService.save(stock);
-            }else {
-                stock.setId(s.getId());
-                //更新库存数量
-                s.setCurrentStock(s.getCurrentStock().add(stock.getAmount()));
-                stockService.updateById(s);
-            }
-            //对purchase表进行操作
-            Purchase purchase = new Purchase();
-            purchase.setStockId(stock.getId());
-            purchase.setPurchaseAmount(stock.getAmount());
-            purchaseService.save(purchase);
-        });
+//        goods.getStocks().forEach(stock -> {
+//            stock.setGoodsId(goods.getId());
+//            //对stock表操作
+//            //根据颜色和尺码查询，库存表中是否存在
+//            QueryWrapper<Stock> queryWrapper = new QueryWrapper<>();
+//            queryWrapper.eq("color",stock.getColor());
+//            queryWrapper.eq("size",stock.getSize());
+//            queryWrapper.eq("goods_id",stock.getGoodsId());
+//            Stock s = stockService.getOne(queryWrapper);
+//            if (s == null){
+//                //没有库存
+//                stock.setCurrentStock(stock.getAmount());
+//                stockService.save(stock);
+//            }else {
+//                stock.setId(s.getId());
+//                //更新库存数量
+//                s.setCurrentStock(s.getCurrentStock() + stock.getAmount());
+//                stockService.updateById(s);
+//            }
+//            //对purchase表进行操作
+//            Purchase purchase = new Purchase();
+//            purchase.setStockId(stock.getId());
+//            purchase.setPurchaseAmount(stock.getAmount());
+//            purchaseService.save(purchase);
+//        });
         return goods.getId();
     }
 
-    @ApiOperation("批量删除")
-    @DeleteMapping("/delete")
-    public void delete(@RequestBody List<Integer> ids) {
-        //goodsService.removeByIds(ids);
-        //逻辑删除
-        List<Goods> goodsList = new ArrayList<>(ids.size());
-        ids.forEach(id->{
-            Goods goods = new Goods();
-            goods.setId(id);
-            goods.setDeleted(1);
-            goodsList.add(goods);
-        });
-        goodsService.updateBatchById(goodsList);
+    @ApiOperation("删除")
+    @DeleteMapping("/delete/{id}")
+    @Transactional(rollbackFor = Exception.class)
+    public void delete(@PathVariable Integer id) {
+        stockService.remove(new QueryWrapper<Stock>().eq("goods_id", id));
+        goodsService.removeById(id);
     }
 
     @ApiOperation("更新")
     @PatchMapping("/update/{id}")
     public int update(@PathVariable Integer id,@Valid @RequestBody Goods goods){
+        goods.setModifyTime(LocalDateTime.now());
         goodsService.updateById(goods);
         return goods.getId();
     }
@@ -153,14 +145,12 @@ public class GoodsController {
         }
         QueryWrapper<Goods> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("sku",sku);
-        queryWrapper.eq("deleted",0);
         Goods goods = goodsService.getOne(queryWrapper);
         if (goods == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("找不到商品！");
         }
         QueryWrapper<Stock> stockQueryWrapper = new QueryWrapper<>();
         stockQueryWrapper.eq("goods_id",goods.getId());
-        stockQueryWrapper.eq("deleted",0);
         return ResponseEntity.ok(stockService.list(stockQueryWrapper));
     }
 

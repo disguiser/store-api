@@ -26,6 +26,8 @@ public class Goods implements Serializable {
     @NonNull
     private String name;
 
+    private Integer category;
+
     private String imgUrl;
 
     @NonNull
@@ -38,6 +40,8 @@ public class Goods implements Serializable {
     private LocalDateTime modifyTime;
 
     private LocalDateTime createTime;
+
+    private Integer inputUser;
 
     private Integer deleted;
 

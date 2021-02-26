@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,7 @@ public class DictMapperTest {
     private DictMapper dictMapper;
 
     @Test
+    @Transactional
     public void testInsert() {
         var dictitem = new DictItem();
         dictitem.setItemCode("Boss");
@@ -44,7 +46,7 @@ public class DictMapperTest {
         dictMapper.updateById(dict);
     }
 
-    @Test
+//    @Test
     public void testSelectAll() {
         List<Dict> dicts = dictMapper.selectAll("权", "-dict_name");
 //        System.out.println(dicts);
