@@ -40,9 +40,9 @@ public class StockController {
 
 
     @ApiOperation("list查询")
-    @GetMapping("/find")
+    @GetMapping("/list")
     public ResponseEntity list(
-            @RequestParam(value = "goodId", required = false) Integer goodsId,
+            @RequestParam(value = "goodsId", required = false) Integer goodsId,
             @RequestParam(value = "deptId", required = false) Integer deptId
     ) {
 //        if (goodsId == null){

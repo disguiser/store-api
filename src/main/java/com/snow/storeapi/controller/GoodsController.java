@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.snow.storeapi.entity.Goods;
+import com.snow.storeapi.entity.MyPage;
 import com.snow.storeapi.entity.Stock;
 import com.snow.storeapi.entity.User;
 import com.snow.storeapi.service.IGoodsService;
@@ -48,7 +49,8 @@ public class GoodsController {
 
     @ApiOperation("列表查询")
     @GetMapping("/findByPage")
-    public Map list(
+    public Map findByPage(
+            @RequestParam(value = "deptId", required = false)String deptId,
             @RequestParam(value = "name", required = false)String name,
             @RequestParam(value = "sku", required = false)String sku,
             @RequestParam(value = "sort", required = false) String sort,
@@ -73,6 +75,20 @@ public class GoodsController {
             }
         }
         IPage<Goods> goodss = goodsService.page(page, queryWrapper);
+        return ResponseUtil.pageRes(goodss);
+    }
+
+    @ApiOperation("列表查询")
+    @GetMapping("/findByDept")
+    public Map findByDept(
+            @RequestParam(value = "deptId", required = false)String deptId,
+            @RequestParam(value = "name", required = false)String name,
+            @RequestParam(value = "sku", required = false)String sku,
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "page", defaultValue = "1")Integer page,
+            @RequestParam(value = "limit", defaultValue = "10")Integer limit
+    ) {
+        MyPage goodss = goodsService.findByDept(page, limit, sort, deptId, name, sku);
         return ResponseUtil.pageRes(goodss);
     }
 

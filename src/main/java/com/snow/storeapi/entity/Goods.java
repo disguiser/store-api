@@ -1,9 +1,6 @@
 package com.snow.storeapi.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 import lombok.NonNull;
 import lombok.experimental.Accessors;
@@ -42,7 +39,7 @@ public class Goods implements Serializable {
     private LocalDateTime createTime;
 
     private Integer inputUser;
-
+    @TableLogic
     private Integer deleted;
 
     @TableField(exist = false)

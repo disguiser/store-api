@@ -1,6 +1,7 @@
 package com.snow.storeapi.util;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.snow.storeapi.entity.MyPage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,13 +16,18 @@ public class ResponseUtil {
     public static Map<String, Object> pageRes(IPage<?> page) {
         logger.debug("数据: " + page.getRecords());
         logger.debug("总条数 ------> " + page.getTotal());
-        logger.debug("当前页数 ------> " + page.getCurrent());
-        logger.debug("当前每页显示数 ------> " + page.getSize());
         Map<String, Object> map = new HashMap<>();
         map.put("total", page.getTotal());
-        map.put("page", page.getCurrent());
-        map.put("size", page.getSize());
         map.put("items", page.getRecords());
+        return map;
+    }
+
+    public static Map<String, Object> pageRes(MyPage page) {
+        logger.debug("数据: " + page.getItems());
+        logger.debug("总条数 ------> " + page.getTotal());
+        Map<String, Object> map = new HashMap<>();
+        map.put("total", page.getTotal());
+        map.put("items", page.getItems());
         return map;
     }
 
