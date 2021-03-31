@@ -23,7 +23,7 @@ public class Goods implements Serializable {
     @NonNull
     private String name;
 
-    private Integer category;
+    private Integer sizeGroup;
 
     private String imgUrl;
 

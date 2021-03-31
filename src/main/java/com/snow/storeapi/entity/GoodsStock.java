@@ -13,7 +13,7 @@ public class GoodsStock {
 
     private String name;
 
-    private Integer category;
+    private Integer sizeGroup;
 
     private String imgUrl;
 

@@ -1,8 +1,10 @@
 package com.snow.storeapi.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.extension.handlers.FastjsonTypeHandler;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -17,7 +19,7 @@ public class Dict {
     private Integer id;
 
     private String dictName;
-
+    @TableField(typeHandler = FastjsonTypeHandler.class)
     private List<DictItem> data;
 
     private Boolean ifUseCode;

@@ -1,8 +1,8 @@
 package com.snow.storeapi;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.snow.storeapi.entity.GoodsCategory;
-import com.snow.storeapi.service.IGoodsCategoryService;
+import com.snow.storeapi.entity.SizeGroup;
+import com.snow.storeapi.service.ISizeGroupService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,20 +14,19 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest
 public class ServiceTest {
     @Autowired
-    private IGoodsCategoryService categoryService;
+    private ISizeGroupService categoryService;
 
 //    @Test
     public void testSelect() {
-        GoodsCategory categories = categoryService.getOne(new QueryWrapper<GoodsCategory>().eq("name", "常服"));
+        SizeGroup categories = categoryService.getOne(new QueryWrapper<SizeGroup>().eq("name", "常服"));
         System.out.println(categories);
     }
 
-    @Test
-    @Transactional
+//    @Test
+//    @Transactional
     public void testInset() throws Exception {
-        GoodsCategory category = new GoodsCategory();
+        SizeGroup category = new SizeGroup();
         category.setName("test");
-        category.setSizeGroup(new String[]{"31", "32"});
         categoryService.save(category);
 //        throw new Exception();
     }

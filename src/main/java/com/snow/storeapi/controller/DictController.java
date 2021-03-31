@@ -9,6 +9,7 @@ import com.snow.storeapi.util.StringUtil;
 import com.snow.storeapi.util.TransformCamelUtil;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -54,7 +55,8 @@ public class DictController {
     @PatchMapping("/update")
     public void update(@Valid @RequestBody Dict dict) {
         var queryWrapper = new QueryWrapper<Version>();
-        var version = versionService.getOne(queryWrapper);
+        var version = versionService.getOne(queryWrapper.eq("name", "dict"));
+        version.setV(version.getV() + 1);
         versionService.updateById(version);
         dictService.updateById(dict);
     }

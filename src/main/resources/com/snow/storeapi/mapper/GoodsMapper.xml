@@ -5,7 +5,7 @@
         <id column="id" jdbcType="INTEGER" property="id" />
         <result column="sku" jdbcType="VARCHAR" property="sku" />
         <result column="name" jdbcType="VARCHAR" property="name" />
-        <result column="category" jdbcType="INTEGER" property="category" />
+        <result column="size_group" jdbcType="INTEGER" property="sizeGroup" />
         <result column="img_url" jdbcType="VARCHAR" property="imgUrl" />
         <result column="sale_price" jdbcType="DECIMAL" property="salePrice" />
         <result column="cost_price" jdbcType="DECIMAL" property="costPrice" />
@@ -15,7 +15,7 @@
     </resultMap>
     <select id="findByDept" resultMap="BaseResultMap">
         SELECT
-        g.id, sku, name, category, img_url, sale_price, cost_price, g.modify_time,
+        g.id, sku, name, size_group, img_url, sale_price, cost_price, g.modify_time,
         s.color, s.size, s.current_stock
         FROM
         stock s

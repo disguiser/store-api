@@ -12,13 +12,13 @@ import java.io.Serializable;
 
 @Data
 @Accessors(chain = true)
-@TableName(value = "goods_category", autoResultMap = true)
-public class GoodsCategory implements Serializable {
+@TableName(value = "size_group", autoResultMap = true)
+public class SizeGroup implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     private String name;
 
     @TableField(typeHandler = FastjsonTypeHandler.class)
-    private String[] sizeGroup;
+    private String[] data;
 }
