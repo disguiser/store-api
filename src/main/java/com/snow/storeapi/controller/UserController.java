@@ -5,9 +5,9 @@ import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.snow.storeapi.constant.SystemConstant;
 import com.snow.storeapi.entity.R;
+import com.snow.storeapi.entity.Sse;
 import com.snow.storeapi.entity.User;
 import com.snow.storeapi.service.IUserService;
 import com.snow.storeapi.util.JwtUtils;
@@ -17,21 +17,33 @@ import com.snow.storeapi.util.StringUtil;
 import com.xkzhangsan.time.calculator.DateTimeCalculatorUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Api(value = "UserController",  tags="用户管理")
 @RestController
 @RequestMapping(value = "/user")
 public class UserController {
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+
+    private Map<String, Sse> sseEmitterMap = new ConcurrentHashMap<>();
+
     @Autowired
     private IUserService userService;
 
@@ -64,11 +76,7 @@ public class UserController {
                 res.put("msg","验证码不正确或已失效!");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
             }
-            Map<String, Object> sub = new HashMap<>();
-            sub.put("id", userInfo.getId().toString());
-            sub.put("userName", userInfo.getUserName());
-            sub.put("deptName", userInfo.getDeptName());
-            String token = JwtUtils.createJWT(JSON.toJSONString(sub), SystemConstant.JWT_TTL);
+            var token = getToken(userInfo);
             Map<String, Object> res = new HashMap<>();
             res.put("userId", userInfo.getId());
             res.put("userName", userInfo.getUserName());
@@ -112,6 +120,77 @@ public class UserController {
         }
     }
 
+    @ApiOperation("获取二维码")
+    @GetMapping("/QRCode")
+    public SseEmitter getBarcode(String clientId) {
+        final SseEmitter emitter = new SseEmitter(0L);
+        ExecutorService service = Executors.newSingleThreadExecutor();
+        var result = new Sse();
+        result.setClientId(clientId);
+        result.setTimestamp(System.currentTimeMillis());
+        result.setSseEmitter(emitter);
+        sseEmitterMap.put(clientId, result);
+        service.execute(() -> {
+            for (;;) {
+                try {
+                    var serverId = UUID.randomUUID().toString();
+                    sseEmitterMap.get(clientId).setServerId(serverId);
+                    logger.debug("sse send: " + serverId);
+                    emitter.send(serverId);
+//                    emitter.send(SseEmitter.event().name("complete").data(String.valueOf(System.currentTimeMillis())));
+                    Thread.sleep(60_000L);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    logger.debug("sse stop");
+                    emitter.completeWithError(e);
+                    break;
+                }
+            }
+        });
+        return emitter;
+    }
+    @ApiOperation("已扫码")
+    @PostMapping("/scanned")
+    public R scanned(@RequestBody Sse req) {
+        var result = sseEmitterMap.get(req.getClientId());
+        System.out.println(result.getServerId());
+        System.out.println(req.getServerId());
+        if (result.getServerId().equals(req.getServerId())) {
+            try {
+                result.getSseEmitter().send(SseEmitter.event().name("scanned").data("scanned"));
+            } catch (IOException e) {
+                logger.debug("sacnned error");
+                result.getSseEmitter().completeWithError(e);
+            }
+            return R.ok();
+        } else {
+            return R.error("二维码已过期");
+        }
+    }
+    @ApiOperation("手机端确认登录")
+    @PostMapping("/phone-confirm")
+    public void confirm(@RequestBody Sse req, HttpServletRequest request) {
+        User user = JwtUtils.getSub(request);
+        var result = sseEmitterMap.get(req.getClientId());
+        if (result.getServerId().equals(req.getServerId())) {
+            User userInfo = userService.getById(user.getId());
+            Map<String, Object> res = new HashMap<>();
+            res.put("userId", userInfo.getId());
+            res.put("userName", userInfo.getUserName());
+            res.put("accountName", userInfo.getAccountName());
+            res.put("deptName", userInfo.getDeptName());
+            res.put("avatar", userInfo.getAvatar());
+            res.put("role", userInfo.getRole());
+            res.put("token", getToken(userInfo));
+            try {
+                result.getSseEmitter().send(SseEmitter.event().name("confirm").data(JSON.toJSONString(res)));
+            } catch (IOException e) {
+                logger.debug("phone confirm error");
+                result.getSseEmitter().completeWithError(e);
+            }
+        }
+    }
+
     @ApiOperation("用户列表查询")
     @GetMapping("/findByPage")
     public Map list(
@@ -141,7 +220,7 @@ public class UserController {
 
     @ApiOperation("添加用户")
     @PutMapping("/create")
-    public int addUser(@RequestBody User user, HttpServletRequest request){
+    public int addUser(@RequestBody User user){
 //        User req = JwtUtils.getSub(request);
 //        user.setDeptId(req.getDeptId());
 //        user.setDeptName(req.getDeptName());
@@ -197,4 +276,11 @@ public class UserController {
         return true;
     }
 
+    public String getToken(User userInfo) {
+        Map<String, Object> sub = new HashMap<>();
+        sub.put("id", userInfo.getId().toString());
+        sub.put("userName", userInfo.getUserName());
+        sub.put("deptName", userInfo.getDeptName());
+        return JwtUtils.createJWT(JSON.toJSONString(sub), SystemConstant.JWT_TTL);
+    }
 }
