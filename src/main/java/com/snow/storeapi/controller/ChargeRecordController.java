@@ -61,7 +61,7 @@ public class ChargeRecordController {
         }
         /*User user = JwtUtils.getSub(request);
         //不是老板,只能查自己门店下的
-        if(!"".equals(user.getRole())) {
+        if(!"".equals(user.getRoles())) {
             queryWrapper.eq("dept_id", user.getDeptId());
         }
         if (vipId != null) {

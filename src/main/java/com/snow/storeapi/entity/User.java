@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.extension.handlers.FastjsonTypeHandler;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -14,7 +15,7 @@ import java.util.List;
 
 @Data
 @Accessors(chain = true)
-@TableName("user")
+@TableName(value = "user", autoResultMap = true)
 public class User implements Serializable {
     private static final long serialVersionUID = 1711736924363048847L;
 
@@ -39,7 +40,8 @@ public class User implements Serializable {
     private String deptName;
 
     @NotNull
-    private String role;
+    @TableField(typeHandler = FastjsonTypeHandler.class)
+    private List<String> roles;
 
     @NotNull
     private String status;

@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.ArrayList;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class UserServiceTest {
@@ -26,13 +28,21 @@ public class UserServiceTest {
         System.out.println("当前每页显示数 ------> " + users.getSize());
         System.out.println(users.getRecords());
     }
-//    @Test
+    @Test
+    public void testSelectOne() {
+        User user = userService.getOne(new QueryWrapper<User>().eq("user_name", "test"));
+        System.out.println(user);
+    }
+    @Test
     public void testInsert() {
         User userInfo = new User();
         userInfo.setAccountName("test");
         userInfo.setUserName("test");
+        var role = new ArrayList<String>();
         userInfo.setPassword("1");
-        userInfo.setRole("Waiter");
+        role.add("Waiter");
+        role.add("Boss");
+        userInfo.setRoles(role);
         userInfo.setStatus("Enabled");
         userService.save(userInfo);
         System.out.println(userInfo);

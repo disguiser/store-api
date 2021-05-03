@@ -14,6 +14,7 @@ import java.util.List;
 
 public class test {
     public static void main(String[] args) {
-        System.out.println(StrUtil.isEmpty(""));
+        var str = new String[]{ "Waiter", "Boss" };
+        System.out.println(str[1]);
     }
 }

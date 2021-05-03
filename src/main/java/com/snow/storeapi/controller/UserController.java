@@ -67,7 +67,6 @@ public class UserController {
                 res.put("msg","密码不正确!");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
             }
-            System.out.println(!StrUtil.isEmpty(phoneNumber));
             if (!StrUtil.isEmpty(phoneNumber) &&
                 (!userInfo.getPhoneCode().equals(req.getPhoneCode()) ||
                 userInfo.getCodeExpTime().isBefore(LocalDateTime.now()))
@@ -83,7 +82,7 @@ public class UserController {
             res.put("accountName", userInfo.getAccountName());
             res.put("deptName", userInfo.getDeptName());
             res.put("avatar", userInfo.getAvatar());
-            res.put("role", userInfo.getRole());
+            res.put("roles", userInfo.getRoles());
             res.put("token", token);
             return ResponseEntity.ok(res);
         } else {
@@ -180,7 +179,7 @@ public class UserController {
             res.put("accountName", userInfo.getAccountName());
             res.put("deptName", userInfo.getDeptName());
             res.put("avatar", userInfo.getAvatar());
-            res.put("role", userInfo.getRole());
+            res.put("role", userInfo.getRoles());
             res.put("token", getToken(userInfo));
             try {
                 result.getSseEmitter().send(SseEmitter.event().name("confirm").data(JSON.toJSONString(res)));

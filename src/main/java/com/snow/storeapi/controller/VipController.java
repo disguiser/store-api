@@ -59,7 +59,7 @@ public class VipController {
         }
         queryWrapper.orderByDesc(true, "create_time");
         //不是老板,只能查自己门店下的
-        /*if(!"".equals(user.getRole())) {
+        /*if(!"".equals(user.getRoles())) {
             queryWrapper.eq("dept_id", user.getDeptId());
         }*/
         queryWrapper.orderByDesc("modify_time");

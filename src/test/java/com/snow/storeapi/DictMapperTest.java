@@ -22,8 +22,8 @@ public class DictMapperTest {
     @Autowired
     private DictMapper dictMapper;
 
-    @Test
-    @Transactional
+//    @Test
+//    @Transactional
     public void testInsert() {
         var dictitem = new DictItem();
         dictitem.setItemCode("Boss");
@@ -38,7 +38,7 @@ public class DictMapperTest {
         assertThat(id, greaterThan(0));
     }
 
-    @Test
+//    @Test
     public void testUpdateById() {
         var dict = new Dict();
         dict.setId(1);

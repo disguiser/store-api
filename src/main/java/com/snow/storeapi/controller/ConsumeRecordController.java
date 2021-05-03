@@ -57,7 +57,7 @@ public class ConsumeRecordController {
         }
         //不是老板,只能查自己门店下的
         /*User user = JwtUtils.getSub(request);
-        if(!"".equals(user.getRole())) {
+        if(!"".equals(user.getRoles())) {
             queryWrapper.eq("dept_id", user.getDeptId());
         }
         if (vipId != null) {
