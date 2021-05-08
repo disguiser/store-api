@@ -31,8 +31,6 @@ public class SysInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
         if (handler instanceof HandlerMethod) {
-            System.out.println("===============");
-            System.out.println(request.getServletPath());
             String authHeader = request.getHeader("Authorization");
             if (StringUtils.isEmpty(authHeader)) {
                 logger.info("验证失败");

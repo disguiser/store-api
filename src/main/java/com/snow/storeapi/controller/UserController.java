@@ -179,7 +179,7 @@ public class UserController {
             res.put("accountName", userInfo.getAccountName());
             res.put("deptName", userInfo.getDeptName());
             res.put("avatar", userInfo.getAvatar());
-            res.put("role", userInfo.getRoles());
+            res.put("roles", userInfo.getRoles());
             res.put("token", getToken(userInfo));
             try {
                 result.getSseEmitter().send(SseEmitter.event().name("confirm").data(JSON.toJSONString(res)));

@@ -44,8 +44,8 @@ public class DictController {
     @ApiOperation("添加字典")
     @PostMapping("/create")
     public int create(@Valid @RequestBody Dict dict) {
-        var queryWrapper = new QueryWrapper<Version>();
-        var version = versionService.getOne(queryWrapper);
+        var version = versionService.getOne(new QueryWrapper<Version>().eq("name", "dict"));
+        version.setV(version.getV() + 1);
         versionService.updateById(version);
         dictService.insert(dict);
         return dict.getId();
@@ -54,8 +54,7 @@ public class DictController {
     @ApiOperation("修改字典")
     @PatchMapping("/update")
     public void update(@Valid @RequestBody Dict dict) {
-        var queryWrapper = new QueryWrapper<Version>();
-        var version = versionService.getOne(queryWrapper.eq("name", "dict"));
+        var version = versionService.getOne(new QueryWrapper<Version>().eq("name", "dict"));
         version.setV(version.getV() + 1);
         versionService.updateById(version);
         dictService.updateById(dict);
