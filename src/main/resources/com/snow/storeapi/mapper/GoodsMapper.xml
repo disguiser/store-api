@@ -9,13 +9,14 @@
         <result column="img_url" jdbcType="VARCHAR" property="imgUrl" />
         <result column="sale_price" jdbcType="DECIMAL" property="salePrice" />
         <result column="cost_price" jdbcType="DECIMAL" property="costPrice" />
+        <result column="pre_sku" jdbcType="VARCHAR" property="preSku" />
         <result column="color" jdbcType="VARCHAR" property="color" />
         <result column="size" jdbcType="VARCHAR" property="size" />
         <result column="current_stock" jdbcType="INTEGER" property="currentStock" />
     </resultMap>
     <select id="findByDept" resultMap="BaseResultMap">
         SELECT
-        g.id, sku, name, size_group, img_url, sale_price, cost_price, g.modify_time,
+        g.id, sku, name, size_group, img_url, sale_price, cost_price, pre_sku, g.modify_time,
         s.color, s.size, s.current_stock
         FROM
         stock s

@@ -2,11 +2,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.snow.storeapi.mapper.OrderMapper">
     <resultMap id="orderMap" type="map">
-        <result property="address" column="address" typeHandler="com.snow.storeapi.util.JsonTypeHandler"></result>
+        <result property="address" column="address" typeHandler="com.snow.storeapi.config.JsonTypeHandler"></result>
     </resultMap>
 
     <resultMap id="orderData" type="map">
-        <result property="customerAddress" column="customerAddress" typeHandler="com.snow.storeapi.util.JsonTypeHandler"></result>
+        <result property="customerAddress" column="customerAddress" typeHandler="com.snow.storeapi.config.JsonTypeHandler"></result>
     </resultMap>
     <select id="findByPage" resultMap="orderMap">
         SELECT

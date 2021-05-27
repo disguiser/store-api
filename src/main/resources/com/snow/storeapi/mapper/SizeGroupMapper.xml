@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.snow.storeapi.mapper.SizeGroupMapper">
+    <resultMap id="BaseResultMap" type="com.snow.storeapi.entity.SizeGroup">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="data" property="data" typeHandler="com.snow.storeapi.config.DictItemTypeHandler"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, name, data
+    </sql>
+    <select id="selectAll" resultType="map">
+        select
+        <include refid="Base_Column_List" />
+        from size_group where 1=1
+        <if test="name != null">
+            and name like concat('%', #{name}, '%')
+        </if>
+        order by
+        <if test="sort.startsWith('-')">
+            substr(#{sort}, 2) desc
+        </if>
+        <if test="sort.startsWith('+')">
+            substr(#{sort}, 2) asc
+        </if>
+    </select>
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from size_group
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="com.snow.storeapi.entity.Dict">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into size_group (name, data) values (#{name, jdbcType=VARCHAR}, #{data,jdbcType=OTHER,typeHandler=com.snow.storeapi.config.DictItemTypeHandler})
+    </insert>
+    <update id="modifyById" parameterType="com.snow.storeapi.entity.Dict">
+        update size_group
+        <set>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="data != null">
+                data = #{data,jdbcType=OTHER,typeHandler=com.snow.storeapi.config.DictItemTypeHandler},
+            </if>
+            <if test="moreOption != null">
+                more_option = #{moreOption},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+</mapper>

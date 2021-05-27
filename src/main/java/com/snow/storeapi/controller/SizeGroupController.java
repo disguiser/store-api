@@ -24,7 +24,7 @@ public class SizeGroupController {
     @ApiOperation("列表查询")
     @GetMapping("/find-all")
     public List list() {
-        List<SizeGroup> sizeGroups = sizeGroupService.list();
+        List<SizeGroup> sizeGroups = sizeGroupService.findAll();
         return sizeGroups;
     }
 
@@ -33,7 +33,7 @@ public class SizeGroupController {
     @Transactional
     public SizeGroup create(@Valid @RequestBody SizeGroup sizeGroup) {
         sizeGroupService.save(sizeGroup);
-        versionService.update(new QueryWrapper<Version>().eq("name", "goodsCategory"));
+        versionService.addOne("sizeGroup");
         return sizeGroup;
     }
 
@@ -41,7 +41,7 @@ public class SizeGroupController {
     @DeleteMapping("/delete/{id}")
     @Transactional
     public void delete(@PathVariable Integer id) {
-        versionService.update(new QueryWrapper<Version>().eq("name", "goodsCategory"));
+        versionService.addOne("sizeGroup");
         sizeGroupService.removeById(id);
     }
 
@@ -49,7 +49,7 @@ public class SizeGroupController {
     @PatchMapping("/update")
     @Transactional
     public void update(@Valid @RequestBody SizeGroup sizeGroup) {
-        versionService.update(new QueryWrapper<Version>().eq("name", "goodsCategory"));
+        versionService.addOne("sizeGroup");
         sizeGroupService.updateById(sizeGroup);
     }
 }

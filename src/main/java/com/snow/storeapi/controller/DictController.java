@@ -1,15 +1,12 @@
 package com.snow.storeapi.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import cn.hutool.core.util.StrUtil;
 import com.snow.storeapi.entity.Dict;
-import com.snow.storeapi.entity.Version;
 import com.snow.storeapi.service.IDictService;
 import com.snow.storeapi.service.IVersionService;
-import com.snow.storeapi.util.StringUtil;
 import com.snow.storeapi.util.TransformCamelUtil;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -29,14 +26,14 @@ public class DictController {
             @RequestParam(value = "dictName", required = false)String dictName,
             @RequestParam(value = "sort", required = false) String sort
     ) {
-        if (!StringUtil.isEmpty(dictName)) {
+        if (!StrUtil.isEmpty(dictName)) {
             dictName = null;
         }
-        if (StringUtil.isEmpty(sort)) {
-            sort = "-modify-time";
-        } else {
-            sort = TransformCamelUtil.underline(sort);
-        }
+//        if (StrUtil.isEmpty(sort)) {
+//            sort = "-modify_time";
+//        } else {
+//            sort = TransformCamelUtil.underline(sort);
+//        }
         List<Dict> dicts = dictService.selectAll(dictName, sort);
         return dicts;
     }
@@ -44,19 +41,15 @@ public class DictController {
     @ApiOperation("添加字典")
     @PostMapping("/create")
     public int create(@Valid @RequestBody Dict dict) {
-        var version = versionService.getOne(new QueryWrapper<Version>().eq("name", "dict"));
-        version.setV(version.getV() + 1);
-        versionService.updateById(version);
-        dictService.insert(dict);
+        versionService.addOne("dict");
+        dictService.save(dict);
         return dict.getId();
     }
 
     @ApiOperation("修改字典")
     @PatchMapping("/update")
     public void update(@Valid @RequestBody Dict dict) {
-        var version = versionService.getOne(new QueryWrapper<Version>().eq("name", "dict"));
-        version.setV(version.getV() + 1);
-        versionService.updateById(version);
+        versionService.addOne("dict");
         dictService.updateById(dict);
     }
 
@@ -64,6 +57,6 @@ public class DictController {
     @ApiOperation("删除字典")
     @DeleteMapping("/delete/{id}")
     public void delete(@PathVariable Integer id) {
-        dictService.deleteById(id);
+        dictService.removeById(id);
     }
 }

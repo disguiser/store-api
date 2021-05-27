@@ -19,9 +19,9 @@ public class Stock implements Serializable {
 
     private Integer goodsId;
 
-    private String color;
+    private Integer color;
 
-    private String size;
+    private Integer size;
 
     private Integer currentStock;
 

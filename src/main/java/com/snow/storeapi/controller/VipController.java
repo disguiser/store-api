@@ -1,6 +1,7 @@
 package com.snow.storeapi.controller;
 
 
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -9,7 +10,6 @@ import com.snow.storeapi.entity.Vip;
 import com.snow.storeapi.service.IVipService;
 import com.snow.storeapi.util.JwtUtils;
 import com.snow.storeapi.util.ResponseUtil;
-import com.snow.storeapi.util.StringUtil;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,10 +51,10 @@ public class VipController {
         User user = JwtUtils.getSub(request);
         IPage<Vip> page = new Page<>(pageNum, limit);
         QueryWrapper<Vip> queryWrapper = new QueryWrapper<>();
-        if (!StringUtil.isEmpty(name)) {
+        if (!StrUtil.isEmpty(name)) {
             queryWrapper.eq("name", name);
         }
-        if (!StringUtil.isEmpty(phone)) {
+        if (!StrUtil.isEmpty(phone)) {
             queryWrapper.eq("phone", phone);
         }
         queryWrapper.orderByDesc(true, "create_time");
@@ -76,10 +76,10 @@ public class VipController {
     ) {
         User user = JwtUtils.getSub(request);
         QueryWrapper<Vip> queryWrapper = new QueryWrapper<>();
-        if (!StringUtil.isEmpty(name)) {
+        if (!StrUtil.isEmpty(name)) {
             queryWrapper.eq("name", name);
         }
-        if (!StringUtil.isEmpty(phone)) {
+        if (!StrUtil.isEmpty(phone)) {
             queryWrapper.eq("phone", phone);
         }
         //不是老板,只能查自己门店下的
@@ -96,7 +96,6 @@ public class VipController {
     public int create(@Valid @RequestBody Vip vip, HttpServletRequest request) {
         User user = JwtUtils.getSub(request);
         vip.setDeptId(user.getDeptId());
-        vip.setDeptName(user.getDeptName());
         vipService.save(vip);
         return vip.getId();
     }

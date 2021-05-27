@@ -1,18 +1,16 @@
 package com.snow.storeapi.controller;
 
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.snow.storeapi.entity.Goods;
-import com.snow.storeapi.entity.MyPage;
-import com.snow.storeapi.entity.Stock;
-import com.snow.storeapi.entity.User;
+import com.snow.storeapi.entity.*;
 import com.snow.storeapi.service.IGoodsService;
 import com.snow.storeapi.service.IPurchaseService;
 import com.snow.storeapi.service.IStockService;
+import com.snow.storeapi.service.IVersionService;
 import com.snow.storeapi.util.JwtUtils;
 import com.snow.storeapi.util.ResponseUtil;
-import com.snow.storeapi.util.StringUtil;
 import com.snow.storeapi.util.TransformCamelUtil;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -46,6 +44,9 @@ public class GoodsController {
     @Autowired
     private IStockService stockService;
 
+    @Autowired
+    private IVersionService versionService;
+
 
     @ApiOperation("列表查询")
     @GetMapping("/findByPage")
@@ -53,19 +54,19 @@ public class GoodsController {
             @RequestParam(value = "deptId", required = false)String deptId,
             @RequestParam(value = "name", required = false)String name,
             @RequestParam(value = "sku", required = false)String sku,
-            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "sort", defaultValue = "-modifyTime") String sort,
             @RequestParam(value = "page", defaultValue = "1")Integer pageNum,
             @RequestParam(value = "limit", defaultValue = "10")Integer limit
     ) {
         IPage<Goods> page = new Page<>(pageNum, limit);
         QueryWrapper<Goods> queryWrapper = new QueryWrapper<>();
-        if (!StringUtil.isEmpty(name)) {
+        if (!StrUtil.isEmpty(name)) {
             queryWrapper.like("name", name);
         }
-        if (!StringUtil.isEmpty(sku)) {
+        if (!StrUtil.isEmpty(sku)) {
             queryWrapper.like("sku", sku);
         }
-        if (StringUtil.isEmpty(sort)) {
+        if (StrUtil.isEmpty(sort)) {
             queryWrapper.orderByDesc("create_time");
         } else {
             if (sort.startsWith("-")) {
@@ -99,6 +100,14 @@ public class GoodsController {
         goods.setInputUser(user.getId());
         if(goods.getId() == null){
             goodsService.save(goods);
+        }
+        if (goods.getSku() == null) {
+            var version = versionService.addOne("sku");
+            var sb = new StringBuilder();
+            sb.append("YQ");
+            sb.append(version.getV());
+            StrUtil.fillBefore(version.getV().toString(), '0', 4);
+            goods.setSku(sb.toString());
         }
 //        goods.getStocks().forEach(stock -> {
 //            stock.setGoodsId(goods.getId());
@@ -146,7 +155,7 @@ public class GoodsController {
 
     @GetMapping("/findOneBySku/{sku}")
     public ResponseEntity findOneBySku(@PathVariable String sku){
-        if (sku == null || StringUtil.isEmpty(sku)){
+        if (sku == null || StrUtil.isEmpty(sku)){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("sku不能为空！");
         }
         QueryWrapper<Goods> queryWrapper = new QueryWrapper<>();
@@ -156,7 +165,7 @@ public class GoodsController {
 
     @GetMapping("/findStockBySku/{sku}")
     public ResponseEntity findStockBySku(@PathVariable String sku){
-        if (sku == null || StringUtil.isEmpty(sku)){
+        if (sku == null || StrUtil.isEmpty(sku)){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("sku不能为空！");
         }
         QueryWrapper<Goods> queryWrapper = new QueryWrapper<>();

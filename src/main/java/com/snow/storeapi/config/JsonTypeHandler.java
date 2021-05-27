@@ -1,6 +1,7 @@
-package com.snow.storeapi.util;
+package com.snow.storeapi.config;
 
 import com.alibaba.fastjson.JSON;
+import com.snow.storeapi.util.MyUtils;
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
 
@@ -11,30 +12,22 @@ import java.sql.SQLException;
 
 public class JsonTypeHandler extends BaseTypeHandler<Object> {
     @Override
-    public void setNonNullParameter(PreparedStatement ps, int i, Object parameter,
-                                    JdbcType jdbcType) throws SQLException {
-
+    public void setNonNullParameter(PreparedStatement ps, int i, Object parameter, JdbcType jdbcType) throws SQLException {
         ps.setString(i, JSON.toJSONString(parameter));
     }
 
     @Override
-    public Object getNullableResult(ResultSet rs, String columnName)
-            throws SQLException {
-
-        return JSON.parseObject(rs.getString(columnName), Object.class);
+    public Object getNullableResult(ResultSet rs, String columnName) throws SQLException {
+        return MyUtils.parseJson(rs.getString(columnName));
     }
 
     @Override
     public Object getNullableResult(ResultSet rs, int columnIndex) throws SQLException {
-
-        return JSON.parseObject(rs.getString(columnIndex), Object.class);
+        return MyUtils.parseJson(rs.getString(columnIndex));
     }
 
     @Override
-    public Object getNullableResult(CallableStatement cs, int columnIndex)
-            throws SQLException {
-
-        return JSON.parseObject(cs.getString(columnIndex), Object.class);
+    public Object getNullableResult(CallableStatement cs, int columnIndex) throws SQLException {
+        return MyUtils.parseJson(cs.getString(columnIndex));
     }
-
 }

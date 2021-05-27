@@ -1,11 +1,11 @@
 package com.snow.storeapi.controller;
 
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.snow.storeapi.entity.Customer;
 import com.snow.storeapi.service.ICustomerService;
 import com.snow.storeapi.util.ResponseUtil;
-import com.snow.storeapi.util.StringUtil;
 import com.snow.storeapi.util.TransformCamelUtil;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -40,10 +39,10 @@ public class CustomerController {
     ) {
         IPage<Customer> page = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(pageNum, limit);
         QueryWrapper<Customer> queryWrapper = new QueryWrapper<>();
-        if (!StringUtil.isEmpty(searchText)) {
+        if (!StrUtil.isEmpty(searchText)) {
             queryWrapper.like("name", searchText).or().like("address", searchText);
         }
-        if (StringUtil.isEmpty(sort)) {
+        if (StrUtil.isEmpty(sort)) {
             queryWrapper.orderByAsc("name");
         } else {
             if (sort.startsWith("-")) {

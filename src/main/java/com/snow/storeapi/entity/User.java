@@ -37,9 +37,6 @@ public class User implements Serializable {
     private Integer deptId;
 
     @NotNull
-    private String deptName;
-
-    @NotNull
     @TableField(typeHandler = FastjsonTypeHandler.class)
     private List<String> roles;
 

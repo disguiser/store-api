@@ -1,5 +1,6 @@
 package com.snow.storeapi.controller;
 
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -10,7 +11,6 @@ import com.snow.storeapi.service.IChargeRecordService;
 import com.snow.storeapi.service.IVipService;
 import com.snow.storeapi.util.JwtUtils;
 import com.snow.storeapi.util.ResponseUtil;
-import com.snow.storeapi.util.StringUtil;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,10 +52,10 @@ public class ChargeRecordController {
     ) {
         IPage<ChargeRecord> page = new Page<>(pageNum, limit);
         QueryWrapper<ChargeRecord> queryWrapper = new QueryWrapper<>();
-        if (!StringUtil.isEmpty(vipId)) {
+        if (!StrUtil.isEmpty(vipId)) {
             queryWrapper.eq("vip_id", vipId);
         }
-        if (!StringUtil.isEmpty(startDate) && !StringUtil.isEmpty(endDate)) {
+        if (!StrUtil.isEmpty(startDate) && !StrUtil.isEmpty(endDate)) {
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             queryWrapper.between("create_time", startDate,endDate);
         }

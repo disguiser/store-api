@@ -13,7 +13,6 @@ import com.snow.storeapi.service.IUserService;
 import com.snow.storeapi.util.JwtUtils;
 import com.snow.storeapi.util.ResponseUtil;
 import com.snow.storeapi.util.SMSUtil;
-import com.snow.storeapi.util.StringUtil;
 import com.xkzhangsan.time.calculator.DateTimeCalculatorUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -80,7 +79,7 @@ public class UserController {
             res.put("userId", userInfo.getId());
             res.put("userName", userInfo.getUserName());
             res.put("accountName", userInfo.getAccountName());
-            res.put("deptName", userInfo.getDeptName());
+            res.put("deptId", userInfo.getDeptId());
             res.put("avatar", userInfo.getAvatar());
             res.put("roles", userInfo.getRoles());
             res.put("token", token);
@@ -177,7 +176,7 @@ public class UserController {
             res.put("userId", userInfo.getId());
             res.put("userName", userInfo.getUserName());
             res.put("accountName", userInfo.getAccountName());
-            res.put("deptName", userInfo.getDeptName());
+            res.put("deptId", userInfo.getDeptId());
             res.put("avatar", userInfo.getAvatar());
             res.put("roles", userInfo.getRoles());
             res.put("token", getToken(userInfo));
@@ -202,10 +201,10 @@ public class UserController {
         User userInfo = JwtUtils.getSub(request);
         IPage<User> page = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(pageNum, limit);
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        if (!StringUtil.isEmpty(name)) {
+        if (!StrUtil.isEmpty(name)) {
             queryWrapper.eq("name", name);
         }
-        if (!StringUtil.isEmpty(accountName)) {
+        if (!StrUtil.isEmpty(accountName)) {
             queryWrapper.eq("account_name", accountName);
         }
         //不是老板,只能查自己门店下的
@@ -238,7 +237,7 @@ public class UserController {
     @PatchMapping("/update/{id}")
     public ResponseEntity update(@PathVariable Integer id,@RequestBody User user){
         Map<String, Object> res = new HashMap<>();
-        if(!StringUtil.isEmpty(user.getNewPassword())){
+        if(!StrUtil.isEmpty(user.getNewPassword())){
             //校验旧密码是否一致
             User u = userService.getById(id);
             if(u.getPassword().equals(user.getOldPassword())) {
@@ -279,7 +278,7 @@ public class UserController {
         Map<String, Object> sub = new HashMap<>();
         sub.put("id", userInfo.getId().toString());
         sub.put("userName", userInfo.getUserName());
-        sub.put("deptName", userInfo.getDeptName());
+        sub.put("deptId", userInfo.getDeptId());
         return JwtUtils.createJWT(JSON.toJSONString(sub), SystemConstant.JWT_TTL);
     }
 }

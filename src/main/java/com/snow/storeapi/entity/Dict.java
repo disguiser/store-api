@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.extension.handlers.FastjsonTypeHandler;
+import com.snow.storeapi.config.DictItemTypeHandler;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -13,16 +13,17 @@ import java.util.List;
 
 @Data
 @Accessors(chain = true)
-@TableName("dept_info")
+@TableName(value = "sys_dict", autoResultMap = true)
 public class Dict {
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     private String dictName;
-    @TableField(typeHandler = FastjsonTypeHandler.class)
+
+    @TableField(typeHandler = DictItemTypeHandler.class)
     private List<DictItem> data;
 
-    private Boolean ifUseCode;
+    private Boolean moreOption;
 
     private LocalDateTime modifyTime;
 }

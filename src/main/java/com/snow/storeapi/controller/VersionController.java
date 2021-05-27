@@ -25,10 +25,6 @@ public class VersionController {
     @ApiOperation("版本修改")
     @PatchMapping("/update/{name}")
     public void update(@PathVariable String name) {
-        var queryWrapper = new QueryWrapper<Version>();
-        queryWrapper.eq("name", name);
-        var version = versionService.getOne(queryWrapper);
-        version.setV(version.getV() + 1);
-        versionService.updateById(version);
+        versionService.addOne(name);
     }
 }

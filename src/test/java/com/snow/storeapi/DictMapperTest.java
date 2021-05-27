@@ -32,7 +32,7 @@ public class DictMapperTest {
         dictItems.add(dictitem);
         Dict dict = new Dict();
         dict.setDictName("roles");
-        dict.setData(dictItems);
+//        dict.setData(dictItems);
         Integer id = dictMapper.insert(dict);
 //        Assert.assertThat(id, equalTo(0));
         assertThat(id, greaterThan(0));
@@ -42,13 +42,13 @@ public class DictMapperTest {
     public void testUpdateById() {
         var dict = new Dict();
         dict.setId(1);
-        dict.setIfUseCode(false);
+        dict.setMoreOption(false);
         dictMapper.updateById(dict);
     }
 
 //    @Test
     public void testSelectAll() {
-        List<Dict> dicts = dictMapper.selectAll("权", "-dict_name");
+        List<Dict> dicts = dictMapper.selectAll("权", "dict_name", true);
 //        System.out.println(dicts);
         assertThat(dicts.size(), greaterThan(0));
     }

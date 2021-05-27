@@ -32,6 +32,8 @@ public class Goods implements Serializable {
 
     private BigDecimal costPrice;
 
+    private String preSku;
+
     private BigDecimal discount;
 
     private LocalDateTime modifyTime;

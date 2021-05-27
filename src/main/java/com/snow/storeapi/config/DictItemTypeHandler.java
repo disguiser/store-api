@@ -2,7 +2,9 @@ package com.snow.storeapi.config;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.snow.storeapi.entity.DictItem;
+import com.snow.storeapi.util.MyUtils;
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.MappedJdbcTypes;
@@ -16,36 +18,27 @@ import java.util.List;
 
 @MappedTypes(List.class)
 @MappedJdbcTypes(JdbcType.VARCHAR)
-public class DictItemHandler extends BaseTypeHandler<List<DictItem>> {
+public class DictItemTypeHandler extends BaseTypeHandler<Object> {
     @Override
-    public void setNonNullParameter(PreparedStatement preparedStatement, int i, List<DictItem> dictItems, JdbcType jdbcType) throws SQLException {
-        preparedStatement.setString(i, JSON.toJSONString(dictItems));
+    public void setNonNullParameter(PreparedStatement preparedStatement, int i, Object object, JdbcType jdbcType) throws SQLException {
+        preparedStatement.setString(i, JSON.toJSONString(object));
     }
 
     @Override
-    public List<DictItem> getNullableResult(ResultSet resultSet, String s) throws SQLException {
+    public Object getNullableResult(ResultSet resultSet, String s) throws SQLException {
         String sqlJson = resultSet.getString(s);
-        if (null != sqlJson) {
-            return JSONArray.parseArray(sqlJson, DictItem.class);
-        }
-        return null;
+        return MyUtils.parseJson(sqlJson);
     }
 
     @Override
-    public List<DictItem> getNullableResult(ResultSet resultSet, int i) throws SQLException {
+    public Object getNullableResult(ResultSet resultSet, int i) throws SQLException {
         String sqlJson = resultSet.getString(i);
-        if (null != sqlJson) {
-            return JSONArray.parseArray(sqlJson, DictItem.class);
-        }
-        return null;
+        return MyUtils.parseJson(sqlJson);
     }
 
     @Override
-    public List<DictItem> getNullableResult(CallableStatement callableStatement, int i) throws SQLException {
+    public Object getNullableResult(CallableStatement callableStatement, int i) throws SQLException {
         String sqlJson = callableStatement.getString(i);
-        if (null != sqlJson) {
-            return JSONArray.parseArray(sqlJson, DictItem.class);
-        }
-        return null;
+        return MyUtils.parseJson(sqlJson);
     }
 }

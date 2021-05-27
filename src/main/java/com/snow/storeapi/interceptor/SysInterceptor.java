@@ -1,5 +1,6 @@
 package com.snow.storeapi.interceptor;
 
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.snow.storeapi.constant.SystemConstant;
@@ -8,8 +9,6 @@ import com.snow.storeapi.entity.R;
 import com.snow.storeapi.util.JwtUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.MediaType;
-import org.springframework.util.StringUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -32,7 +31,7 @@ public class SysInterceptor implements HandlerInterceptor {
             throws Exception {
         if (handler instanceof HandlerMethod) {
             String authHeader = request.getHeader("Authorization");
-            if (StringUtils.isEmpty(authHeader)) {
+            if (StrUtil.isEmpty(authHeader)) {
                 logger.info("验证失败");
                 response.setStatus(SystemConstant.JWT_ERRCODE_NULL);
                 print(response, R.error(SystemConstant.JWT_ERRCODE_NULL, "签名验证不存在"));

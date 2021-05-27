@@ -4,10 +4,10 @@
     <resultMap id="BaseResultMap" type="com.snow.storeapi.entity.Dict">
         <id column="id" jdbcType="INTEGER" property="id" />
         <result column="dict_name" jdbcType="VARCHAR" property="dictName" />
-        <result column="data" property="data" typeHandler="com.snow.storeapi.config.DictItemHandler"/>
+        <result column="data" property="data" typeHandler="com.snow.storeapi.config.DictItemTypeHandler"/>
     </resultMap>
     <sql id="Base_Column_List">
-        id, dict_name, data, if_use_code, modify_time
+        id, dict_name, data, more_option, modify_time
     </sql>
     <select id="selectAll" resultMap="BaseResultMap">
         select
@@ -17,11 +17,12 @@
             and dict_name like concat('%', #{dictName}, '%')
         </if>
         order by
-        <if test="sort.startsWith('-')">
-            substr(#{sort}, 2) desc
-        </if>
-        <if test="sort.startsWith('+')">
-            substr(#{sort}, 2) asc
+        <choose>
+            <when test="'id'.equals(sort)">id</when>
+            <otherwise>modify_time desc</otherwise>
+        </choose>
+        <if test="desc">
+            desc
         </if>
     </select>
     <delete id="deleteById" parameterType="java.lang.Integer">
@@ -32,19 +33,19 @@
         <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
             SELECT LAST_INSERT_ID()
         </selectKey>
-        insert into sys_dict (dict_name, data) values (#{dictName, jdbcType=VARCHAR}, #{data,jdbcType=OTHER,typeHandler=com.snow.storeapi.config.DictItemHandler})
+        insert into sys_dict (dict_name, data) values (#{dictName, jdbcType=VARCHAR}, #{data,jdbcType=OTHER,typeHandler=com.snow.storeapi.config.DictItemTypeHandler})
     </insert>
-    <update id="updateById" parameterType="com.snow.storeapi.entity.Dict">
+    <update id="modifyById" parameterType="com.snow.storeapi.entity.Dict">
         update sys_dict
         <set>
             <if test="dictName != null">
                 dict_name = #{dictName,jdbcType=VARCHAR},
             </if>
             <if test="data != null">
-                data = #{data,jdbcType=OTHER,typeHandler=com.snow.storeapi.config.DictItemHandler},
+                data = #{data,jdbcType=OTHER,typeHandler=com.snow.storeapi.config.DictItemTypeHandler},
             </if>
-            <if test="ifUseCode != null">
-                if_use_code = #{ifUseCode},
+            <if test="moreOption != null">
+                more_option = #{moreOption},
             </if>
         </set>
         where id = #{id,jdbcType=INTEGER}
