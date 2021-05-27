@@ -40,7 +40,11 @@ public class CustomerController {
         IPage<Customer> page = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(pageNum, limit);
         QueryWrapper<Customer> queryWrapper = new QueryWrapper<>();
         if (!StrUtil.isEmpty(searchText)) {
-            queryWrapper.like("name", searchText).or().like("address", searchText);
+            if (searchText.matches("\\d+")) {
+                queryWrapper.like("mobile", searchText);
+            } else {
+                queryWrapper.like("name", searchText);
+            }
         }
         if (StrUtil.isEmpty(sort)) {
             queryWrapper.orderByAsc("name");

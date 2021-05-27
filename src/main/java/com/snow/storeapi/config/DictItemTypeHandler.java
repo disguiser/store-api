@@ -27,18 +27,18 @@ public class DictItemTypeHandler extends BaseTypeHandler<Object> {
     @Override
     public Object getNullableResult(ResultSet resultSet, String s) throws SQLException {
         String sqlJson = resultSet.getString(s);
-        return MyUtils.parseJson(sqlJson);
+        return MyUtils.parseJson(sqlJson, DictItem.class);
     }
 
     @Override
     public Object getNullableResult(ResultSet resultSet, int i) throws SQLException {
         String sqlJson = resultSet.getString(i);
-        return MyUtils.parseJson(sqlJson);
+        return MyUtils.parseJson(sqlJson, DictItem.class);
     }
 
     @Override
     public Object getNullableResult(CallableStatement callableStatement, int i) throws SQLException {
         String sqlJson = callableStatement.getString(i);
-        return MyUtils.parseJson(sqlJson);
+        return MyUtils.parseJson(sqlJson, DictItem.class);
     }
 }

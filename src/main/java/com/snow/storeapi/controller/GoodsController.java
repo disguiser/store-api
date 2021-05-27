@@ -95,19 +95,18 @@ public class GoodsController {
 
     @ApiOperation("添加")
     @PostMapping("/create")
-    public int create(@Valid @RequestBody Goods goods, HttpServletRequest request) {
+    public Goods create(@Valid @RequestBody Goods goods, HttpServletRequest request) {
         User user = JwtUtils.getSub(request);
         goods.setInputUser(user.getId());
-        if(goods.getId() == null){
-            goodsService.save(goods);
-        }
-        if (goods.getSku() == null) {
+        if (StrUtil.isEmpty(goods.getSku())) {
             var version = versionService.addOne("sku");
             var sb = new StringBuilder();
             sb.append("YQ");
-            sb.append(version.getV());
-            StrUtil.fillBefore(version.getV().toString(), '0', 4);
+            sb.append(StrUtil.fillBefore(version.getV().toString(), '0', 4));
             goods.setSku(sb.toString());
+        }
+        if(goods.getId() == null){
+            goodsService.save(goods);
         }
 //        goods.getStocks().forEach(stock -> {
 //            stock.setGoodsId(goods.getId());
@@ -134,7 +133,7 @@ public class GoodsController {
 //            purchase.setPurchaseAmount(stock.getAmount());
 //            purchaseService.save(purchase);
 //        });
-        return goods.getId();
+        return goods;
     }
 
     @ApiOperation("删除")

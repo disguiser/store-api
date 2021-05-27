@@ -71,9 +71,10 @@ public class OrderController {
             orderGoods.setStockId((Integer) map.get("stockId"));
             orderGoods.setOrderId(order.getId());
             orderGoods.setAmount((Integer) map.get("amount"));
-            orderGoods.setSubtotalMoney(new BigDecimal((Integer) map.get("subtotalMoney")));
+            orderGoods.setSalePrice(new BigDecimal((Double) map.get("salePrice")));
+            orderGoods.setSubtotalMoney(new BigDecimal((Double) map.get("subtotalMoney")));
             orderGoodsList.add(orderGoods);
-            //更新商品现有库存
+            // 更新商品现有库存
             Stock stock = new Stock();
             stock.setId((Integer) map.get("stockId"));
             stock.setCurrentStock((Integer) map.get("currentStock") - (Integer) map.get("amount"));

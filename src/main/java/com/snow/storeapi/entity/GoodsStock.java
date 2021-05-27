@@ -26,4 +26,6 @@ public class GoodsStock {
     private String size;
 
     private Integer currentStock;
+
+    private String preSku;
 }

@@ -16,10 +16,6 @@ import java.util.List;
 
 public class test {
     public static void main(String[] args) {
-        var str = "[{\"itemCode\":\"1\"}]";
-        var json = JSON.parse(str);
-        System.out.println(JSON.parseArray(str, DictItem.class));
-//        System.out.println(json instanceof JSONObject);
-//        System.out.println(json instanceof JSONArray);
+        System.out.println("as".matches("\\d+"));
     }
 }

@@ -18,16 +18,16 @@ public class JsonTypeHandler extends BaseTypeHandler<Object> {
 
     @Override
     public Object getNullableResult(ResultSet rs, String columnName) throws SQLException {
-        return MyUtils.parseJson(rs.getString(columnName));
+        return MyUtils.parseJson(rs.getString(columnName), Object.class);
     }
 
     @Override
     public Object getNullableResult(ResultSet rs, int columnIndex) throws SQLException {
-        return MyUtils.parseJson(rs.getString(columnIndex));
+        return MyUtils.parseJson(rs.getString(columnIndex), Object.class);
     }
 
     @Override
     public Object getNullableResult(CallableStatement cs, int columnIndex) throws SQLException {
-        return MyUtils.parseJson(cs.getString(columnIndex));
+        return MyUtils.parseJson(cs.getString(columnIndex), Object.class);
     }
 }
