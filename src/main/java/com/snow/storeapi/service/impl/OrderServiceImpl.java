@@ -3,14 +3,12 @@ package com.snow.storeapi.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.util.concurrent.AtomicDouble;
 import com.snow.storeapi.entity.Order;
-import com.snow.storeapi.entity.R;
 import com.snow.storeapi.mapper.OrderMapper;
 import com.snow.storeapi.service.IOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -56,7 +54,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,Order> implements 
     public Map getOrderDataById(Integer orderId) {
         Order order = orderMapper.selectById(orderId);
         List<Map<String, Object>> list = orderMapper.getOrderDataById(orderId);
-        List<Map<String,String>> groupByList = orderMapper.getGroupBy(orderId);
+        List<Map<String,Object>> groupByList = orderMapper.getGroupBy(orderId);
         List<Map<String,Object>> after = new ArrayList<>();
         Map<String,Object> result = new HashMap<>();
         AtomicInteger total = new AtomicInteger();
@@ -67,9 +65,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,Order> implements 
             AtomicInteger subtotal = new AtomicInteger();
             AtomicDouble subtotalMoney = new AtomicDouble();
             list.forEach(map->{
-                if(groupBy.get("sku").equals(map.get("sku")) &&
+                if(
+                        groupBy.get("sku").equals(map.get("sku")) &&
                         groupBy.get("name").equals(map.get("name")) &&
-                        groupBy.get("color").equals(map.get("color"))){
+                        groupBy.get("color").equals(map.get("color"))
+                ){
                     p.putAll(map);
                     p.remove("size");
                     p.remove("amount");

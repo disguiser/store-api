@@ -21,9 +21,9 @@ public class GoodsStock {
 
     private BigDecimal costPrice;
 
-    private String color;
+    private Integer color;
 
-    private String size;
+    private Integer size;
 
     private Integer currentStock;
 

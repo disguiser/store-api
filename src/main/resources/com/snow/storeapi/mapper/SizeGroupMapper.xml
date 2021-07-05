@@ -41,7 +41,7 @@
                 name = #{name,jdbcType=VARCHAR},
             </if>
             <if test="data != null">
-                data = #{data,jdbcType=OTHER,typeHandler=com.snow.storeapi.config.DictItemTypeHandler},
+                data = #{data,jdbcType=OTHER,typeHandler=com.snow.storeapi.config.DictItemTypeHandlersiz},
             </if>
             <if test="moreOption != null">
                 more_option = #{moreOption},

@@ -22,5 +22,5 @@ public interface OrderMapper extends BaseMapper<Order> {
 
     List<Map<String,Object>> getOrderDataById(@Param(value = "orderId")Integer orderId);
 
-    List<Map<String,String>> getGroupBy(@Param(value = "orderId")Integer orderId);
+    List<Map<String,Object>> getGroupBy(@Param(value = "orderId")Integer orderId);
 }

@@ -35,7 +35,6 @@ public class VipServiceTest {
         vipInfo.setBirthday("2011-01-01");
         vipInfo.setDeptId(101);
         vipInfo.setPhone("18758222222");
-        vipInfo.setDeptName("女装");
         vipInfo.setName("test");
         vipInfo.setBirthDiscount(70);
         vipInfo.setVipDiscount(90);

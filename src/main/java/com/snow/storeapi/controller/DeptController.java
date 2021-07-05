@@ -26,7 +26,7 @@ public class DeptController {
     @Autowired
     private IDeptService deptService;
 
-    @ApiOperation("部门列表查询")
+    @ApiOperation("全部部门查询")
     @GetMapping("/find-all")
     public List list(
             @RequestParam(value = "name", required = false)String deptName

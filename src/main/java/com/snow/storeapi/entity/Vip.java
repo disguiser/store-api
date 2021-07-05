@@ -59,8 +59,6 @@ public class Vip implements Serializable {
 
     private Integer deptId;
 
-    private String deptName;
-
     private LocalDateTime createTime;
 
     private LocalDateTime modifyTime;
