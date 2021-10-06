@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface IOrderService extends IService<Order> {
-    List<Map<String,Object>> findByPage(Integer page,Integer limit,Map<String,Object> map);
+    List<Map<String,Object>> findByPage(Map<String,Object> listQuery);
 
     List<Map<String,Object>> getDetailByOrderId(Integer orderId);
 

@@ -24,25 +24,33 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,Order> implements 
     private OrderMapper orderMapper;
 
     @Override
-    public List<Map<String, Object>> findByPage(Integer page,Integer limit,Map<String,Object> map) {
+    public List<Map<String, Object>> findByPage(Map<String,Object> query) {
+        int page = (int) query.get("page");
+        int limit = (int) query.get("limit");
         int start = (page - 1) * limit;
         int end = limit;
         String address = null;
         LocalDateTime startDate = null;
         LocalDateTime endDate = null;
-        if (map != null || map.size() > 0){
-            if (map.containsKey("address") && map.get("address") != null) {
-                address = map.get("address").toString();
-            }
-            DateTimeFormatter dtf =  DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            if (map.containsKey("startDate") && map.get("startDate") != null) {
-                startDate =LocalDateTime.ofEpochSecond(Long.valueOf(map.get("startDate").toString())/1000,0, ZoneOffset.ofHours(8));
-            }
-            if (map.containsKey("endDate") && map.get("endDate") != null) {
-                endDate =LocalDateTime.ofEpochSecond(Long.valueOf(map.get("endDate").toString())/1000,0, ZoneOffset.ofHours(8));
-            }
+        String customerName = null;
+        var category = 1;
+        if (query.containsKey("category")) {
+            category = (int) query.get("category");
         }
-        return orderMapper.findByPage(start,end,address,startDate,endDate);
+        if (query.containsKey("address")) {
+            address = query.get("address").toString();
+        }
+        if (query.containsKey("customerName")) {
+            customerName = query.get("customerName").toString();
+        }
+        DateTimeFormatter dtf =  DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        if (query.containsKey("startDate")) {
+            startDate =LocalDateTime.ofEpochSecond(Long.valueOf(query.get("startDate").toString())/1000,0, ZoneOffset.ofHours(8));
+        }
+        if (query.containsKey("endDate")) {
+            endDate =LocalDateTime.ofEpochSecond(Long.valueOf(query.get("endDate").toString())/1000,0, ZoneOffset.ofHours(8));
+        }
+        return orderMapper.findByPage(start,end,address,startDate,endDate, category, customerName);
     }
 
     @Override

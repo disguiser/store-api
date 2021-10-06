@@ -30,7 +30,7 @@ public class SizeController {
         if (!StrUtil.isEmpty(itemName)) {
             queryWrapper.like("item_name", itemName);
         }
-        List<Size> sizes = sizeService.list(queryWrapper);
+        List<Size> sizes =  sizeService.list(queryWrapper);
         return sizes;
     }
     

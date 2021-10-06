@@ -16,7 +16,15 @@ import java.util.Map;
 @Component(value = "orderMapper")
 public interface OrderMapper extends BaseMapper<Order> {
 
-    List<Map<String,Object>> findByPage(@Param("start")Integer start, @Param("end")Integer end, @Param("address")String address, @Param("startDate") LocalDateTime startDate, @Param("endDate")LocalDateTime endDate);
+    List<Map<String,Object>> findByPage(
+            @Param("start")Integer start,
+            @Param("end")Integer end,
+            @Param("address")String address,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate")LocalDateTime endDate,
+            @Param("category")Integer category,
+            @Param("customerName")String customerName
+    );
 
     List<Map<String,Object>> getDetailByOrderId(@Param("orderId")Integer orderId);
 

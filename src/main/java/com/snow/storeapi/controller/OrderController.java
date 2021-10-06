@@ -1,11 +1,11 @@
 package com.snow.storeapi.controller;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.snow.storeapi.entity.*;
-import com.snow.storeapi.service.*;
+import com.snow.storeapi.service.IOrderGoodsService;
+import com.snow.storeapi.service.IOrderService;
+import com.snow.storeapi.service.IStockService;
 import com.snow.storeapi.util.JwtUtils;
 import com.snow.storeapi.util.ResponseUtil;
 import io.swagger.annotations.ApiOperation;
@@ -20,8 +20,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 商品
@@ -44,11 +46,26 @@ public class OrderController {
     @ApiOperation("列表查询")
     @PostMapping("/findByPage")
     public Map list(
-            @RequestParam(value = "page", defaultValue = "1")Integer pageNum,
+            @RequestParam(value = "page", defaultValue = "1")Integer page,
             @RequestParam(value = "limit", defaultValue = "10")Integer limit,
-            @RequestBody Map map
+            @RequestParam(value = "category", required = true)Integer category,
+            @RequestParam(value = "address", required = false)String address,
+            @RequestParam(value = "customerName", required = false)String customerName,
+            @RequestBody(required = false) Map map
     ) {
-        return ResponseUtil.listRes(orderService.findByPage(pageNum,limit,map));
+        if (map == null) {
+            map = new HashMap<String, Object>();
+        }
+        map.put("page", page);
+        map.put("limit", limit);
+        map.put("category", category);
+        if (!StrUtil.isEmpty(address)) {
+            map.put("address", address);
+        }
+        if (!StrUtil.isEmpty(customerName)) {
+            map.put("customerName", customerName);
+        }
+        return ResponseUtil.listRes(orderService.findByPage(map));
     }
 
     @ApiOperation("根据订单id查询详情")

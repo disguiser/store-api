@@ -17,17 +17,21 @@
         c.address,
         c.mobile,
         c.open_id AS openId,
-        o.order_time AS orderTime,
-        u.user_name AS inputUser
+        o.order_time AS orderTime
         FROM
         `order` o
-        LEFT JOIN customer c ON o.customer_id = c.id
-        LEFT JOIN `user` u ON o.input_user = u.id
+        LEFT JOIN customer c ON o.buyer = c.id
         WHERE
         1 = 1
         <trim>
+            <if test="category != null">
+                AND o.category = #{category}
+            </if>
             <if test="address != null">
                 AND c.address LIKE CONCAT(CONCAT('%', #{address}), '%')
+            </if>
+            <if test="customerName != null">
+                AND c.name LIKE CONCAT(CONCAT('%', #{customerName}), '%')
             </if>
             <if test="startDate != null">
                 AND o.order_time <![CDATA[>= ]]> #{startDate}
@@ -76,7 +80,7 @@
 		LEFT JOIN stock s on s.id = og.stock_id
         LEFT JOIN goods g ON s.goods_id = g.id
         LEFT JOIN `user` u ON o.input_user = u.id
-        LEFT JOIN customer c on o.customer_id  = c.id
+        LEFT JOIN customer c on o.buyer  = c.id
         WHERE o.id = #{orderId}
   </select>
 
@@ -88,7 +92,7 @@
             LEFT JOIN stock s ON s.id = og.stock_id
             LEFT JOIN goods g ON s.goods_id = g.id
             LEFT JOIN `user` u ON o.input_user = u.id
-            LEFT JOIN customer c ON o.customer_id = c.id
+            LEFT JOIN customer c ON o.buyer = c.id
             WHERE o.id = #{orderId}
 	    GROUP BY g.sku,g.name,s.color
     </select>

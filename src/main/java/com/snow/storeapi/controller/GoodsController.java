@@ -158,7 +158,7 @@ public class GoodsController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("sku不能为空！");
         }
         QueryWrapper<Goods> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("sku",sku);
+        queryWrapper.eq("sku",sku.toUpperCase());
         return  ResponseEntity.ok(goodsService.getOne(queryWrapper));
     }
 

@@ -29,12 +29,18 @@ public class Order implements Serializable {
 
     private LocalDateTime OrderTime;
 
-    private int customerId;
+    private int buyer;
 
     private Integer inputUser;
 
     @TableField(exist = false)
     private List<Map<String, Object>> stockList;
+
+    private Integer deptId;
+
+    private String deptName;
+
+    private Integer category;
 
     private Integer deleted;
 
