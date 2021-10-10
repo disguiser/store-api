@@ -1,5 +1,6 @@
 package com.snow.storeapi.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.snow.storeapi.entity.PrintTemplate;
 import com.snow.storeapi.service.IPrintTemplateService;
 import io.swagger.annotations.ApiOperation;
@@ -18,7 +19,9 @@ public class PrintTemplateController {
     @ApiOperation("列表查询")
     @GetMapping("/find-all")
     public List<PrintTemplate> findAll() {
-        List<PrintTemplate> printTemplates = printTemplateService.list();
+        QueryWrapper<PrintTemplate> queryWrapper = new QueryWrapper<>();
+        queryWrapper.orderByDesc("modify_time");
+        List<PrintTemplate> printTemplates = printTemplateService.list(queryWrapper);
         return printTemplates;
     }
 

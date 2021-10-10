@@ -100,10 +100,7 @@ public class GoodsController {
         goods.setInputUser(user.getId());
         if (StrUtil.isEmpty(goods.getSku())) {
             var version = versionService.addOne("sku");
-            var sb = new StringBuilder();
-            sb.append("YQ");
-            sb.append(StrUtil.fillBefore(version.getV().toString(), '0', 4));
-            goods.setSku(sb.toString());
+            goods.setSku(StrUtil.fillBefore(version.getV().toString(), '0', 4).toString());
         }
         if(goods.getId() == null){
             goodsService.save(goods);

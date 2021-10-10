@@ -22,7 +22,7 @@
         `order` o
         LEFT JOIN customer c ON o.buyer = c.id
         WHERE
-        1 = 1
+        deleted = 0
         <trim>
             <if test="category != null">
                 AND o.category = #{category}
