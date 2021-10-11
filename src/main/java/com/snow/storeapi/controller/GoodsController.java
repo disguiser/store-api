@@ -67,7 +67,7 @@ public class GoodsController {
             queryWrapper.like("sku", sku);
         }
         if (StrUtil.isEmpty(sort)) {
-            queryWrapper.orderByDesc("create_time");
+            queryWrapper.orderByDesc("sku");
         } else {
             if (sort.startsWith("-")) {
                 queryWrapper.orderByDesc(TransformCamelUtil.underline(sort.substring(1)));
