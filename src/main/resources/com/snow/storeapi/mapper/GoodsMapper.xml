@@ -27,8 +27,8 @@
             <if test="name != null">
                 AND g.name LIKE CONCAT(CONCAT('%', #{name, jdbcType=VARCHAR}), '%')
             </if>
-            <if test="sku != null">
-                AND g.sku LIKE CONCAT(CONCAT('%', #{sku, jdbcType=VARCHAR}), '%')
+            <if test="preSku != null">
+                AND g.pre_sku LIKE CONCAT(CONCAT('%', #{preSku, jdbcType=VARCHAR}), '%')
             </if>
         </trim>
         ORDER BY

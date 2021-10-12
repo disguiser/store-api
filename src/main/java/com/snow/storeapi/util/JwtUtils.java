@@ -29,7 +29,7 @@ public class JwtUtils {
 //		byte[] secretKey = SystemConstant.JWT_SECERT.getBytes("UTF-8");
 		JwtBuilder builder = Jwts.builder()
 				.setSubject(subject)   // 主题
-				.setIssuer("瑞雪")     // 签发者
+				.setIssuer("周明帅")     // 签发者
 				.setIssuedAt(now)      // 签发时间
 				.signWith(key, SignatureAlgorithm.HS256); // 签名算法以及密匙
 		if (ttlMillis >= 0) {

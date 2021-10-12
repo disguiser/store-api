@@ -8,7 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 public interface GoodsMapper extends BaseMapper<Goods> {
-    List<Goods> findByDept(@Param("offset")Integer offset, @Param("limit")Integer limit, @Param("sort")String sort, @Param("deptId")String deptId, @Param("name")String name, @Param("sku")String sku);
+    List<Goods> findByDept(@Param("sort")String sort, @Param("deptId")String deptId, @Param("name")String name, @Param("preSku")String preSku);
 
     Integer count();
 }

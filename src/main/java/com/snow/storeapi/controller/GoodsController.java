@@ -51,29 +51,25 @@ public class GoodsController {
     @ApiOperation("列表查询")
     @GetMapping("/findByPage")
     public Map findByPage(
-            @RequestParam(value = "deptId", required = false)String deptId,
-            @RequestParam(value = "name", required = false)String name,
-            @RequestParam(value = "sku", required = false)String sku,
+            @RequestParam(value = "deptId", required = false) String deptId,
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "preSku", required = false) String preSku,
             @RequestParam(value = "sort", defaultValue = "-modifyTime") String sort,
-            @RequestParam(value = "page", defaultValue = "1")Integer pageNum,
-            @RequestParam(value = "limit", defaultValue = "10")Integer limit
+            @RequestParam(value = "page", defaultValue = "1") Integer pageNum,
+            @RequestParam(value = "limit", defaultValue = "10") Integer limit
     ) {
         IPage<Goods> page = new Page<>(pageNum, limit);
         QueryWrapper<Goods> queryWrapper = new QueryWrapper<>();
         if (!StrUtil.isEmpty(name)) {
             queryWrapper.like("name", name);
         }
-        if (!StrUtil.isEmpty(sku)) {
-            queryWrapper.like("sku", sku);
+        if (!StrUtil.isEmpty(preSku)) {
+            queryWrapper.like("pre_sku", preSku);
         }
-        if (StrUtil.isEmpty(sort)) {
-            queryWrapper.orderByDesc("sku");
+        if (sort.startsWith("-")) {
+            queryWrapper.orderByDesc(TransformCamelUtil.underline(sort.substring(1)));
         } else {
-            if (sort.startsWith("-")) {
-                queryWrapper.orderByDesc(TransformCamelUtil.underline(sort.substring(1)));
-            } else {
-                queryWrapper.orderByAsc(TransformCamelUtil.underline(sort));
-            }
+            queryWrapper.orderByAsc(TransformCamelUtil.underline(sort));
         }
         IPage<Goods> goodss = goodsService.page(page, queryWrapper);
         return ResponseUtil.pageRes(goodss);
@@ -84,12 +80,10 @@ public class GoodsController {
     public Map findByDept(
             @RequestParam(value = "deptId", required = false)String deptId,
             @RequestParam(value = "name", required = false)String name,
-            @RequestParam(value = "sku", required = false)String sku,
-            @RequestParam(value = "sort", required = false) String sort,
-            @RequestParam(value = "page", defaultValue = "1")Integer page,
-            @RequestParam(value = "limit", defaultValue = "10")Integer limit
+            @RequestParam(value = "preSku", required = false)String preSku,
+            @RequestParam(value = "sort", required = false) String sort
     ) {
-        MyPage goodss = goodsService.findByDept(page, limit, sort, deptId, name, sku);
+        MyPage goodss = goodsService.findByDept(sort, deptId, name, preSku);
         return ResponseUtil.pageRes(goodss);
     }
 
@@ -158,21 +152,4 @@ public class GoodsController {
         queryWrapper.eq("sku",sku.toUpperCase());
         return  ResponseEntity.ok(goodsService.getOne(queryWrapper));
     }
-
-    @GetMapping("/findStockBySku/{sku}")
-    public ResponseEntity findStockBySku(@PathVariable String sku){
-        if (sku == null || StrUtil.isEmpty(sku)){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("sku不能为空！");
-        }
-        QueryWrapper<Goods> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("sku",sku);
-        Goods goods = goodsService.getOne(queryWrapper);
-        if (goods == null){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("找不到商品！");
-        }
-        QueryWrapper<Stock> stockQueryWrapper = new QueryWrapper<>();
-        stockQueryWrapper.eq("goods_id",goods.getId());
-        return ResponseEntity.ok(stockService.list(stockQueryWrapper));
-    }
-
 }
