@@ -33,12 +33,16 @@
             <if test="customerName != null">
                 AND c.name LIKE CONCAT(CONCAT('%', #{customerName}), '%')
             </if>
-            <if test="startDate != null">
-                AND o.order_time <![CDATA[>= ]]> #{startDate}
-            </if>
-            <if test="endDate != null">
-                AND o.order_time <![CDATA[<= ]]> #{endDate}
-            </if>
+            <choose>
+                <when test="startDate != null and endDate != null">
+                    AND o.order_time <![CDATA[>= ]]> #{startDate}
+                    AND o.order_time <![CDATA[<= ]]> #{endDate}
+                </when>
+                <otherwise>
+                    AND o.order_time <![CDATA[>= ]]> DATE_FORMAT(NOW(),'%Y-%m-%d 00:00:00')
+                    AND o.order_time <![CDATA[<= ]]> DATE_FORMAT(NOW(),'%Y-%m-%d 23:59:59')
+                </otherwise>
+            </choose>
         </trim>
         ORDER BY
         o.order_time DESC

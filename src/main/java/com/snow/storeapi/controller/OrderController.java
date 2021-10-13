@@ -51,21 +51,21 @@ public class OrderController {
             @RequestParam(value = "category", required = true)Integer category,
             @RequestParam(value = "address", required = false)String address,
             @RequestParam(value = "customerName", required = false)String customerName,
-            @RequestBody(required = false) Map map
+            @RequestBody(required = false) Map timeMap
     ) {
-        if (map == null) {
-            map = new HashMap<String, Object>();
+        if (timeMap == null) {
+            timeMap = new HashMap<String, Object>();
         }
-        map.put("page", page);
-        map.put("limit", limit);
-        map.put("category", category);
+        timeMap.put("page", page);
+        timeMap.put("limit", limit);
+        timeMap.put("category", category);
         if (!StrUtil.isEmpty(address)) {
-            map.put("address", address);
+            timeMap.put("address", address);
         }
         if (!StrUtil.isEmpty(customerName)) {
-            map.put("customerName", customerName);
+            timeMap.put("customerName", customerName);
         }
-        return ResponseUtil.listRes(orderService.findByPage(map));
+        return ResponseUtil.listRes(orderService.findByPage(timeMap));
     }
 
     @ApiOperation("根据订单id查询详情")

@@ -48,7 +48,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,Order> implements 
             startDate =LocalDateTime.ofEpochSecond(Long.valueOf(query.get("startDate").toString())/1000,0, ZoneOffset.ofHours(8));
         }
         if (query.containsKey("endDate")) {
-            endDate =LocalDateTime.ofEpochSecond(Long.valueOf(query.get("endDate").toString())/1000,0, ZoneOffset.ofHours(8));
+            endDate =LocalDateTime.ofEpochSecond(Long.valueOf(query.get("endDate").toString())/1000 + 24 * 60 * 60,0, ZoneOffset.ofHours(8));
         }
         return orderMapper.findByPage(start,end,address,startDate,endDate, category, customerName);
     }
