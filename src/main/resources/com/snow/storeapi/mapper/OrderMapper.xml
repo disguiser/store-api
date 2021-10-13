@@ -51,7 +51,7 @@
 
     <select id="getDetailByOrderId" resultType="map">
         SELECT
-            g.sku,
+            g.pre_sku as preSku,
             g.`name`,
             s.color,
             s.size,
