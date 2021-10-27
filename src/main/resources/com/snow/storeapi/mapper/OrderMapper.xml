@@ -61,7 +61,7 @@
             order_goods og
             LEFT JOIN stock s ON og.stock_id = s.id
             LEFT JOIN goods g ON s.goods_id = g.id
-            where og.order_id = #{orderId}
+            where og.deleted = 0 and og.order_id = #{orderId}
     </select>
 
   <select id="getOrderDataById" resultMap="orderData">
@@ -85,7 +85,7 @@
         LEFT JOIN goods g ON s.goods_id = g.id
         LEFT JOIN `user` u ON o.input_user = u.id
         LEFT JOIN customer c on o.buyer  = c.id
-        WHERE o.id = #{orderId}
+        WHERE o.id = #{orderId} and o.deleted = 0
   </select>
 
     <select id="getGroupBy" resultType="map">
@@ -97,7 +97,7 @@
             LEFT JOIN goods g ON s.goods_id = g.id
             LEFT JOIN `user` u ON o.input_user = u.id
             LEFT JOIN customer c ON o.buyer = c.id
-            WHERE o.id = #{orderId}
+            WHERE o.id = #{orderId} and o.deleted = 0
 	    GROUP BY g.sku,g.name,s.color
     </select>
 </mapper>
