@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.snow.storeapi.entity.Customer;
 import com.snow.storeapi.service.ICustomerService;
+import com.snow.storeapi.service.IOrderService;
 import com.snow.storeapi.util.ResponseUtil;
 import com.snow.storeapi.util.TransformCamelUtil;
 import io.swagger.annotations.ApiOperation;
@@ -28,6 +29,9 @@ public class CustomerController {
 
     @Autowired
     private ICustomerService customerService;
+
+    @Autowired
+    private IOrderService orderService;
 
     @ApiOperation("客户列表查询")
     @GetMapping("/findByPage")
@@ -78,5 +82,11 @@ public class CustomerController {
     @DeleteMapping("/delete")
     public void delete(@RequestBody List<Integer> ids) {
         customerService.removeByIds(ids);
+    }
+
+    @ApiOperation("客户欠款")
+    @GetMapping("/debt/{id}")
+    public Double debet(@PathVariable Integer id) {
+        return orderService.debt(id);
     }
 }

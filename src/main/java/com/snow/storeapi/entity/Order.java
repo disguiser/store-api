@@ -1,9 +1,6 @@
 package com.snow.storeapi.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 import lombok.NonNull;
 import lombok.experimental.Accessors;
@@ -29,7 +26,7 @@ public class Order implements Serializable {
 
     private LocalDateTime OrderTime;
 
-    private int buyer;
+    private Integer buyer;
 
     private Integer inputUser;
 
@@ -42,6 +39,9 @@ public class Order implements Serializable {
 
     private Integer category;
 
+    private Integer paymentStatus;
+
+    @TableLogic
     private Integer deleted;
 
     public Order() {

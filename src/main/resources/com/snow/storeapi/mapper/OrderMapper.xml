@@ -13,11 +13,14 @@
         o.id,
         o.total,
         o.total_money AS totalMoney,
+        o.buyer,
         c.`name`,
         c.address,
+        c.address_detail as addressDetail,
         c.mobile,
         c.open_id AS openId,
-        o.order_time AS orderTime
+        o.order_time AS orderTime,
+        o.payment_status as paymentStatus
         FROM
         `order` o
         LEFT JOIN customer c ON o.buyer = c.id
@@ -76,6 +79,7 @@
         g.discount,
         c.`name` as customerName,
         c.address as customerAddress,
+        c.address_detail as addressDetail,
         c.mobile as customerMoblie,
         u.user_name AS inputUser
     FROM
@@ -99,5 +103,8 @@
             LEFT JOIN customer c ON o.buyer = c.id
             WHERE o.id = #{orderId} and o.deleted = 0
 	    GROUP BY g.sku,g.name,s.color
+    </select>
+    <select id="debt" resultType="Double">
+        select sum(total_money) as debt from `order` where deleted = 0 and buyer=#{buyer} and payment_status = 0
     </select>
 </mapper>

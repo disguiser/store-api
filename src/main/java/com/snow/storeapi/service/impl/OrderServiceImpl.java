@@ -99,4 +99,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,Order> implements 
         result.put("totalMoney",order.getTotalMoney());
         return result;
     }
+
+    @Override
+    public Double debt(Integer buyer) {
+        return orderMapper.debt(buyer);
+    }
 }
