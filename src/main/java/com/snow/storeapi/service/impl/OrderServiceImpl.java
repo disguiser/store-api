@@ -88,7 +88,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,Order> implements 
                 }
             });
             p.put("subtotal",subtotal);
-            //BigDecimal sumTotalMoney = new BigDecimal(String.valueOf(subtotal)).multiply(new BigDecimal(p.get("salePrice").toString()));
+            // BigDecimal sumTotalMoney = new BigDecimal(String.valueOf(subtotal)).multiply(new BigDecimal(p.get("salePrice").toString()));
             p.put("subtotalMoney",subtotalMoney);
             total.addAndGet(subtotal.intValue());
             totalMoney.addAndGet(subtotalMoney.doubleValue());

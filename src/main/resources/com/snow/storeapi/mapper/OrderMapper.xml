@@ -41,10 +41,10 @@
                     AND o.order_time <![CDATA[>= ]]> #{startDate}
                     AND o.order_time <![CDATA[<= ]]> #{endDate}
                 </when>
-                <otherwise>
+                <when test="customerName == null">
                     AND o.order_time <![CDATA[>= ]]> DATE_FORMAT(NOW(),'%Y-%m-%d 00:00:00')
                     AND o.order_time <![CDATA[<= ]]> DATE_FORMAT(NOW(),'%Y-%m-%d 23:59:59')
-                </otherwise>
+                </when>
             </choose>
         </trim>
         ORDER BY
