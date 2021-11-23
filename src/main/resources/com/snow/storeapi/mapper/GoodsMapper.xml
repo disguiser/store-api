@@ -22,7 +22,7 @@
         stock s
         LEFT JOIN goods g ON g.id = s.goods_id and s.dept_id = #{deptId, jdbcType=INTEGER}
         WHERE
-        g.deleted = 0
+        g.deleted = 0 and s.deleted = 0
         <trim>
             <if test="name != null">
                 AND g.name LIKE CONCAT(CONCAT('%', #{name, jdbcType=VARCHAR}), '%')
