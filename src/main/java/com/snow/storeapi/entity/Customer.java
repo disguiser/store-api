@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -30,6 +31,8 @@ public class Customer implements Serializable {
     private String addressDetail;
 
     private String openId;
+
+    private BigDecimal debt;
 
     private LocalDateTime createTime;
 }

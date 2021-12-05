@@ -1,21 +1,12 @@
 package com.snow.storeapi;
 
-import cn.hutool.core.util.RandomUtil;
-import cn.hutool.core.util.StrUtil;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.snow.storeapi.entity.DictItem;
-import com.xkzhangsan.time.calculator.DateTimeCalculatorUtil;
-
-import java.time.LocalDateTime;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
+import com.snow.storeapi.enums.EnumExample;
 
 public class test {
     public static void main(String[] args) {
-        System.out.println("as".matches("\\d+"));
+//        System.out.println("as".matches("\\d+"));
+        Integer a = 1;
+        int b = 1;
+        System.out.println(a == b);
     }
 }

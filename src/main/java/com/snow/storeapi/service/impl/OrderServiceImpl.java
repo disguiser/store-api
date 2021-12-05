@@ -24,7 +24,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,Order> implements 
     private OrderMapper orderMapper;
 
     @Override
-    public List<Map<String, Object>> findByPage(Map<String,Object> query) {
+    public List<Map<String, ?>> findByPage(Map<String,Object> query) {
         int page = (int) query.get("page");
         int limit = (int) query.get("limit");
         int start = (page - 1) * limit;

@@ -17,7 +17,7 @@ import java.util.Map;
 @Component(value = "orderMapper")
 public interface OrderMapper extends BaseMapper<Order> {
 
-    List<Map<String,Object>> findByPage(
+    List<Map<String, ?>> findByPage(
             @Param("start")Integer start,
             @Param("end")Integer end,
             @Param("address")String address,

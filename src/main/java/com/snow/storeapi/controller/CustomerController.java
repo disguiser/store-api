@@ -89,4 +89,9 @@ public class CustomerController {
     public Double debet(@PathVariable Integer id) {
         return orderService.debt(id);
     }
+    @ApiOperation("id查找客户")
+    @GetMapping("/findOne/{id}")
+    public Customer findOne(@PathVariable Integer id) {
+        return customerService.getById(id);
+    }
 }

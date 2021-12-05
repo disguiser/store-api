@@ -2,10 +2,11 @@ package com.snow.storeapi.controller;
 
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.snow.storeapi.entity.Order;
-import com.snow.storeapi.entity.OrderGoods;
-import com.snow.storeapi.entity.Stock;
-import com.snow.storeapi.entity.User;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.snow.storeapi.entity.*;
+import com.snow.storeapi.enums.EnumExample;
+import com.snow.storeapi.enums.PaymentStatus;
+import com.snow.storeapi.service.ICustomerService;
 import com.snow.storeapi.service.IOrderGoodsService;
 import com.snow.storeapi.service.IOrderService;
 import com.snow.storeapi.service.IStockService;
@@ -45,6 +46,9 @@ public class OrderController {
 
     @Autowired
     private IStockService stockService;
+
+    @Autowired
+    private ICustomerService customerService;
 
     @ApiOperation("列表查询")
     @PostMapping("/findByPage")
@@ -109,9 +113,20 @@ public class OrderController {
     @PatchMapping("/update/{id}")
     @Transactional(rollbackFor = Exception.class)
     public int update(@PathVariable Integer id, @Valid @RequestBody Order order) {
+        var customer = customerService.getById(order.getBuyer());
+        switch (order.getPaymentStatus()) {
+            case PaymentStatus.UNDONE:
+                customer.setDebt(customer.getDebt().add(order.getTotalMoney()));
+                break;
+            case PaymentStatus.DONE:
+                customer.setDebt(customer.getDebt().subtract(order.getTotalMoney()));
+                break;
+        }
+        customerService.updateById(customer);
         orderService.updateById(order);
         return order.getId();
     }
+
 
     @ApiOperation("批量删除")
     @DeleteMapping("/delete/{id}")
