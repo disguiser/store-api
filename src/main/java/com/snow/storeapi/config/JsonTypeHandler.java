@@ -1,6 +1,6 @@
 package com.snow.storeapi.config;
 
-import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.snow.storeapi.util.MyUtils;
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
@@ -13,7 +13,11 @@ import java.sql.SQLException;
 public class JsonTypeHandler extends BaseTypeHandler<Object> {
     @Override
     public void setNonNullParameter(PreparedStatement ps, int i, Object parameter, JdbcType jdbcType) throws SQLException {
-        ps.setString(i, JSON.toJSONString(parameter));
+        try {
+            ps.setString(i, MyUtils.objectMapper.writeValueAsString(parameter));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

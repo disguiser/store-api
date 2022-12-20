@@ -1,12 +1,12 @@
 package com.snow.storeapi.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import io.swagger.models.auth.In;
 import lombok.Data;
 import lombok.NonNull;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +22,7 @@ public class Order implements Serializable {
     @NonNull
     private Integer total;
 
-    private BigDecimal totalMoney;
+    private Integer totalMoney;
 
     private LocalDateTime OrderTime;
 

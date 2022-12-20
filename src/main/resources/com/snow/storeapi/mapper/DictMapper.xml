@@ -4,7 +4,7 @@
     <resultMap id="BaseResultMap" type="com.snow.storeapi.entity.Dict">
         <id column="id" jdbcType="INTEGER" property="id" />
         <result column="dict_name" jdbcType="VARCHAR" property="dictName" />
-        <result column="data" property="data" typeHandler="com.snow.storeapi.config.DictItemTypeHandler"/>
+        <result column="data" property="data" typeHandler="com.snow.storeapi.config.JsonTypeHandler"/>
     </resultMap>
     <sql id="Base_Column_List">
         id, dict_name, data, more_option, modify_time

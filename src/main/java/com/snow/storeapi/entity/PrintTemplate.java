@@ -1,13 +1,15 @@
 package com.snow.storeapi.entity;
 
-import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.extension.handlers.FastjsonTypeHandler;
+import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import lombok.Data;
 import lombok.experimental.Accessors;
+
+import java.util.List;
+import java.util.Map;
 
 @Data
 @Accessors(chain = true)
@@ -22,6 +24,6 @@ public class PrintTemplate {
 
     private Integer height;
 
-    @TableField(typeHandler = FastjsonTypeHandler.class)
-    private JSONArray data;
+    @TableField(typeHandler = JacksonTypeHandler.class)
+    private List<Map<String, ?>> data;
 }

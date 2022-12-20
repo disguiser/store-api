@@ -1,11 +1,8 @@
 package com.snow.storeapi.controller;
 
 import cn.hutool.core.util.StrUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.snow.storeapi.entity.*;
-import com.snow.storeapi.enums.EnumExample;
-import com.snow.storeapi.enums.PaymentStatus;
+import com.snow.storeapi.entity.Order;
+import com.snow.storeapi.entity.User;
 import com.snow.storeapi.service.ICustomerService;
 import com.snow.storeapi.service.IOrderGoodsService;
 import com.snow.storeapi.service.IOrderService;
@@ -23,10 +20,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.math.BigDecimal;
-import java.util.ArrayList;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -36,19 +32,13 @@ import java.util.Map;
 @RequestMapping("/order")
 public class OrderController {
 
-    private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
-
     @Autowired
     private IOrderService orderService;
 
     @Autowired
-    private IOrderGoodsService orderGoodsService;
-
-    @Autowired
-    private IStockService stockService;
-
-    @Autowired
     private ICustomerService customerService;
+
+    private Object HashMap;
 
     @ApiOperation("列表查询")
     @PostMapping("/findByPage")
@@ -77,7 +67,7 @@ public class OrderController {
 
     @ApiOperation("根据订单id查询详情")
     @GetMapping("/getDetailByOrderId/{orderId}")
-    public Map getDetailByOrderId(@PathVariable Integer orderId) {
+    public Map mgetDetailByOrderId(@PathVariable Integer orderId) {
         return ResponseUtil.listRes(orderService.getDetailByOrderId(orderId));
     }
 
@@ -87,81 +77,56 @@ public class OrderController {
     public int create(@Valid @RequestBody Order order, HttpServletRequest request) {
         User user = JwtUtils.getSub(request);
         order.setInputUser(user.getId());
-        orderService.save(order);
-        var orderGoodsList = new ArrayList<OrderGoods>();
-        var stockList = new ArrayList<Stock>();
-        for (Map<String, Object> map : order.getStockList()) {
-            OrderGoods orderGoods = new OrderGoods();
-            orderGoods.setStockId((Integer) map.get("stockId"));
-            orderGoods.setOrderId(order.getId());
-            orderGoods.setAmount((Integer) map.get("amount"));
-            orderGoods.setSalePrice(new BigDecimal(String.valueOf(map.get("salePrice"))));
-            orderGoods.setSubtotalMoney(new BigDecimal(String.valueOf(map.get("subtotalMoney"))));
-            orderGoodsList.add(orderGoods);
-            // 更新商品现有库存
-            Stock stock = new Stock();
-            stock.setId((Integer) map.get("stockId"));
-            stock.setCurrentStock((Integer) map.get("currentStock") - (Integer) map.get("amount"));
-            stockList.add(stock);
+        var orderId = orderService.create(order);
+        if (order.getBuyer() != null) {
+            var customer = customerService.getById(order.getBuyer());
+            customer.setDebt(customer.getDebt() + order.getTotalMoney());
+            customerService.updateById(customer);
         }
-        stockService.updateBatchById(stockList);
-        orderGoodsService.saveBatch(orderGoodsList);
-        return order.getId();
+        return orderId;
     }
 
-    @ApiOperation("修改")
-    @PatchMapping("/update/{id}")
-    @Transactional(rollbackFor = Exception.class)
-    public int update(@PathVariable Integer id, @Valid @RequestBody Order order) {
-        var customer = customerService.getById(order.getBuyer());
-        switch (order.getPaymentStatus()) {
-            case PaymentStatus.UNDONE:
-                customer.setDebt(customer.getDebt().add(order.getTotalMoney()));
-                break;
-            case PaymentStatus.DONE:
-                customer.setDebt(customer.getDebt().subtract(order.getTotalMoney()));
-                break;
-        }
-        customerService.updateById(customer);
-        orderService.updateById(order);
-        return order.getId();
-    }
+//    @ApiOperation("修改")
+//    @PatchMapping("/update/{id}")
+//    @Transactional(rollbackFor = Exception.class)
+//    public int update(@PathVariable Integer id, @Valid @RequestBody Order order) {
+//        var customer = customerService.getById(order.getBuyer());
+//        switch (order.getPaymentStatus()) {
+//            case PaymentStatus.UNDONE:
+//                customer.setDebt(customer.getDebt().add(order.getTotalMoney()));
+//                break;
+//            case PaymentStatus.DONE:
+//                customer.setDebt(customer.getDebt().subtract(order.getTotalMoney()));
+//                break;
+//        }
+//        customerService.updateById(customer);
+//        orderService.updateById(order);
+//        return order.getId();
+//    }
 
 
     @ApiOperation("批量删除")
     @DeleteMapping("/delete/{id}")
     @Transactional(rollbackFor = Exception.class)
     public void delete(@PathVariable Integer id) {
-        //更新商品表的库存 & 删除明细表
-        QueryWrapper<OrderGoods> wrapper = new QueryWrapper<>();
-        wrapper.eq("order_id", id);
-        List<OrderGoods> list = orderGoodsService.list(wrapper);
-        if (list != null && list.size() > 0) {
-            var stockList = new ArrayList<Stock>();
-            list.forEach(orderGoods -> {
-                Stock current = stockService.getById(orderGoods.getStockId());
-                if (current != null) {
-                    Stock stock = new Stock();
-                    stock.setId(orderGoods.getStockId());
-                    stock.setCurrentStock(current.getCurrentStock() + orderGoods.getAmount());
-                    stockList.add(stock);
-                }
-                stockService.updateBatchById(stockList);
-            });
+        orderService.delete(id);
+        var order = orderService.getById(id);
+        if (order.getBuyer() != null) {
+            var customer = customerService.getById(order.getBuyer());
+            customer.setDebt(customer.getDebt() - order.getTotalMoney());
+            customerService.updateById(customer);
         }
-        orderGoodsService.remove(wrapper);
-        orderService.removeById(id);
     }
 
-    @ApiOperation("出货单数据")
-    @GetMapping("getOrderDataById/{id}")
-    public ResponseEntity getOrderDataById(@PathVariable Integer id) {
-        Order order = orderService.getById(id);
-        if (order == null) {
-            Map<String, Object> res = new HashMap<>();
-            res.put("msg", "未查到下单信息！");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
-        }
-        return ResponseEntity.ok(orderService.getOrderDataById(id));
+    @GetMapping("test")
+    @ResponseBody()
+    public Map test() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("LocalDateTime", LocalDateTime.now());
+        Date date = new Date();
+        System.out.println(date.toString());
+        map.put("date", date);
+//        return ResponseEntity.ok(JSON.toJSONString(map));
+        return map;
     }
 }

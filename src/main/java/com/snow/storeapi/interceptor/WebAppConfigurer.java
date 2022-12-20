@@ -5,7 +5,6 @@ import org.springframework.web.servlet.config.annotation.*;
 /**
  * 拦截配置--调用链
  */
-@EnableWebMvc
 @Configuration
 public class WebAppConfigurer implements WebMvcConfigurer {
 
@@ -18,6 +17,7 @@ public class WebAppConfigurer implements WebMvcConfigurer {
                 .excludePathPatterns("/user/sendPhoneCode/**")
                 .excludePathPatterns("/user/QRCode")
 				.excludePathPatterns("/user/login")
+                .excludePathPatterns("/order/test")
                 .excludePathPatterns("/*.html")
                 .excludePathPatterns("/swagger-resources/**")
 		        .addPathPatterns("/**");
@@ -40,7 +40,7 @@ public class WebAppConfigurer implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("*")
+                .allowedOriginPatterns("*")
                 .allowedMethods("POST", "GET", "PUT", "PATCH", "OPTIONS", "DELETE")
                 .maxAge(3600)
                 .allowCredentials(true);

@@ -5,15 +5,10 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.snow.storeapi.entity.Vip;
 import com.snow.storeapi.service.IVipService;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
-import java.math.BigDecimal;
-
-@RunWith(SpringRunner.class)
+//@RunWith(SpringRunner.class)
 @SpringBootTest
 public class VipServiceTest {
     @Autowired
@@ -31,7 +26,7 @@ public class VipServiceTest {
 //    @Test
     public void testInsert() {
         Vip vipInfo = new Vip();
-        vipInfo.setBalance(new BigDecimal(100));
+        vipInfo.setBalance(100);
         vipInfo.setBirthday("2011-01-01");
         vipInfo.setDeptId(101);
         vipInfo.setPhone("18758222222");

@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.extension.handlers.FastjsonTypeHandler;
+import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -20,6 +20,6 @@ public class SizeGroup implements Serializable {
 
     private String name;
 
-    @TableField(typeHandler = FastjsonTypeHandler.class)
+    @TableField(typeHandler = JacksonTypeHandler.class)
     private List<?> data;
 }

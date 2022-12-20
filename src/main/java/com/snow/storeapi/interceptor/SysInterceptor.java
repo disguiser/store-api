@@ -1,7 +1,6 @@
 package com.snow.storeapi.interceptor;
 
 import cn.hutool.core.util.StrUtil;
-import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.snow.storeapi.constant.SystemConstant;
 import com.snow.storeapi.entity.CheckResult;
@@ -25,7 +24,7 @@ public class SysInterceptor implements HandlerInterceptor {
 
     private static final Logger logger = LoggerFactory.getLogger(SysInterceptor.class);
 
-    public static ObjectMapper objectMapper;
+    public ObjectMapper objectMapper = new ObjectMapper();
 
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
@@ -74,7 +73,7 @@ public class SysInterceptor implements HandlerInterceptor {
             response.addHeader("Access-Control-Allow-Origin", "*");
             response.setCharacterEncoding("UTF-8");
             PrintWriter writer = response.getWriter();
-            writer.print(JSON.toJSONString(message));
+            writer.print(objectMapper.writeValueAsString(message));
             writer.flush();
         } catch (IOException e) {
             e.printStackTrace();

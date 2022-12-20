@@ -18,12 +18,19 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper,Goods> implements 
     private GoodsMapper goodsMapper;
     @Override
     @Transactional
-    public MyPage findByDept(String sort, String deptId, String name, String preSku) {
-//        var offset = (page - 1) * limit;
+    public MyPage findByDept(
+            String sort,
+            String deptId,
+            String name,
+            String preSku,
+            Integer page,
+            Integer limit
+    ) {
+        var offset = (page - 1) * limit;
         if (sort != null && sort.startsWith("-")) {
             sort = sort.substring(1) + "DESC";
         }
-        List<Goods> goodss = goodsMapper.findByDept(sort, deptId, name, preSku);
+        List<Goods> goodss = goodsMapper.findByDept(sort, deptId, name, preSku, offset, limit);
         var myPage = new MyPage();
         myPage.setItems(goodss);
         var total = goodsMapper.count();

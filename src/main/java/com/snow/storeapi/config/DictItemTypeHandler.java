@@ -1,8 +1,6 @@
 package com.snow.storeapi.config;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.snow.storeapi.entity.DictItem;
 import com.snow.storeapi.util.MyUtils;
 import org.apache.ibatis.type.BaseTypeHandler;
@@ -21,7 +19,11 @@ import java.util.List;
 public class DictItemTypeHandler extends BaseTypeHandler<Object> {
     @Override
     public void setNonNullParameter(PreparedStatement preparedStatement, int i, Object object, JdbcType jdbcType) throws SQLException {
-        preparedStatement.setString(i, JSON.toJSONString(object));
+        try {
+            preparedStatement.setString(i, MyUtils.objectMapper.writeValueAsString(object));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

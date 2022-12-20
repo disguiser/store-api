@@ -12,15 +12,12 @@ import com.snow.storeapi.service.IVipService;
 import com.snow.storeapi.util.JwtUtils;
 import com.snow.storeapi.util.ResponseUtil;
 import io.swagger.annotations.ApiOperation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
@@ -32,8 +29,6 @@ import java.util.Map;
 @RequestMapping("/chargeRecord")
 public class ChargeRecordController {
 
-    private static final Logger logger = LoggerFactory.getLogger(ChargeRecordController.class);
-    
     @Autowired
     private IChargeRecordService chargeRecordService;
 
@@ -81,8 +76,8 @@ public class ChargeRecordController {
         chargeRecord.setCreator(user.getId());
         chargeRecordService.save(chargeRecord);
         Vip vip = vipService.getById(chargeRecord.getVipId());
-        BigDecimal balance = vip.getBalance();
-        BigDecimal newBalance = balance.add(chargeRecord.getChargeAmount()).add(chargeRecord.getGiveAmount());
+        Integer balance = vip.getBalance();
+        Integer newBalance = balance + chargeRecord.getChargeAmount() + chargeRecord.getGiveAmount();
         vip.setBalance(newBalance);
         vipService.updateById(vip);
         return chargeRecord.getId();

@@ -6,7 +6,6 @@ import lombok.NonNull;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -28,13 +27,13 @@ public class Goods implements Serializable {
     private String imgUrl;
 
     @NonNull
-    private BigDecimal salePrice;
+    private Integer salePrice;
 
-    private BigDecimal costPrice;
+    private Integer costPrice;
 
     private String preSku;
 
-    private BigDecimal discount;
+    private Integer discount;
 
     private LocalDateTime modifyTime;
 

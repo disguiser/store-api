@@ -3,8 +3,6 @@ package com.snow.storeapi;
 import com.snow.storeapi.entity.Dict;
 import com.snow.storeapi.entity.DictItem;
 import com.snow.storeapi.mapper.DictMapper;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -16,7 +14,7 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 
-@RunWith(SpringRunner.class)
+//@RunWith(SpringRunner.class)
 @SpringBootTest
 public class DictMapperTest {
     @Autowired

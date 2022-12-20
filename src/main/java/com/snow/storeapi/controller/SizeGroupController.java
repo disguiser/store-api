@@ -24,7 +24,8 @@ public class SizeGroupController {
     @ApiOperation("列表查询")
     @GetMapping("/find-all")
     public List list() {
-        List<SizeGroup> sizeGroups = sizeGroupService.findAll();
+//        List<SizeGroup> sizeGroups = sizeGroupService.findAll();
+        List<SizeGroup> sizeGroups = sizeGroupService.list();
         return sizeGroups;
     }
 

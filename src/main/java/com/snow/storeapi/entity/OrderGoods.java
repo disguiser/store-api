@@ -3,14 +3,10 @@ package com.snow.storeapi.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import io.swagger.models.auth.In;
 import lombok.Data;
-import lombok.NonNull;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Data
 @Accessors(chain = true)
@@ -26,9 +22,9 @@ public class OrderGoods implements Serializable {
 
     private Integer amount;
 
-    private BigDecimal salePrice;
+    private Integer salePrice;
 
-    private BigDecimal subtotalMoney;
+    private Integer subtotalMoney;
 
     private Integer deleted;
 }

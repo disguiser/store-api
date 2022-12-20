@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.3.5.RELEASE</version>
+		<version>2.7.5</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
@@ -32,6 +32,11 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 
+<!--		<dependency>-->
+<!--			<groupId>com.fasterxml.jackson.datatype</groupId>-->
+<!--			<artifactId>jackson-datatype-jsr310</artifactId>-->
+<!--		</dependency>-->
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -52,8 +57,13 @@
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<scope>runtime</scope>
-			<version>5.1.49</version>
+			<version>8.0.30</version>
 		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>org.postgresql</groupId>-->
+<!--			<artifactId>postgresql</artifactId>-->
+<!--			<version>42.5.0</version>-->
+<!--		</dependency>-->
 
 		<dependency>
 			<groupId>cn.hutool</groupId>
@@ -76,7 +86,7 @@
 		<dependency>
 			<groupId>com.baomidou</groupId>
 			<artifactId>mybatis-plus-boot-starter</artifactId>
-			<version>3.4.2</version>
+			<version>3.5.2</version>
 		</dependency>
 		<dependency>
 			<groupId>com.baomidou</groupId>
@@ -132,17 +142,12 @@
 			<version>2.9.2</version>
 		</dependency>
 
-		<dependency>
-			<groupId>com.alibaba</groupId>
-			<artifactId>fastjson</artifactId>
-			<version>1.2.73</version>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>com.alibaba</groupId>-->
+<!--			<artifactId>fastjson</artifactId>-->
+<!--			<version>1.2.83</version>-->
+<!--		</dependency>-->
 
-<!--        <dependency>-->
-<!--            <groupId>org.bouncycastle</groupId>-->
-<!--            <artifactId>bcprov-jdk15on</artifactId>-->
-<!--            <version>1.64</version>-->
-<!--        </dependency>-->
 		<!--腾讯cos-->
 		<dependency>
 			<groupId>com.qcloud</groupId>
@@ -180,12 +185,10 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<source>11</source>
-					<target>11</target>
+					<source>16</source>
+					<target>16</target>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
-
-
 </project>

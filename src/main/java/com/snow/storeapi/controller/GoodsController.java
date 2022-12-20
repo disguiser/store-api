@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * 商品
@@ -81,9 +82,11 @@ public class GoodsController {
             @RequestParam(value = "deptId", required = false)String deptId,
             @RequestParam(value = "name", required = false)String name,
             @RequestParam(value = "preSku", required = false)String preSku,
-            @RequestParam(value = "sort", required = false) String sort
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "page")Integer page,
+            @RequestParam(value = "limit")Integer limit
     ) {
-        MyPage goodss = goodsService.findByDept(sort, deptId, name, preSku);
+        MyPage goodss = goodsService.findByDept(sort, deptId, name, preSku, page, limit);
         return ResponseUtil.pageRes(goodss);
     }
 
@@ -128,11 +131,18 @@ public class GoodsController {
     }
 
     @ApiOperation("删除")
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping({"/delete/{goodsId}", "/delete/{goodsId}/{deptId}"})
     @Transactional(rollbackFor = Exception.class)
-    public void delete(@PathVariable Integer id) {
-        stockService.remove(new QueryWrapper<Stock>().eq("goods_id", id));
-        goodsService.removeById(id);
+    public void delete(
+            @PathVariable Integer goodsId,
+            @PathVariable(required = false) Optional<Integer> deptId
+    ) {
+        var queryWrapper = new QueryWrapper<Stock>().eq("goods_id", goodsId);
+        if (deptId.isPresent()) {
+            queryWrapper.eq("dept_id", deptId);
+        }
+        stockService.remove(queryWrapper);
+        goodsService.removeById(goodsId);
     }
 
     @ApiOperation("更新")

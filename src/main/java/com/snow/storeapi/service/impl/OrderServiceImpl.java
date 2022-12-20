@@ -1,27 +1,58 @@
 package com.snow.storeapi.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.google.common.util.concurrent.AtomicDouble;
 import com.snow.storeapi.entity.Order;
+import com.snow.storeapi.entity.OrderGoods;
+import com.snow.storeapi.entity.Stock;
 import com.snow.storeapi.mapper.OrderMapper;
+import com.snow.storeapi.service.IOrderGoodsService;
 import com.snow.storeapi.service.IOrderService;
+import com.snow.storeapi.service.IStockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 public class OrderServiceImpl extends ServiceImpl<OrderMapper,Order> implements IOrderService {
     @Autowired
     private OrderMapper orderMapper;
+
+    @Autowired
+    private IStockService stockService;
+
+    @Autowired
+    private IOrderGoodsService orderGoodsService;
+
+    @Override
+    public Integer create(Order order) {
+        save(order);
+        var orderGoodsList = new ArrayList<OrderGoods>();
+        var stockList = new ArrayList<Stock>();
+        for (Map<String, Object> map : order.getStockList()) {
+            OrderGoods orderGoods = new OrderGoods();
+            orderGoods.setStockId((Integer) map.get("stockId"));
+            orderGoods.setOrderId(order.getId());
+            orderGoods.setAmount((Integer) map.get("amount"));
+            orderGoods.setSalePrice((Integer) map.get("salePrice"));
+            orderGoods.setSubtotalMoney((Integer) map.get("subtotalMoney"));
+            orderGoodsList.add(orderGoods);
+            // 更新商品现有库存
+            Stock stock = new Stock();
+            stock.setId((Integer) map.get("stockId"));
+            stock.setCurrentStock((Integer) map.get("currentStock") - (Integer) map.get("amount"));
+            stockList.add(stock);
+        }
+        stockService.updateBatchById(stockList);
+        orderGoodsService.saveBatch(orderGoodsList);
+        return order.getId();
+    }
 
     @Override
     public List<Map<String, ?>> findByPage(Map<String,Object> query) {
@@ -59,49 +90,25 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,Order> implements 
     }
 
     @Override
-    public Map getOrderDataById(Integer orderId) {
-        Order order = orderMapper.selectById(orderId);
-        List<Map<String, Object>> list = orderMapper.getOrderDataById(orderId);
-        List<Map<String,Object>> groupByList = orderMapper.getGroupBy(orderId);
-        List<Map<String,Object>> after = new ArrayList<>();
-        Map<String,Object> result = new HashMap<>();
-        AtomicInteger total = new AtomicInteger();
-        AtomicDouble totalMoney = new AtomicDouble();
-        //唯一值 sku+name+color
-        groupByList.forEach(groupBy->{
-            Map<String,Object> p = new HashMap();
-            AtomicInteger subtotal = new AtomicInteger();
-            AtomicDouble subtotalMoney = new AtomicDouble();
-            list.forEach(map->{
-                if(
-                        groupBy.get("sku").equals(map.get("sku")) &&
-                        groupBy.get("name").equals(map.get("name")) &&
-                        groupBy.get("color").equals(map.get("color"))
-                ){
-                    p.putAll(map);
-                    p.remove("size");
-                    p.remove("amount");
-                    p.put(map.get("size").toString(),map.get("amount"));
-                    BigDecimal amount = new BigDecimal(map.get("amount").toString());
-                    subtotal.addAndGet(amount.intValue());
-                    subtotalMoney.addAndGet(new BigDecimal(map.get("sumtotalMoney").toString()).doubleValue());
+    public void delete(Integer id) {
+        //更新商品表的库存 & 删除明细表
+        QueryWrapper<OrderGoods> wrapper = new QueryWrapper<>();
+        wrapper.eq("order_id", id);
+        List<OrderGoods> list = orderGoodsService.list(wrapper);
+        if (list != null && list.size() > 0) {
+            var stockList = new ArrayList<Stock>();
+            list.forEach(orderGoods -> {
+                Stock current = stockService.getById(orderGoods.getStockId());
+                if (current != null) {
+                    Stock stock = new Stock();
+                    stock.setId(orderGoods.getStockId());
+                    stock.setCurrentStock(current.getCurrentStock() + orderGoods.getAmount());
+                    stockList.add(stock);
                 }
+                stockService.updateBatchById(stockList);
             });
-            p.put("subtotal",subtotal);
-            // BigDecimal sumTotalMoney = new BigDecimal(String.valueOf(subtotal)).multiply(new BigDecimal(p.get("salePrice").toString()));
-            p.put("subtotalMoney",subtotalMoney);
-            total.addAndGet(subtotal.intValue());
-            totalMoney.addAndGet(subtotalMoney.doubleValue());
-            after.add(p);
-        });
-        result.put("list",after);
-        result.put("total",order.getTotal());
-        result.put("totalMoney",order.getTotalMoney());
-        return result;
-    }
-
-    @Override
-    public Double debt(Integer buyer) {
-        return orderMapper.debt(buyer);
+        }
+        orderGoodsService.remove(wrapper);
+        removeById(id);
     }
 }

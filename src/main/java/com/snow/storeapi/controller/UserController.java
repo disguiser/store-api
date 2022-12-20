@@ -2,11 +2,13 @@ package com.snow.storeapi.controller;
 
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
-import com.alibaba.fastjson.JSON;
+import cn.hutool.crypto.digest.DigestUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.snow.storeapi.constant.SystemConstant;
-import com.snow.storeapi.entity.R;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.snow.storeapi.DTO.user.UpdateUserDTO;
+import com.snow.storeapi.DTO.user.UserLoginDTO;
+import com.snow.storeapi.entity.ErrorMsg;
 import com.snow.storeapi.entity.Sse;
 import com.snow.storeapi.entity.User;
 import com.snow.storeapi.service.IUserService;
@@ -16,9 +18,9 @@ import com.snow.storeapi.util.SMSUtil;
 import com.xkzhangsan.time.calculator.DateTimeCalculatorUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,13 +40,18 @@ import java.util.concurrent.Executors;
 @Api(value = "UserController",  tags="用户管理")
 @RestController
 @RequestMapping(value = "/user")
+@Slf4j
 public class UserController {
-    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
-
     private Map<String, Sse> sseEmitterMap = new ConcurrentHashMap<>();
+
+    @Value("${SALT}")
+    private String SALT;
 
     @Autowired
     private IUserService userService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @ApiOperation(value = "登录")
     @PostMapping(value = "/login")
@@ -61,7 +68,8 @@ public class UserController {
         }
         User userInfo = userService.getOne(queryWrapper);
         if (userInfo != null){
-            if (!StrUtil.isEmpty(accountName) && !userInfo.getPassword().equals(req.getPassword())){
+            var hexPw = DigestUtil.md5Hex(req.getPassword() + SALT);
+            if (!StrUtil.isEmpty(accountName) && !userInfo.getPassword().equals(hexPw)){
                 Map<String, Object> res = new HashMap<>();
                 res.put("msg","密码不正确!");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
@@ -74,21 +82,29 @@ public class UserController {
                 res.put("msg","验证码不正确或已失效!");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
             }
-            var token = getToken(userInfo);
-            Map<String, Object> res = new HashMap<>();
-            res.put("userId", userInfo.getId());
-            res.put("userName", userInfo.getUserName());
-            res.put("accountName", userInfo.getAccountName());
-            res.put("deptId", userInfo.getDeptId());
-            res.put("avatar", userInfo.getAvatar());
-            res.put("roles", userInfo.getRoles());
-            res.put("token", token);
-            return ResponseEntity.ok(res);
+            return ResponseEntity.ok(buildLoginResponse(userInfo));
         } else {
-            Map<String, Object> res = new HashMap<>();
-            res.put("msg","不存在该用户!");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+//            Map<String, Object> res = new HashMap<>();
+//            res.put("msg","不存在该用户!");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg("不存在该用户!"));
         }
+    }
+
+    public UserLoginDTO buildLoginResponse(User userInfo) {
+        var token = JwtUtils.generateToken(
+                userInfo.getId(),
+                userInfo.getUserName(),
+                userInfo.getDeptId()
+        );
+        return UserLoginDTO
+                .builder()
+                .userName(userInfo.getUserName())
+                .accountName(userInfo.getAccountName())
+                .deptId(userInfo.getDeptId())
+                .avatar(userInfo.getAvatar())
+                .roles(userInfo.getRoles())
+                .token(token)
+                .build();
     }
 
     @ApiOperation("获取短信验证码")
@@ -133,13 +149,13 @@ public class UserController {
                 try {
                     var serverId = UUID.randomUUID().toString();
                     sseEmitterMap.get(clientId).setServerId(serverId);
-                    logger.debug("sse send: " + serverId);
+                    log.debug("sse send: " + serverId);
                     emitter.send(serverId);
 //                    emitter.send(SseEmitter.event().name("complete").data(String.valueOf(System.currentTimeMillis())));
                     Thread.sleep(60_000L);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    logger.debug("sse stop");
+                    log.debug("sse stop");
                     emitter.completeWithError(e);
                     break;
                 }
@@ -149,7 +165,7 @@ public class UserController {
     }
     @ApiOperation("已扫码")
     @PostMapping("/scanned")
-    public R scanned(@RequestBody Sse req) {
+    public ResponseEntity scanned(@RequestBody Sse req) {
         var result = sseEmitterMap.get(req.getClientId());
         System.out.println(result.getServerId());
         System.out.println(req.getServerId());
@@ -157,12 +173,12 @@ public class UserController {
             try {
                 result.getSseEmitter().send(SseEmitter.event().name("scanned").data("scanned"));
             } catch (IOException e) {
-                logger.debug("sacnned error");
+                log.debug("sacnned error");
                 result.getSseEmitter().completeWithError(e);
             }
-            return R.ok();
+            return new ResponseEntity(HttpStatus.OK);
         } else {
-            return R.error("二维码已过期");
+            return new ResponseEntity(new ErrorMsg("二维码已过期"), HttpStatus.UNAUTHORIZED);
         }
     }
     @ApiOperation("手机端确认登录")
@@ -172,18 +188,16 @@ public class UserController {
         var result = sseEmitterMap.get(req.getClientId());
         if (result.getServerId().equals(req.getServerId())) {
             User userInfo = userService.getById(user.getId());
-            Map<String, Object> res = new HashMap<>();
-            res.put("userId", userInfo.getId());
-            res.put("userName", userInfo.getUserName());
-            res.put("accountName", userInfo.getAccountName());
-            res.put("deptId", userInfo.getDeptId());
-            res.put("avatar", userInfo.getAvatar());
-            res.put("roles", userInfo.getRoles());
-            res.put("token", getToken(userInfo));
+            var res = buildLoginResponse(userInfo);
             try {
-                result.getSseEmitter().send(SseEmitter.event().name("confirm").data(JSON.toJSONString(res)));
+                result.getSseEmitter()
+                        .send(
+                                SseEmitter.event()
+                                        .name("confirm")
+                                        .data(objectMapper.writeValueAsString(res))
+                        );
             } catch (IOException e) {
-                logger.debug("phone confirm error");
+                log.debug("phone confirm error");
                 result.getSseEmitter().completeWithError(e);
             }
         }
@@ -219,9 +233,6 @@ public class UserController {
     @ApiOperation("添加用户")
     @PutMapping("/create")
     public int addUser(@RequestBody User user){
-//        User req = JwtUtils.getSub(request);
-//        user.setDeptId(req.getDeptId());
-//        user.setDeptName(req.getDeptName());
         userService.save(user);
         return user.getId();
     }
@@ -235,20 +246,20 @@ public class UserController {
 
     @ApiOperation("更新用户")
     @PatchMapping("/update/{id}")
-    public ResponseEntity update(@PathVariable Integer id,@RequestBody User user){
-        Map<String, Object> res = new HashMap<>();
-        if(!StrUtil.isEmpty(user.getNewPassword())){
+    public ResponseEntity update(@PathVariable Integer id,@RequestBody UpdateUserDTO updateUserDTO){
+        if(!StrUtil.isEmpty(updateUserDTO.getNewPassword())){
             //校验旧密码是否一致
             User u = userService.getById(id);
-            if(u.getPassword().equals(user.getOldPassword())) {
-                user.setPassword(user.getNewPassword());
+            if(u.getPassword().equals(updateUserDTO.getOldPassword())) {
+                updateUserDTO.setPassword(updateUserDTO.getNewPassword());
             }else {
-                res.put("msg","旧密码不正确!");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body(new ErrorMsg("旧密码不正确!"));
             }
         }
-        userService.updateById(user);
-        return ResponseEntity.ok(res);
+        userService.updateById(UpdateUserDTO.toUser(updateUserDTO));
+        return ResponseEntity.ok("");
     }
 
     @ApiOperation("更新用户头像")
@@ -274,11 +285,6 @@ public class UserController {
         return true;
     }
 
-    public String getToken(User userInfo) {
-        Map<String, Object> sub = new HashMap<>();
-        sub.put("id", userInfo.getId().toString());
-        sub.put("userName", userInfo.getUserName());
-        sub.put("deptId", userInfo.getDeptId());
-        return JwtUtils.createJWT(JSON.toJSONString(sub), SystemConstant.JWT_TTL);
-    }
+    @GetMapping("/check-auth")
+    public void checkAuth() {}
 }

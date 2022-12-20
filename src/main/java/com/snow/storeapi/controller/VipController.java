@@ -101,7 +101,7 @@ public class VipController {
     }
 
     @ApiOperation("修改会员")
-    @PatchMapping("/update")
+    @PatchMapping("/update/{id}")
     public void update(@Valid @RequestBody Vip vip) {
         vip.setModifyTime(LocalDateTime.now());
         vipService.updateById(vip);

@@ -1,6 +1,8 @@
 package com.snow.storeapi.util;
 
 import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.snow.storeapi.constant.SystemConstant;
 import com.snow.storeapi.entity.CheckResult;
 import com.snow.storeapi.entity.User;
@@ -10,11 +12,14 @@ import io.jsonwebtoken.security.Keys;
 import javax.servlet.http.HttpServletRequest;
 import java.security.Key;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * jwt加密和解密的工具类
  */
 public class JwtUtils {
+	static ObjectMapper objectMapper = new ObjectMapper();
 	/**
 	 * 签发JWT
 	 * @param subject 可以是JSON数据 尽可能少
@@ -94,11 +99,33 @@ public class JwtUtils {
 		String token = request.getHeader("Authorization");
 		try {
 			String subString = parseJWT(token.substring(7)).getSubject();
-			return JSON.parseObject(subString, User.class);
+			return objectMapper.readValue(subString, User.class);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	public static String generateToken(Integer id, String userName, Integer deptId) {
+		Map<String, Object> sub = new HashMap<>();
+		sub.put("id", id);
+		sub.put("userName", userName);
+		sub.put("deptId", deptId);
+		var objectMapper = new ObjectMapper();
+		try {
+			return JwtUtils.createJWT(objectMapper.writeValueAsString(sub), SystemConstant.JWT_TTL);
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public static String getTestToken() throws JsonProcessingException {
+		Map<String, Object> sub = new HashMap<>();
+		sub.put("id", "24");
+		sub.put("userName", "test");
+//		sub.put("deptId", "");
+		var objectMapper = new ObjectMapper();
+		return JwtUtils.createJWT(objectMapper.writeValueAsString(sub), SystemConstant.JWT_TTL);
 	}
 
 	public static void main(String[] args) throws InterruptedException {

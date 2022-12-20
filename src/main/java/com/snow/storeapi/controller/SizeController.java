@@ -34,7 +34,7 @@ public class SizeController {
         return sizes;
     }
     
-    @ApiOperation("添加部门")
+    @ApiOperation("添加尺码")
     @PostMapping("/create")
     public int create(@Valid @RequestBody Size size) {
         versionService.addOne("size");
@@ -42,7 +42,7 @@ public class SizeController {
         return size.getId();
     }
 
-    @ApiOperation("修改部门")
+    @ApiOperation("修改尺码")
     @PatchMapping("/update")
     @Transactional
     public void update(@Valid @RequestBody Size size) {
@@ -51,9 +51,10 @@ public class SizeController {
     }
 
 
-    @ApiOperation("删除部门")
+    @ApiOperation("删除尺码")
     @DeleteMapping("/delete/{id}")
     public void delete(@PathVariable Integer id) {
+        versionService.addOne("size");
         sizeService.removeById(id);
     }
 }

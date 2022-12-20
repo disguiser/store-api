@@ -4,8 +4,8 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.extension.handlers.FastjsonTypeHandler;
-import lombok.Data;
+import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
+import lombok.*;
 import lombok.experimental.Accessors;
 
 import javax.validation.constraints.NotNull;
@@ -14,6 +14,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Accessors(chain = true)
 @TableName(value = "user", autoResultMap = true)
 public class User implements Serializable {
@@ -36,8 +39,9 @@ public class User implements Serializable {
     @NotNull
     private Integer deptId;
 
+    @Singular
     @NotNull
-    @TableField(typeHandler = FastjsonTypeHandler.class)
+    @TableField(typeHandler = JacksonTypeHandler.class)
     private List<String> roles;
 
     @NotNull
@@ -47,11 +51,11 @@ public class User implements Serializable {
 
     private LocalDateTime createTime;
 
-    @TableField(exist = false)
-    private String newPassword;
-
-    @TableField(exist = false)
-    private String oldPassword;
+//    @TableField(exist = false)
+//    private String newPassword;
+//
+//    @TableField(exist = false)
+//    private String oldPassword;
 
     @NotNull
     private String phoneNumber;

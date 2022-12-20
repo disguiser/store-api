@@ -24,9 +24,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/customer")
 public class CustomerController {
-
-    private static final Logger logger = LoggerFactory.getLogger(CustomerController.class);
-
     @Autowired
     private ICustomerService customerService;
 
@@ -34,8 +31,8 @@ public class CustomerController {
     private IOrderService orderService;
 
     @ApiOperation("客户列表查询")
-    @GetMapping("/findByPage")
-    public Map list(
+    @GetMapping("/page")
+    public Map findByPage(
             @RequestParam(value = "searchText", required = false) String searchText,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "page", defaultValue = "1") Integer pageNum,
@@ -71,7 +68,7 @@ public class CustomerController {
     }
 
     @ApiOperation("修改客户")
-    @PatchMapping("/update/{id}")
+    @PatchMapping("/{id}")
     public int update(@PathVariable Integer id, @Valid @RequestBody Customer customer) {
         customer.setId(id);
         customerService.updateById(customer);
@@ -79,18 +76,13 @@ public class CustomerController {
     }
 
     @ApiOperation("批量删除")
-    @DeleteMapping("/delete")
+    @DeleteMapping("")
     public void delete(@RequestBody List<Integer> ids) {
         customerService.removeByIds(ids);
     }
 
-    @ApiOperation("客户欠款")
-    @GetMapping("/debt/{id}")
-    public Double debet(@PathVariable Integer id) {
-        return orderService.debt(id);
-    }
     @ApiOperation("id查找客户")
-    @GetMapping("/findOne/{id}")
+    @GetMapping("/{id}")
     public Customer findOne(@PathVariable Integer id) {
         return customerService.getById(id);
     }

@@ -8,7 +8,6 @@ import lombok.NonNull;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -23,7 +22,7 @@ public class ConsumeRecord implements Serializable {
     private Integer vipId;
 
     @NonNull
-    private BigDecimal consumeAmount;
+    private Integer consumeAmount;
 
     private Integer creator;
 

@@ -104,7 +104,4 @@
             WHERE o.id = #{orderId} and o.deleted = 0
 	    GROUP BY g.sku,g.name,s.color
     </select>
-    <select id="debt" resultType="Double">
-        select sum(total_money) as debt from `order` where deleted = 0 and buyer=#{buyer} and payment_status = 0
-    </select>
 </mapper>

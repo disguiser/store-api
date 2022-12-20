@@ -8,7 +8,6 @@ import lombok.NonNull;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -25,9 +24,9 @@ public class ChargeRecord implements Serializable {
     private Integer vipId;
 
     @NonNull
-    private BigDecimal chargeAmount;
+    private Integer chargeAmount;
 
-    private BigDecimal giveAmount;
+    private Integer giveAmount;
 
     private Integer creator;
 

@@ -2,8 +2,6 @@ package com.snow.storeapi.entity;
 
 import lombok.Data;
 
-import java.math.BigDecimal;
-
 @Data
 public class GoodsStock {
     // goodsId
@@ -17,9 +15,9 @@ public class GoodsStock {
 
     private String imgUrl;
 
-    private BigDecimal salePrice;
+    private Integer salePrice;
 
-    private BigDecimal costPrice;
+    private Integer costPrice;
 
     private Integer color;
 

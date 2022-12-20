@@ -19,29 +19,36 @@
         g.id, sku, name, size_group, img_url, sale_price, cost_price, pre_sku, g.modify_time,
         s.color, s.size, s.current_stock
         FROM
-        stock s
-        LEFT JOIN goods g ON g.id = s.goods_id and s.dept_id = #{deptId, jdbcType=INTEGER}
+             (
+                 select * from goods
+                 where deleted = 0
+                <trim>
+                    <if test="name != null">
+                        AND name LIKE CONCAT
+                        (CONCAT('%', #{name, jdbcType=VARCHAR}), '%')
+                    </if>
+                    <if test="preSku != null">
+                        AND pre_sku LIKE CONCAT(CONCAT('%', #{preSku, jdbcType=VARCHAR}), '%')
+                    </if>
+                </trim>
+                ORDER BY
+                <choose>
+                    <when test="sort != null">
+                        #{sort}
+                    </when>
+                    <otherwise>
+                        modify_time desc
+                    </otherwise>
+                </choose>
+
+                limit #{offset, jdbcType=INTEGER}, #{limit, jdbcType=INTEGER}
+            ) g
+        LEFT JOIN (select * from stock) s ON g.id = s.goods_id and s.dept_id = #{deptId, jdbcType=INTEGER}
         WHERE
-        g.deleted = 0 and s.deleted = 0
-        <trim>
-            <if test="name != null">
-                AND g.name LIKE CONCAT(CONCAT('%', #{name, jdbcType=VARCHAR}), '%')
-            </if>
-            <if test="preSku != null">
-                AND g.pre_sku LIKE CONCAT(CONCAT('%', #{preSku, jdbcType=VARCHAR}), '%')
-            </if>
-        </trim>
-        ORDER BY
-        <choose>
-            <when test="sort != null">
-                #{sort}
-            </when>
-            <otherwise>
-                g.modify_time desc
-            </otherwise>
-        </choose>
+        s.deleted = 0
     </select>
     <select id="count" resultType="int">
-        SELECT FOUND_ROWS() AS total;
+--         SELECT FOUND_ROWS() AS total;
+        select count(1) from goods where deleted = 0
     </select>
 </mapper>

@@ -54,12 +54,34 @@ public class StockController {
     }
 
     @ApiOperation("添加")
-    @PutMapping("/create")
+    @PostMapping("/single")
     public Integer create(@Valid @RequestBody Stock stock, HttpServletRequest request) {
         User user = JwtUtils.getSub(request);
         stock.setInputUser(user.getId());
         stockService.save(stock);
         return stock.getId();
+    }
+
+    @ApiOperation("批量添加")
+    @PostMapping("/multi")
+    public void multiCreate(@RequestBody Stock[] stocks, HttpServletRequest request) {
+        User user = JwtUtils.getSub(request);
+        for (var stock: stocks) {
+            var _stock = stockService.getOne(
+                    new QueryWrapper<Stock>()
+                            .eq("dept_id", stock.getDeptId())
+                            .eq("goods_id", stock.getGoodsId())
+                            .eq("color", stock.getColor())
+                            .eq("size", stock.getSize())
+            );
+            if (_stock != null) {
+                _stock.setCurrentStock(_stock.getCurrentStock() + stock.getCurrentStock());
+                stockService.updateById(_stock);
+            } else {
+                stock.setInputUser(user.getId());
+                stockService.save(stock);
+            }
+        }
     }
 
     @ApiOperation("批量删除")

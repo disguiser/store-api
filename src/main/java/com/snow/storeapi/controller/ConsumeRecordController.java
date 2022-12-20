@@ -11,15 +11,12 @@ import com.snow.storeapi.service.IVipService;
 import com.snow.storeapi.util.JwtUtils;
 import com.snow.storeapi.util.ResponseUtil;
 import io.swagger.annotations.ApiOperation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -30,8 +27,6 @@ import java.util.Map;
 @RequestMapping("/consumeRecord")
 public class ConsumeRecordController {
 
-    private static final Logger logger = LoggerFactory.getLogger(ConsumeRecordController.class);
-    
     @Autowired
     private IConsumeRecordService consumeRecordService;
 
@@ -77,8 +72,8 @@ public class ConsumeRecordController {
         consumeRecord.setCreator(user.getId());
         consumeRecordService.save(consumeRecord);
         Vip vip = vipService.getById(consumeRecord.getVipId());
-        BigDecimal balance = vip.getBalance();
-        BigDecimal newBalance = balance.subtract(consumeRecord.getConsumeAmount());
+        Integer balance = vip.getBalance();
+        Integer newBalance = balance - consumeRecord.getConsumeAmount();
         vip.setBalance(newBalance);
         vipService.updateById(vip);
         return consumeRecord.getId();
