@@ -21,7 +21,7 @@ public class ColorController {
     @Autowired
     private IVersionService versionService;
 
-    @ApiOperation("全部尺码查询")
+    @ApiOperation("全部颜色查询")
     @GetMapping("/all")
     public List findAll(
             @RequestParam(value = "itemName", required = false)String itemName

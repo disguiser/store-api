@@ -14,6 +14,6 @@ public class StoreApiApplicationTests {
 		var templateId = "851052";
 		var phoneNumber="18758327028";
 		var params = new String[]{"123456","10"};
-		SMSUtil.sendMessage(templateId, sign, phoneNumber, params);
+//		SMSUtil.sendMessage(templateId, sign, phoneNumber, params);
 	}
 }

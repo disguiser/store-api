@@ -3,6 +3,7 @@ package com.snow.storeapi.controller;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.snow.storeapi.entity.Customer;
 import com.snow.storeapi.service.ICustomerService;
 import com.snow.storeapi.service.IOrderService;
@@ -38,7 +39,8 @@ public class CustomerController {
             @RequestParam(value = "page", defaultValue = "1") Integer pageNum,
             @RequestParam(value = "limit", defaultValue = "10") Integer limit
     ) {
-        IPage<Customer> page = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(pageNum, limit);
+        System.out.println(limit);
+        IPage<Customer> page = new Page<>(pageNum, limit);
         QueryWrapper<Customer> queryWrapper = new QueryWrapper<>();
         if (!StrUtil.isEmpty(searchText)) {
             if (searchText.matches("\\d+")) {
@@ -61,7 +63,7 @@ public class CustomerController {
     }
 
     @ApiOperation("添加客户")
-    @PostMapping("/create")
+    @PostMapping("")
     public int create(@Valid @RequestBody Customer customer) {
         customerService.save(customer);
         return customer.getId();
@@ -69,16 +71,15 @@ public class CustomerController {
 
     @ApiOperation("修改客户")
     @PatchMapping("/{id}")
-    public int update(@PathVariable Integer id, @Valid @RequestBody Customer customer) {
+    public void update(@PathVariable Integer id, @Valid @RequestBody Customer customer) {
         customer.setId(id);
         customerService.updateById(customer);
-        return customer.getId();
     }
 
-    @ApiOperation("批量删除")
-    @DeleteMapping("")
-    public void delete(@RequestBody List<Integer> ids) {
-        customerService.removeByIds(ids);
+    @ApiOperation("删除")
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Integer id) {
+        customerService.removeById(id);
     }
 
     @ApiOperation("id查找客户")

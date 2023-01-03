@@ -120,7 +120,7 @@ public class UserController {
             var sign = "周明帅的网站";
             var templateId = "851052";
             var params = new String[]{phoneCode,"20"};
-            SMSUtil.sendMessage(templateId, sign, phoneNumber, params);
+//            SMSUtil.sendMessage(templateId, sign, phoneNumber, params);
             userService.updateById(
                     userInfo
                         .setPhoneCode(phoneCode)

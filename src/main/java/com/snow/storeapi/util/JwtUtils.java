@@ -1,6 +1,5 @@
 package com.snow.storeapi.util;
 
-import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.snow.storeapi.constant.SystemConstant;

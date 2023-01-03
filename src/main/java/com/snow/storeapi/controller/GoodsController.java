@@ -52,7 +52,6 @@ public class GoodsController {
     @ApiOperation("列表查询")
     @GetMapping("/findByPage")
     public Map findByPage(
-            @RequestParam(value = "deptId", required = false) String deptId,
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "preSku", required = false) String preSku,
             @RequestParam(value = "sort", defaultValue = "-modifyTime") String sort,
@@ -76,6 +75,7 @@ public class GoodsController {
         return ResponseUtil.pageRes(goodss);
     }
 
+    // 包含明细 sql手写
     @ApiOperation("列表查询")
     @GetMapping("/findByDept")
     public Map findByDept(
@@ -95,10 +95,10 @@ public class GoodsController {
     public Goods create(@Valid @RequestBody Goods goods, HttpServletRequest request) {
         User user = JwtUtils.getSub(request);
         goods.setInputUser(user.getId());
-        if (StrUtil.isEmpty(goods.getSku())) {
-            var version = versionService.addOne("sku");
-            goods.setSku(StrUtil.fillBefore(version.getV().toString(), '0', 4).toString());
-        }
+        // generate sku
+        var version = versionService.addOne("sku");
+        goods.setSku(StrUtil.fillBefore(version.getV().toString(), '0', 4).toString());
+
         if(goods.getId() == null){
             goodsService.save(goods);
         }

@@ -2,7 +2,6 @@ package com.snow.storeapi.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.snow.storeapi.entity.Bill;
-import com.snow.storeapi.entity.Customer;
 import com.snow.storeapi.service.IBillService;
 import com.snow.storeapi.service.ICustomerService;
 import io.swagger.annotations.ApiOperation;
@@ -33,7 +32,6 @@ public class BillController {
             queryWrapper.like("customer_id", customerId);
         }
         List<Bill> bills =  billService.list(queryWrapper);
-        System.out.println(bills);
         return bills;
     }
     

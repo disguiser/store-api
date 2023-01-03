@@ -114,7 +114,7 @@ public class BillControllerTest {
                 .andExpect(jsonPath("$[0].amount").value(TestConstant.BILL_CREATE_AMOUNT))
                 .andExpect(jsonPath("$[0].paymentChannel").value(PaymentChannel.WECHAT))
                 .andExpect(jsonPath("$[0].customerId").value(TestConstant.CUSTOMER_ID))
-                .andExpect(jsonPath("$[0].date").value())
+                .andExpect(jsonPath("$[0].date").value(LocalDate.now().toString()))
                 .andDo(print());
     }
 
