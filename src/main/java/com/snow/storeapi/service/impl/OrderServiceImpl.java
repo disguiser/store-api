@@ -1,5 +1,6 @@
 package com.snow.storeapi.service.impl;
 
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.snow.storeapi.entity.Order;
@@ -12,7 +13,9 @@ import com.snow.storeapi.service.IStockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -35,7 +38,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,Order> implements 
         save(order);
         var orderGoodsList = new ArrayList<OrderGoods>();
         var stockList = new ArrayList<Stock>();
-        for (Map<String, Object> map : order.getStockList()) {
+        for (Map<String, Object> map : order.getItemList()) {
             OrderGoods orderGoods = new OrderGoods();
             orderGoods.setStockId((Integer) map.get("stockId"));
             orderGoods.setOrderId(order.getId());
@@ -55,33 +58,29 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,Order> implements 
     }
 
     @Override
-    public List<Map<String, ?>> findByPage(Map<String,Object> query) {
-        int page = (int) query.get("page");
-        int limit = (int) query.get("limit");
+    public List<Map<String, ?>> findByPage(Integer page, Integer limit, Integer category, String address, String customerName, Long startDate, Long endDate) {
+        if (StrUtil.isEmpty(address)) {
+            address = null;
+        }
+        if (StrUtil.isEmpty(customerName)) {
+            customerName = null;
+        }
         int start = (page - 1) * limit;
         int end = limit;
-        String address = null;
-        LocalDateTime startDate = null;
-        LocalDateTime endDate = null;
-        String customerName = null;
-        var category = 1;
-        if (query.containsKey("category")) {
-            category = (int) query.get("category");
-        }
-        if (query.containsKey("address")) {
-            address = query.get("address").toString();
-        }
-        if (query.containsKey("customerName")) {
-            customerName = query.get("customerName").toString();
-        }
+        LocalDateTime _startDate = null;
+        LocalDateTime _endDate = null;
         DateTimeFormatter dtf =  DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        if (query.containsKey("startDate")) {
-            startDate =LocalDateTime.ofEpochSecond(Long.valueOf(query.get("startDate").toString())/1000,0, ZoneOffset.ofHours(8));
+        if (startDate != null) {
+            _startDate =LocalDateTime.ofEpochSecond(startDate/1000,0, ZoneOffset.ofHours(8));
+        } else {
+            _startDate = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
         }
-        if (query.containsKey("endDate")) {
-            endDate =LocalDateTime.ofEpochSecond(Long.valueOf(query.get("endDate").toString())/1000 + 24 * 60 * 60,0, ZoneOffset.ofHours(8));
+        if (endDate != null) {
+            _endDate =LocalDateTime.ofEpochSecond(endDate/1000 + 24 * 60 * 60,0, ZoneOffset.ofHours(8));
+        } else {
+            _endDate = LocalDateTime.of(LocalDate.now(), LocalTime.MAX);
         }
-        return orderMapper.findByPage(start,end,address,startDate,endDate, category, customerName);
+        return orderMapper.findByPage(start,end,address,_startDate,_endDate, category, customerName);
     }
 
     @Override
@@ -110,5 +109,15 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,Order> implements 
         }
         orderGoodsService.remove(wrapper);
         removeById(id);
+    }
+
+    @Override
+    public Integer sumMoney() {
+        return orderMapper.sumMoney();
+    }
+
+    @Override
+    public Integer sumAmount(Integer category) {
+        return orderMapper.sumAmount(category);
     }
 }

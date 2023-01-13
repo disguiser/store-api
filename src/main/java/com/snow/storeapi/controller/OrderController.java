@@ -1,6 +1,7 @@
 package com.snow.storeapi.controller;
 
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.snow.storeapi.entity.Order;
 import com.snow.storeapi.entity.User;
 import com.snow.storeapi.service.ICustomerService;
@@ -10,6 +11,7 @@ import com.snow.storeapi.service.IStockService;
 import com.snow.storeapi.util.JwtUtils;
 import com.snow.storeapi.util.ResponseUtil;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.models.auth.In;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
@@ -41,28 +44,17 @@ public class OrderController {
     private Object HashMap;
 
     @ApiOperation("列表查询")
-    @PostMapping("/findByPage")
+    @GetMapping("/findByPage")
     public Map list(
             @RequestParam(value = "page", defaultValue = "1") Integer page,
             @RequestParam(value = "limit", defaultValue = "10") Integer limit,
             @RequestParam(value = "category", required = true) Integer category,
             @RequestParam(value = "address", required = false) String address,
             @RequestParam(value = "customerName", required = false) String customerName,
-            @RequestBody(required = false) Map timeMap
+            @RequestParam(value = "startDate", required = false) Long startDate,
+            @RequestParam(value = "endDate", required = false) Long endDate
     ) {
-        if (timeMap == null) {
-            timeMap = new HashMap<String, Object>();
-        }
-        timeMap.put("page", page);
-        timeMap.put("limit", limit);
-        timeMap.put("category", category);
-        if (!StrUtil.isEmpty(address)) {
-            timeMap.put("address", address);
-        }
-        if (!StrUtil.isEmpty(customerName)) {
-            timeMap.put("customerName", customerName);
-        }
-        return ResponseUtil.listRes(orderService.findByPage(timeMap));
+        return ResponseUtil.listRes(orderService.findByPage(page, limit, category, address, customerName, startDate, endDate));
     }
 
     @ApiOperation("根据订单id查询详情")
@@ -72,7 +64,7 @@ public class OrderController {
     }
 
     @ApiOperation("添加")
-    @PostMapping("/create")
+    @PostMapping("")
     @Transactional(rollbackFor = Exception.class)
     public int create(@Valid @RequestBody Order order, HttpServletRequest request) {
         User user = JwtUtils.getSub(request);
@@ -106,7 +98,7 @@ public class OrderController {
 
 
     @ApiOperation("批量删除")
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     @Transactional(rollbackFor = Exception.class)
     public void delete(@PathVariable Integer id) {
         orderService.delete(id);
@@ -116,6 +108,19 @@ public class OrderController {
             customer.setDebt(customer.getDebt() - order.getTotalMoney());
             customerService.updateById(customer);
         }
+    }
+
+    @GetMapping("/daily/money")
+    public Integer dailyMoney(
+    ) {
+        return orderService.sumMoney();
+    }
+
+    @GetMapping("/daily/amount")
+    public Integer dailyAmount(
+            @RequestParam(value = "category") Integer category
+    ) {
+        return orderService.sumAmount(category);
     }
 
     @GetMapping("test")

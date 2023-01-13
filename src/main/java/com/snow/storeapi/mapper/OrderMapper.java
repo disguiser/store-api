@@ -34,4 +34,8 @@ public interface OrderMapper extends BaseMapper<Order> {
     List<Map<String,Object>> getGroupBy(@Param(value = "orderId")Integer orderId);
 
     Double debt(@Param(value = "buyer")Integer buyer);
+
+    Integer sumMoney();
+
+    Integer sumAmount(Integer category);
 }

@@ -36,23 +36,21 @@ public class DeptController {
     }
 
     @ApiOperation("添加部门")
-    @PostMapping("/create")
+    @PostMapping("")
     public int create(@Valid @RequestBody Dept dept) {
         deptService.save(dept);
         return dept.getId();
     }
 
     @ApiOperation("修改部门")
-    @PatchMapping("/update")
-    @Transactional
+    @PatchMapping("")
     public void update(@Valid @RequestBody Dept dept) {
-        dept.setModifyTime(LocalDateTime.now());
         deptService.updateById(dept);
     }
 
 
     @ApiOperation("删除部门")
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public void delete(@PathVariable Integer id) {
         deptService.removeById(id);
     }

@@ -9,9 +9,13 @@ import java.util.Map;
 public interface IOrderService extends IService<Order> {
     Integer create(Order order);
 
-    List<Map<String,?>> findByPage(Map<String,Object> listQuery);
+    List<Map<String,?>> findByPage(Integer page, Integer limit, Integer category, String address, String customerName, Long startDate, Long endDate);
 
     List<Map<String,Object>> getDetailByOrderId(Integer orderId);
 
     void delete(Integer id);
+
+    Integer sumMoney();
+
+    Integer sumAmount(Integer category);
 }

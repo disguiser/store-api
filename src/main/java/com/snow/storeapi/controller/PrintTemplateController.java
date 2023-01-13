@@ -17,7 +17,7 @@ public class PrintTemplateController {
     private IPrintTemplateService printTemplateService;
 
     @ApiOperation("列表查询")
-    @GetMapping("/find-all")
+    @GetMapping("/all")
     public List<PrintTemplate> findAll() {
         QueryWrapper<PrintTemplate> queryWrapper = new QueryWrapper<>();
         queryWrapper.orderByDesc("modify_time");
@@ -26,20 +26,20 @@ public class PrintTemplateController {
     }
 
     @ApiOperation("新增打印模板")
-    @PostMapping("/create")
+    @PostMapping("")
     public int create(@Valid @RequestBody PrintTemplate printTemplate) {
         printTemplateService.save(printTemplate);
         return printTemplate.getId();
     }
 
     @ApiOperation("修改打印模版")
-    @PatchMapping("/update")
+    @PatchMapping("")
     public void update(@Valid @RequestBody PrintTemplate printTemplate) {
         printTemplateService.updateById(printTemplate);
     }
 
     @ApiOperation("删除打印模板")
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public void delete(@PathVariable Integer id) {
         printTemplateService.removeById(id);
     }

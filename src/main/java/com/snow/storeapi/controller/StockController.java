@@ -85,15 +85,14 @@ public class StockController {
     }
 
     @ApiOperation("批量删除")
-    @DeleteMapping("/delete")
+    @DeleteMapping("")
     public void delete(@RequestBody List<Integer> ids) {
         stockService.removeByIds(ids);
     }
 
     @ApiOperation("更新")
-    @PatchMapping("/update/{id}")
+    @PatchMapping("/{id}")
     public Integer update(@PathVariable Integer id,@Valid @RequestBody Stock stock){
-        stock.setModifyTime(LocalDateTime.now());
         stockService.updateById(stock);
         return stock.getId();
     }

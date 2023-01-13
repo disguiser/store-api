@@ -30,8 +30,9 @@ public class Order implements Serializable {
 
     private Integer inputUser;
 
+    // goods may with stock
     @TableField(exist = false)
-    private List<Map<String, Object>> stockList;
+    private List<Map<String, Object>> itemList;
 
     private Integer deptId;
 

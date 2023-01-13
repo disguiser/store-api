@@ -91,7 +91,7 @@ public class GoodsController {
     }
 
     @ApiOperation("添加")
-    @PostMapping("/create")
+    @PostMapping("")
     public Goods create(@Valid @RequestBody Goods goods, HttpServletRequest request) {
         User user = JwtUtils.getSub(request);
         goods.setInputUser(user.getId());
@@ -131,7 +131,7 @@ public class GoodsController {
     }
 
     @ApiOperation("删除")
-    @DeleteMapping({"/delete/{goodsId}", "/delete/{goodsId}/{deptId}"})
+    @DeleteMapping({"/{goodsId}", "/{goodsId}/{deptId}"})
     @Transactional(rollbackFor = Exception.class)
     public void delete(
             @PathVariable Integer goodsId,
@@ -146,9 +146,8 @@ public class GoodsController {
     }
 
     @ApiOperation("更新")
-    @PatchMapping("/update/{id}")
+    @PatchMapping("/{id}")
     public int update(@PathVariable Integer id,@Valid @RequestBody Goods goods){
-        goods.setModifyTime(LocalDateTime.now());
         goodsService.updateById(goods);
         return goods.getId();
     }

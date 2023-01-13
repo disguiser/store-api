@@ -38,7 +38,7 @@ public class DictController {
     }
 
     @ApiOperation("添加字典")
-    @PostMapping("/create")
+    @PostMapping("")
     public int create(@Valid @RequestBody Dict dict) {
         versionService.addOne("dict");
         dictService.save(dict);
@@ -46,7 +46,7 @@ public class DictController {
     }
 
     @ApiOperation("修改字典")
-    @PatchMapping("/update")
+    @PatchMapping("")
     public void update(@Valid @RequestBody Dict dict) {
         versionService.addOne("dict");
         dictService.updateById(dict);
@@ -54,7 +54,7 @@ public class DictController {
 
 
     @ApiOperation("删除字典")
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public void delete(@PathVariable Integer id) {
         dictService.removeById(id);
     }

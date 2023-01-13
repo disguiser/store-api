@@ -41,10 +41,10 @@
                     AND o.order_time <![CDATA[>= ]]> #{startDate}
                     AND o.order_time <![CDATA[<= ]]> #{endDate}
                 </when>
-                <when test="customerName == null">
-                    AND o.order_time <![CDATA[>= ]]> DATE_FORMAT(NOW(),'%Y-%m-%d 00:00:00')
-                    AND o.order_time <![CDATA[<= ]]> DATE_FORMAT(NOW(),'%Y-%m-%d 23:59:59')
-                </when>
+<!--                <when test="customerName == null">-->
+<!--                    AND o.order_time <![CDATA[>= ]]> DATE_FORMAT(NOW(),'%Y-%m-%d 00:00:00')-->
+<!--                    AND o.order_time <![CDATA[<= ]]> DATE_FORMAT(NOW(),'%Y-%m-%d 23:59:59')-->
+<!--                </when>-->
             </choose>
         </trim>
         ORDER BY
@@ -67,7 +67,7 @@
             where og.deleted = 0 and og.order_id = #{orderId}
     </select>
 
-  <select id="getOrderDataById" resultMap="orderData">
+    <select id="getOrderDataById" resultMap="orderData">
     SELECT
         g.sku,
         g.`name`,
@@ -81,16 +81,16 @@
         c.address as customerAddress,
         c.address_detail as addressDetail,
         c.mobile as customerMoblie,
-        u.user_name AS inputUser
+        u.user_name
     FROM
         `order` o
         INNER JOIN order_goods og ON o.id = og.order_id
-		LEFT JOIN stock s on s.id = og.stock_id
+        LEFT JOIN stock s on s.id = og.stock_id
         LEFT JOIN goods g ON s.goods_id = g.id
         LEFT JOIN `user` u ON o.input_user = u.id
         LEFT JOIN customer c on o.buyer  = c.id
         WHERE o.id = #{orderId} and o.deleted = 0
-  </select>
+    </select>
 
     <select id="getGroupBy" resultType="map">
         SELECT g.sku,g.name,s.color
@@ -102,6 +102,19 @@
             LEFT JOIN `user` u ON o.input_user = u.id
             LEFT JOIN customer c ON o.buyer = c.id
             WHERE o.id = #{orderId} and o.deleted = 0
-	    GROUP BY g.sku,g.name,s.color
+        GROUP BY g.sku,g.name,s.color
+    </select>
+
+    <select id="sumMoney" resultType="java.lang.Integer">
+        select sum(total_money) from
+        `order` where deleted = 0
+        AND order_time <![CDATA[>= ]]> DATE_FORMAT(NOW(),'%Y-%m-%d 00:00:00')
+        AND order_time <![CDATA[<= ]]> DATE_FORMAT(NOW(),'%Y-%m-%d 23:59:59')
+    </select>
+    <select id="sumAmount" resultType="java.lang.Integer">
+        select sum(total) from
+        `order` where deleted = 0 and category = #{category}
+        AND order_time <![CDATA[>= ]]> DATE_FORMAT(NOW(),'%Y-%m-%d 00:00:00')
+        AND order_time <![CDATA[<= ]]> DATE_FORMAT(NOW(),'%Y-%m-%d 23:59:59')
     </select>
 </mapper>
