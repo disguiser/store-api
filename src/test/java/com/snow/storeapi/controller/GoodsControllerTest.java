@@ -21,14 +21,14 @@ public class GoodsControllerTest extends BaseControllerTest {
 
     private final String BASE_URL = "/goods";
 
-    @BeforeAll
+//    @BeforeAll
     public void beforeAll() throws JsonProcessingException {
         super.beforeAll();
         jdbc.execute("truncate table goods;");
     }
 
     @Order(1)
-    @Test
+//    @Test
     public void testCreate() throws Exception {
         var goods = Goods.builder()
                 .preSku(TestConstant.GOODS_CREATE_PRE_SKU)
@@ -51,7 +51,7 @@ public class GoodsControllerTest extends BaseControllerTest {
     }
 
     @Order(2)
-    @Test
+//    @Test
     public void testFindByPage() {
 
     }

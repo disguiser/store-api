@@ -112,12 +112,22 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,Order> implements 
     }
 
     @Override
-    public Integer sumMoney() {
-        return orderMapper.sumMoney();
+    public Integer sumMoney(Integer deptId) {
+        return orderMapper.sumMoney(deptId);
     }
 
     @Override
-    public Integer sumAmount(Integer category) {
-        return orderMapper.sumAmount(category);
+    public Integer sumAmount(Integer category, Integer deptId) {
+        return orderMapper.sumAmount(category, deptId);
+    }
+
+    @Override
+    public List<Map<String, Object>> chartMoney(Integer deptId, Integer category) {
+        return orderMapper.chartMoney(deptId, category);
+    }
+
+    @Override
+    public List<Map<String, Object>> chartAmount(Integer catyegory, Integer deptId) {
+        return orderMapper.chartAmount(catyegory, deptId);
     }
 }

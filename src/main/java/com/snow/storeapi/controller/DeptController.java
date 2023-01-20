@@ -27,10 +27,8 @@ public class DeptController {
     private IDeptService deptService;
 
     @ApiOperation("全部部门查询")
-    @GetMapping("/find-all")
-    public List list(
-            @RequestParam(value = "name", required = false)String deptName
-    ) {
+    @GetMapping("/all")
+    public List list() {
         List<Dept> depts = deptService.list(new QueryWrapper<Dept>().orderByDesc("modify_time"));
         return depts;
     }

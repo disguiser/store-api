@@ -29,6 +29,11 @@ public class StockController {
     @Autowired
     private IStockService stockService;
 
+    @GetMapping("/sum")
+    public Integer sumByDept(HttpServletRequest request) {
+        User user = JwtUtils.getSub(request);
+        return stockService.sumByDept(user.getDeptId());
+    }
 
     @ApiOperation("list查询")
     @GetMapping("/list")

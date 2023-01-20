@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.snow.storeapi.mapper.OrderGoodsMapper">
+    <select id="dailyList" resultType="hashmap">
+        select g.pre_sku preSku,s.color,s.size,og.sale_price salePrice,og.amount,og.subtotal_money subtotalMoney,o.order_time orderTime
+        from `order_goods` og, `order` o, `stock` s, `goods` g
+        where og.deleted = 0
+        AND o.order_time <![CDATA[>= ]]> DATE_FORMAT(NOW(),'%Y-%m-%d 00:00:00')
+        AND o.order_time <![CDATA[<= ]]> DATE_FORMAT(NOW(),'%Y-%m-%d 23:59:59')
+<!--        and o.order_time <![CDATA[>= ]]> '2023-01-16 00:00:00'-->
+<!--        and o.order_time <![CDATA[<= ]]> '2023-01-16 23:59:59'-->
+        and og.order_id = o.id and og.stock_id = s.id and s.goods_id = g.id
+        ORDER BY
+        <choose>
+            <when test="'salePrice'.equals(sort)">salePrice</when>
+            <when test="'preSku'.equals(sort)">preSku</when>
+            <when test="'orderTime'.equals(sort)">orderTime</when>
+            <otherwise>orderTime</otherwise>
+        </choose>
+        <if test="desc">
+            desc
+        </if>
+    </select>
+</mapper>

@@ -10,11 +10,10 @@
         <result column="birthday" property="birthday" />
         <result column="balance" property="balance" />
         <result column="dept_id" property="deptId" />
-        <result column="dept_name" property="deptName" />
     </resultMap>
 
     <sql id="Base_Column_List">
-        vip_id, vip_name, telephone, birthday, balance, dept_id, dept_name
+        vip_id, vip_name, telephone, birthday, balance, dept_id
     </sql>-->
 
 </mapper>

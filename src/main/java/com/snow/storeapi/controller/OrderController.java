@@ -1,31 +1,20 @@
 package com.snow.storeapi.controller;
 
-import cn.hutool.core.util.StrUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.snow.storeapi.entity.Order;
 import com.snow.storeapi.entity.User;
+import com.snow.storeapi.enums.Role;
 import com.snow.storeapi.service.ICustomerService;
-import com.snow.storeapi.service.IOrderGoodsService;
 import com.snow.storeapi.service.IOrderService;
-import com.snow.storeapi.service.IStockService;
 import com.snow.storeapi.util.JwtUtils;
 import com.snow.storeapi.util.ResponseUtil;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.models.auth.In;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -59,7 +48,7 @@ public class OrderController {
 
     @ApiOperation("根据订单id查询详情")
     @GetMapping("/getDetailByOrderId/{orderId}")
-    public Map mgetDetailByOrderId(@PathVariable Integer orderId) {
+    public Map getDetailByOrderId(@PathVariable Integer orderId) {
         return ResponseUtil.listRes(orderService.getDetailByOrderId(orderId));
     }
 
@@ -69,6 +58,7 @@ public class OrderController {
     public int create(@Valid @RequestBody Order order, HttpServletRequest request) {
         User user = JwtUtils.getSub(request);
         order.setInputUser(user.getId());
+        order.setDeptId(user.getDeptId());
         var orderId = orderService.create(order);
         if (order.getBuyer() != null) {
             var customer = customerService.getById(order.getBuyer());
@@ -101,37 +91,64 @@ public class OrderController {
     @DeleteMapping("/{id}")
     @Transactional(rollbackFor = Exception.class)
     public void delete(@PathVariable Integer id) {
-        orderService.delete(id);
         var order = orderService.getById(id);
         if (order.getBuyer() != null) {
             var customer = customerService.getById(order.getBuyer());
             customer.setDebt(customer.getDebt() - order.getTotalMoney());
             customerService.updateById(customer);
         }
+        orderService.delete(id);
     }
 
     @GetMapping("/daily/money")
-    public Integer dailyMoney(
-    ) {
-        return orderService.sumMoney();
+    public Integer dailyMoney(HttpServletRequest request) {
+        User user = JwtUtils.getSub(request);
+        if (null != user.getDeptId()) {
+            return orderService.sumMoney(user.getDeptId());
+        } else {
+            return null;
+        }
     }
 
     @GetMapping("/daily/amount")
     public Integer dailyAmount(
-            @RequestParam(value = "category") Integer category
+            @RequestParam(value = "category") Integer category,
+            HttpServletRequest request
     ) {
-        return orderService.sumAmount(category);
+        User user = JwtUtils.getSub(request);
+        if (null != user.getDeptId()) {
+            return orderService.sumAmount(category, user.getDeptId());
+        } else {
+            return null;
+        }
     }
 
-    @GetMapping("test")
-    @ResponseBody()
-    public Map test() {
-        Map<String, Object> map = new HashMap<>();
-        map.put("LocalDateTime", LocalDateTime.now());
-        Date date = new Date();
-        System.out.println(date.toString());
-        map.put("date", date);
-//        return ResponseEntity.ok(JSON.toJSONString(map));
-        return map;
+    @GetMapping("/chart/money")
+    public List<Map<String, Object>> chartMoney(
+            @RequestParam(value = "category") Integer category,
+            HttpServletRequest request
+    ) {
+        User user = JwtUtils.getSub(request);
+        if (user.getRoles().contains(Role.BOSS)) {
+
+        }
+        if (null != user.getDeptId()) {
+            return orderService.chartMoney(user.getDeptId(), category);
+        } else {
+            return null;
+        }
+    }
+
+    @GetMapping("/chart/amount")
+    public List<Map<String, Object>> chartAmount(
+            @RequestParam(value = "category") Integer category,
+            HttpServletRequest request
+    ) {
+        User user = JwtUtils.getSub(request);
+        if (null != user.getDeptId()) {
+            return orderService.chartAmount(category, user.getDeptId());
+        } else {
+            return null;
+        }
     }
 }

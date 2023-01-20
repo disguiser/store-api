@@ -75,7 +75,7 @@ CREATE TABLE `goods` (
   `sale_price` int NOT NULL COMMENT '销售单价',
   `cost_price` int DEFAULT NULL COMMENT '成本单价',
   `pre_sku` varchar(50) DEFAULT NULL COMMENT '上家货号',
-  `discount` decimal(3,2) DEFAULT NULL COMMENT '折扣',
+  `discount` int DEFAULT NULL COMMENT '折扣',
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `modify_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
   `input_user` int DEFAULT NULL,
@@ -94,7 +94,6 @@ CREATE TABLE `order` (
   `input_user` int DEFAULT NULL COMMENT '录入员，user主键',
   `deleted` tinyint DEFAULT '0',
   `dept_id` varchar(45) DEFAULT NULL COMMENT '门店id',
-  `dept_name` varchar(45) DEFAULT NULL COMMENT '门店名称',
   `category` tinyint DEFAULT NULL COMMENT '1:批发\n2:零售',
   `payment_status` tinyint DEFAULT '1' COMMENT '0:赊账\n1:结清',
   PRIMARY KEY (`id`)
@@ -142,7 +141,6 @@ CREATE TABLE `sale` (
   `sale_date` date NOT NULL COMMENT '销售日期',
   `sale_user_id` int DEFAULT NULL COMMENT '销售人员',
   `dept_id` int DEFAULT NULL COMMENT '所属部门id',
-  `dept_name` varchar(45) DEFAULT NULL COMMENT '所属部门',
   `remake` varchar(100) DEFAULT NULL COMMENT '备注',
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   PRIMARY KEY (`id`)
@@ -208,7 +206,6 @@ CREATE TABLE `user` (
   `password` char(32) DEFAULT '534d3821b45399172b086cdd3795e864',
   `avatar` varchar(100) DEFAULT NULL,
   `dept_id` int DEFAULT NULL,
-  `dept_name` varchar(45) DEFAULT NULL,
   `roles` json DEFAULT NULL,
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
   `modify_time` datetime DEFAULT CURRENT_TIMESTAMP,

@@ -7,11 +7,10 @@
     <result column="account_name" jdbcType="VARCHAR" property="accountName" />
     <result column="password" jdbcType="VARCHAR" property="password" />
     <result column="dept_id" jdbcType="INTEGER" property="deptId" />
-    <result column="dept_name" jdbcType="INTEGER" property="deptName" />
     <result column="avatar" jdbcType="VARCHAR" property="avatar" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, user_name, account_name, password, dept_id, dept_name, avatar
+    id, user_name, account_name, password, dept_id, avatar
   </sql>
   <select id="selectByAccountName" parameterType="java.lang.String" resultMap="BaseResultMap">
     select 

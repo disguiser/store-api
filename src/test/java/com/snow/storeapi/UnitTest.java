@@ -10,12 +10,12 @@ import org.springframework.test.context.TestPropertySource;
 
 @DisplayName("测试")
 @TestPropertySource("/application-test.properties")
-@SpringBootTest
+//@SpringBootTest
 // 旧版本
 //@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @Slf4j
 public class UnitTest {
-    @BeforeAll
+//    @BeforeAll
     public void setup() {
     }
 

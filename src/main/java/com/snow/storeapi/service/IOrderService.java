@@ -15,7 +15,11 @@ public interface IOrderService extends IService<Order> {
 
     void delete(Integer id);
 
-    Integer sumMoney();
+    Integer sumMoney(Integer deptId);
 
-    Integer sumAmount(Integer category);
+    Integer sumAmount(Integer category, Integer deptId);
+
+    List<Map<String, Object>> chartMoney(Integer deptId, Integer category);
+
+    List<Map<String, Object>> chartAmount(Integer catyegory, Integer deptId);
 }

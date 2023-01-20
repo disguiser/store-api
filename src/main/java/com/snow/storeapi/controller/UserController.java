@@ -14,7 +14,6 @@ import com.snow.storeapi.entity.User;
 import com.snow.storeapi.service.IUserService;
 import com.snow.storeapi.util.JwtUtils;
 import com.snow.storeapi.util.ResponseUtil;
-import com.snow.storeapi.util.SMSUtil;
 import com.xkzhangsan.time.calculator.DateTimeCalculatorUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -94,7 +93,8 @@ public class UserController {
         var token = JwtUtils.generateToken(
                 userInfo.getId(),
                 userInfo.getUserName(),
-                userInfo.getDeptId()
+                userInfo.getDeptId(),
+                userInfo.getRoles()
         );
         return UserLoginDTO
                 .builder()

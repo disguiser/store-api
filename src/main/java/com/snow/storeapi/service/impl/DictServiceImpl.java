@@ -35,8 +35,8 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements ID
         if (!StrUtil.isEmpty(sort)) {
             if (sort.startsWith("-")) {
                 desc = true;
+                sort = sort.substring(1);
             }
-            sort = sort.substring(1);
         }
         return dictMapper.selectAll(dictName, sort, desc);
     }

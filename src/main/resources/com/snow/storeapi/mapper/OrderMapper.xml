@@ -108,13 +108,36 @@
     <select id="sumMoney" resultType="java.lang.Integer">
         select sum(total_money) from
         `order` where deleted = 0
+        and dept_id = #{deptId}
         AND order_time <![CDATA[>= ]]> DATE_FORMAT(NOW(),'%Y-%m-%d 00:00:00')
         AND order_time <![CDATA[<= ]]> DATE_FORMAT(NOW(),'%Y-%m-%d 23:59:59')
     </select>
     <select id="sumAmount" resultType="java.lang.Integer">
         select sum(total) from
-        `order` where deleted = 0 and category = #{category}
+        `order` where deleted = 0
+        and dept_id = #{deptId}
+        and category = #{category}
         AND order_time <![CDATA[>= ]]> DATE_FORMAT(NOW(),'%Y-%m-%d 00:00:00')
         AND order_time <![CDATA[<= ]]> DATE_FORMAT(NOW(),'%Y-%m-%d 23:59:59')
+    </select>
+
+    <select id="chartMoney" resultType="hashmap">
+        select sum(total_money) total, date(order_time) orderTime from `order`
+        where deleted = 0
+        and dept_id = #{deptId}
+        and category = #{category}
+        and DATE_SUB(CURDATE(), INTERVAL 6 DAY) <![CDATA[<= ]]> date(order_time)
+        group by date(order_time)
+        order by date(order_time);
+    </select>
+
+    <select id="chartAmount" resultType="hashmap">
+        select sum(total) total, date(order_time) orderTime from `order`
+        where deleted = 0
+        and dept_id = #{deptId}
+        and category = #{category}
+        and DATE_SUB(CURDATE(), INTERVAL 6 DAY) <![CDATA[<= ]]> date(order_time)
+        group by date(order_time)
+        order by date(order_time);
     </select>
 </mapper>

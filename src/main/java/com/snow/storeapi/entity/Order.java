@@ -36,6 +36,7 @@ public class Order implements Serializable {
 
     private Integer deptId;
 
+    @TableField(exist = false)
     private String deptName;
 
     private Integer category;

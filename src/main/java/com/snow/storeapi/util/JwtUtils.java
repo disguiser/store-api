@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -105,11 +106,12 @@ public class JwtUtils {
 		}
 	}
 
-	public static String generateToken(Integer id, String userName, Integer deptId) {
+	public static String generateToken(Integer id, String userName, Integer deptId, List<String> roles) {
 		Map<String, Object> sub = new HashMap<>();
 		sub.put("id", id);
 		sub.put("userName", userName);
 		sub.put("deptId", deptId);
+		sub.put("roles", roles);
 		var objectMapper = new ObjectMapper();
 		try {
 			return JwtUtils.createJWT(objectMapper.writeValueAsString(sub), SystemConstant.JWT_TTL);
