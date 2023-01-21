@@ -30,7 +30,7 @@ jobs:
         with:
           command: |
             screen -S store-api
-            java -jar store-api-2.0.jar --spring.profiles.active=prod
+            java -jar target/store-api-2.0.jar --spring.profiles.active=prod
           host: ${{ secrets.HOST }}
           user: ${{ secrets.USER_NAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
