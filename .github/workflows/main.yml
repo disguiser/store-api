@@ -1,0 +1,35 @@
+name: deploy
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup java environment
+        uses: actions/setup-java@v3.9.0
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+      - name: Build with Maven
+        run: mvn -B package -DskipTest
+      - name: copy jar file with scp
+        uses: appleboy/scp-action@v0.0.1
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "target/store-api-2.0.jar"
+          target: "store-api"
+      - name: run
+        uses: fifsky/ssh-action@master
+        with:
+          command: |
+            screen -S store-api
+            java -jar store-api-2.0.jar --spring.profiles.active=prod
+          host: ${{ secrets.HOST }}
+          user: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
