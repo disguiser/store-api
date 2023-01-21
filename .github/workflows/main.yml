@@ -29,8 +29,7 @@ jobs:
         uses: fifsky/ssh-action@master
         with:
           command: |
-            screen -R store-api
-            java -jar /home/ubuntu/store-api/target/store-api-2.0.jar --spring.profiles.active=prod
+            ./store-api/deploy.sh
           host: ${{ secrets.HOST }}
           user: ${{ secrets.USER_NAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
