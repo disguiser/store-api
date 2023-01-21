@@ -29,7 +29,8 @@ jobs:
         uses: fifsky/ssh-action@master
         with:
           command: |
-            ./store-api/deploy.sh
+            cd store-api
+            ./deploy.sh
           host: ${{ secrets.HOST }}
           user: ${{ secrets.USER_NAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
