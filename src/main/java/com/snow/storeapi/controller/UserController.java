@@ -25,7 +25,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -278,7 +278,7 @@ public class UserController {
     public Boolean checkAccountNameUinque(@PathVariable String accountName){
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("account_name",accountName);
-        int count = userService.count(queryWrapper);
+        long count = userService.count(queryWrapper);
         if(count > 0){
             return false;
         }

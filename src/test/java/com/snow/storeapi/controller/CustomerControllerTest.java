@@ -62,6 +62,7 @@ public class CustomerControllerTest extends BaseControllerTest {
                 .debt(TestConstant.CUSTOMER_CREATE_DEBT)
                 .build();
         customerMapper.insert(customer1);
+        customer1.setId(null);
         customerMapper.insert(customer1);
         var customer2 = Customer.builder()
                 .name("123")

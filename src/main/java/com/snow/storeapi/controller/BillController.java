@@ -5,11 +5,11 @@ import com.snow.storeapi.entity.Bill;
 import com.snow.storeapi.service.IBillService;
 import com.snow.storeapi.service.ICustomerService;
 import io.swagger.annotations.ApiOperation;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController

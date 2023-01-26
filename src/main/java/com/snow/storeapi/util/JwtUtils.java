@@ -8,7 +8,7 @@ import com.snow.storeapi.entity.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
