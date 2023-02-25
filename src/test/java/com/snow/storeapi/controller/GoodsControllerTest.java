@@ -1,21 +1,22 @@
 package com.snow.storeapi.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.snow.storeapi.TestConstant;
 import com.snow.storeapi.entity.Goods;
 import com.snow.storeapi.mapper.GoodsMapper;
-import org.junit.jupiter.api.BeforeAll;
+import com.snow.storeapi.security.JwtComponent;
 import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.web.context.WebApplicationContext;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class GoodsControllerTest extends BaseControllerTest {
-
     @Autowired
     private GoodsMapper goodsMapper;
 

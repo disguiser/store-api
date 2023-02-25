@@ -2,7 +2,7 @@ package com.snow.storeapi.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.snow.storeapi.util.JwtUtils;
+import com.snow.storeapi.security.JwtComponent;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.TestInstance;
@@ -22,22 +22,19 @@ import org.springframework.web.context.WebApplicationContext;
 @Slf4j
 public class BaseControllerTest {
     MockMvc mockMvc;
-
     String token;
-
+    Integer id;
     @Autowired
     WebApplicationContext wac;
-
     @Autowired
     ObjectMapper objectMapper;
-
     @Autowired
     JdbcTemplate jdbc;
-
-    Integer id;
+    @Autowired
+    JwtComponent jwtComponent;
 
     public void beforeAll() throws JsonProcessingException {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
-        this.token = JwtUtils.getTestToken();
+        this.token = jwtComponent.getTestToken();
     }
 }

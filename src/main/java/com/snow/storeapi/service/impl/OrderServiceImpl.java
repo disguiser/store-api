@@ -10,6 +10,7 @@ import com.snow.storeapi.mapper.OrderMapper;
 import com.snow.storeapi.service.IOrderGoodsService;
 import com.snow.storeapi.service.IOrderService;
 import com.snow.storeapi.service.IStockService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,15 +24,11 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@RequiredArgsConstructor
 public class OrderServiceImpl extends ServiceImpl<OrderMapper,Order> implements IOrderService {
-    @Autowired
-    private OrderMapper orderMapper;
-
-    @Autowired
-    private IStockService stockService;
-
-    @Autowired
-    private IOrderGoodsService orderGoodsService;
+    private final OrderMapper orderMapper;
+    private final IStockService stockService;
+    private final IOrderGoodsService orderGoodsService;
 
     @Override
     public Integer create(Order order) {

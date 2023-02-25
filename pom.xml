@@ -23,9 +23,9 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>17</java.version>
-		<mybatis-plus.version>3.5.3.1</mybatis-plus.version>
-		<native.maven.plugin.version>0.9.19</native.maven.plugin.version>
 		<jasypt>3.0.5</jasypt>
+		<mybatis-plus>3.5.3.1</mybatis-plus>
+		<jjwt>0.11.5</jjwt>
 		<!--<tencent.qcloudsms.version>1.0.6</tencent.qcloudsms.version>-->
 	</properties>
 
@@ -35,10 +35,10 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 
-<!--		<dependency>-->
-<!--			<groupId>com.fasterxml.jackson.datatype</groupId>-->
-<!--			<artifactId>jackson-datatype-jsr310</artifactId>-->
-<!--		</dependency>-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -62,11 +62,6 @@
 			<scope>runtime</scope>
 			<version>8.0.30</version>
 		</dependency>
-<!--		<dependency>-->
-<!--			<groupId>org.postgresql</groupId>-->
-<!--			<artifactId>postgresql</artifactId>-->
-<!--			<version>42.5.0</version>-->
-<!--		</dependency>-->
 
 		<dependency>
 			<groupId>cn.hutool</groupId>
@@ -94,7 +89,7 @@
 		<dependency>
 			<groupId>com.baomidou</groupId>
 			<artifactId>mybatis-plus-boot-starter</artifactId>
-			<version>${mybatis-plus.version}</version>
+			<version>${mybatis-plus}</version>
 		</dependency>
 <!--		<dependency>-->
 <!--			<groupId>com.baomidou</groupId>-->
@@ -117,25 +112,20 @@
 
 		<!-- JWT -->
 		<dependency>
-			<groupId>com.auth0</groupId>
-			<artifactId>java-jwt</artifactId>
-			<version>3.8.3</version>
-		</dependency>
-		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-api</artifactId>
-			<version>0.10.7</version>
+			<version>${jjwt}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-impl</artifactId>
-			<version>0.10.7</version>
+			<version>${jjwt}</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-jackson</artifactId>
-			<version>0.10.7</version>
+			<version>${jjwt}</version>
 			<scope>runtime</scope>
 		</dependency>
 		<!-- 构建Restful API -->
@@ -149,12 +139,6 @@
 			<artifactId>springfox-swagger-ui</artifactId>
 			<version>2.9.2</version>
 		</dependency>
-
-<!--		<dependency>-->
-<!--			<groupId>com.alibaba</groupId>-->
-<!--			<artifactId>fastjson</artifactId>-->
-<!--			<version>1.2.83</version>-->
-<!--		</dependency>-->
 
 		<!--腾讯cos-->
 		<dependency>
@@ -190,28 +174,6 @@
 
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>org.graalvm.buildtools</groupId>
-				<artifactId>native-maven-plugin</artifactId>
-				<version>${native.maven.plugin.version}</version>
-<!--				<extensions>false</extensions>-->
-<!--				<executions>-->
-<!--					<execution>-->
-<!--						<id>build-native</id>-->
-<!--						<goals>-->
-<!--							<goal>compile-no-fork</goal>-->
-<!--						</goals>-->
-<!--						<phase>package</phase>-->
-<!--					</execution>-->
-<!--					<execution>-->
-<!--						<id>test-native</id>-->
-<!--						<goals>-->
-<!--							<goal>test</goal>-->
-<!--						</goals>-->
-<!--						<phase>test</phase>-->
-<!--					</execution>-->
-<!--				</executions>-->
-			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>

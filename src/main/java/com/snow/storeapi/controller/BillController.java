@@ -6,7 +6,7 @@ import com.snow.storeapi.service.IBillService;
 import com.snow.storeapi.service.ICustomerService;
 import io.swagger.annotations.ApiOperation;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,13 +14,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/bill")
+@RequiredArgsConstructor
 public class BillController {
-    @Autowired
-    private IBillService billService;
-
-    @Autowired
-    private ICustomerService customerService;
-
+    private final IBillService billService;
+    private final ICustomerService customerService;
     @ApiOperation("全部查询")
     @GetMapping("/all")
     public List findAll(
@@ -45,7 +42,7 @@ public class BillController {
     }
 
     @PatchMapping("")
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void update(@Valid @RequestBody Bill bill) {
         var oldBill = billService.getById(bill.getId());
         if (!oldBill.getAmount().equals(bill.getAmount())) {

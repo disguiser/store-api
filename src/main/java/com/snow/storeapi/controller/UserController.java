@@ -2,30 +2,31 @@ package com.snow.storeapi.controller;
 
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.crypto.digest.DigestUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.snow.storeapi.DTO.user.UpdateUserDTO;
 import com.snow.storeapi.DTO.user.UserLoginDTO;
 import com.snow.storeapi.entity.ErrorMsg;
 import com.snow.storeapi.entity.Sse;
 import com.snow.storeapi.entity.User;
-import com.snow.storeapi.service.IUserService;
-import com.snow.storeapi.util.JwtUtils;
+import com.snow.storeapi.service.impl.UserServiceImpl;
+import com.snow.storeapi.security.JwtComponent;
 import com.snow.storeapi.util.ResponseUtil;
 import com.xkzhangsan.time.calculator.DateTimeCalculatorUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -40,24 +41,21 @@ import java.util.concurrent.Executors;
 @RestController
 @RequestMapping(value = "/user")
 @Slf4j
+@RequiredArgsConstructor
 public class UserController {
     private Map<String, Sse> sseEmitterMap = new ConcurrentHashMap<>();
+    private final UserServiceImpl userService;
+    private final JwtComponent jwtComponent;
 
-    @Value("${SALT}")
-    private String SALT;
-
-    @Autowired
-    private IUserService userService;
-
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @ApiOperation(value = "登录")
     @PostMapping(value = "/login")
-    public ResponseEntity userLogin(@RequestBody User req) {
+    public ResponseEntity userLogin(@RequestBody User loginDto) throws JsonProcessingException {
         QueryWrapper<User> queryWrapper = new QueryWrapper();
-        var accountName = req.getAccountName();
-        var phoneNumber = req.getPhoneNumber();
+        var accountName = loginDto.getAccountName();
+        var phoneNumber = loginDto.getPhoneNumber();
         if (!StrUtil.isEmpty(accountName)) {
             queryWrapper.eq("account_name", accountName);
         } else if (!StrUtil.isEmpty(phoneNumber)) {
@@ -65,37 +63,31 @@ public class UserController {
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
-        User userInfo = userService.getOne(queryWrapper);
+        User userInfo = userService.loadUserByUsername(accountName);
         if (userInfo != null){
-            var hexPw = DigestUtil.md5Hex(req.getPassword() + SALT);
+            var hexPw = passwordEncoder.encode(loginDto.getPassword());
             if (!StrUtil.isEmpty(accountName) && !userInfo.getPassword().equals(hexPw)){
-                Map<String, Object> res = new HashMap<>();
-                res.put("msg","密码不正确!");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg("密码不正确!"));
             }
             if (!StrUtil.isEmpty(phoneNumber) &&
-                (!userInfo.getPhoneCode().equals(req.getPhoneCode()) ||
+                (!userInfo.getPhoneCode().equals(loginDto.getPhoneCode()) ||
                 userInfo.getCodeExpTime().isBefore(LocalDateTime.now()))
             ) {
-                Map<String, Object> res = new HashMap<>();
-                res.put("msg","验证码不正确或已失效!");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg("验证码不正确或已失效!"));
             }
             return ResponseEntity.ok(buildLoginResponse(userInfo));
         } else {
-//            Map<String, Object> res = new HashMap<>();
-//            res.put("msg","不存在该用户!");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg("不存在该用户!"));
         }
     }
 
     public UserLoginDTO buildLoginResponse(User userInfo) {
-        var token = JwtUtils.generateToken(
-                userInfo.getId(),
-                userInfo.getUserName(),
-                userInfo.getDeptId(),
-                userInfo.getRoles()
-        );
+        Map<String, Object> sub = new HashMap<>();
+        sub.put("id", userInfo.getId());
+        sub.put("userName", userInfo.getUserName());
+        sub.put("deptId", userInfo.getDeptId());
+        sub.put("roles", userInfo.getRoles());
+        var token = jwtComponent.generateToken(sub);
         return UserLoginDTO
                 .builder()
                 .userName(userInfo.getUserName())
@@ -128,9 +120,7 @@ public class UserController {
             );
             return ResponseEntity.ok(null);
         } else {
-            var res = new HashMap<String, Object>();
-            res.put("msg","该手机号码不存在!");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg("该手机号码不存在!"));
         }
     }
 
@@ -183,8 +173,8 @@ public class UserController {
     }
     @ApiOperation("手机端确认登录")
     @PostMapping("/phone-confirm")
-    public void confirm(@RequestBody Sse req, HttpServletRequest request) {
-        User user = JwtUtils.getSub(request);
+    public void confirm(@RequestBody Sse req) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getDetails();
         var result = sseEmitterMap.get(req.getClientId());
         if (result.getServerId().equals(req.getServerId())) {
             User userInfo = userService.getById(user.getId());
@@ -212,7 +202,7 @@ public class UserController {
             @RequestParam(value = "limit", defaultValue = "10")Integer limit,
             HttpServletRequest request
     ) {
-        User userInfo = JwtUtils.getSub(request);
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getDetails();
         IPage<User> page = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(pageNum, limit);
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         if (!StrUtil.isEmpty(name)) {

@@ -7,7 +7,7 @@ import com.snow.storeapi.entity.Bill;
 import com.snow.storeapi.enums.PaymentChannel;
 import com.snow.storeapi.mapper.BillMapper;
 import com.snow.storeapi.mapper.CustomerMapper;
-import com.snow.storeapi.util.JwtUtils;
+import com.snow.storeapi.security.JwtComponent;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,28 +41,24 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class BillControllerTest {
     private MockMvc mockMvc;
     private String token;
-
+    private Integer id;
     @Autowired
     private BillMapper billMapper;
-
     @Autowired
     private CustomerMapper customerMapper;
-
     @Autowired
     private WebApplicationContext wac;
-
     @Autowired
-    ObjectMapper objectMapper;
-
+    private ObjectMapper objectMapper;
     @Autowired
     private JdbcTemplate jdbc;
-
-    private Integer id;
+    @Autowired
+    private JwtComponent jwtComponent;
 
     @BeforeAll
     public void beforeAll() throws JsonProcessingException {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
-        this.token = JwtUtils.getTestToken();
+        this.token = jwtComponent.getTestToken();
         jdbc.execute("truncate table customer;");
         jdbc.execute("truncate table bill;");
         var sql = """

@@ -5,22 +5,20 @@ import com.snow.storeapi.entity.Dict;
 import com.snow.storeapi.service.IDictService;
 import com.snow.storeapi.service.IVersionService;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/dict")
+@RequestMapping("/admin/dict")
+@RequiredArgsConstructor
 public class DictController {
-    @Autowired
-    private IDictService dictService;
-    @Autowired
-    private IVersionService versionService;
-
+    private final IDictService dictService;
+    private final IVersionService versionService;
     @ApiOperation("字典查询")
-    @GetMapping("/findAll")
+    @GetMapping("/all")
     public List<Dict> findAll(
             @RequestParam(value = "dictName", required = false)String dictName,
             @RequestParam(value = "sort", required = false) String sort

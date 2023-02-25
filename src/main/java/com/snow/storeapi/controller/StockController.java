@@ -4,17 +4,14 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.snow.storeapi.entity.Stock;
 import com.snow.storeapi.entity.User;
 import com.snow.storeapi.service.IStockService;
-import com.snow.storeapi.util.JwtUtils;
 import io.swagger.annotations.ApiOperation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import java.time.LocalDateTime;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 /**
@@ -22,16 +19,12 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/stock")
+@RequiredArgsConstructor
 public class StockController {
-
-    private static final Logger logger = LoggerFactory.getLogger(StockController.class);
-    
-    @Autowired
-    private IStockService stockService;
-
+    private final IStockService stockService;
     @GetMapping("/sum")
     public Integer sumByDept(HttpServletRequest request) {
-        User user = JwtUtils.getSub(request);
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getDetails();
         return stockService.sumByDept(user.getDeptId());
     }
 
@@ -61,7 +54,7 @@ public class StockController {
     @ApiOperation("添加")
     @PostMapping("/single")
     public Integer create(@Valid @RequestBody Stock stock, HttpServletRequest request) {
-        User user = JwtUtils.getSub(request);
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getDetails();
         stock.setInputUser(user.getId());
         stockService.save(stock);
         return stock.getId();
@@ -70,7 +63,7 @@ public class StockController {
     @ApiOperation("批量添加")
     @PostMapping("/multi")
     public void multiCreate(@RequestBody Stock[] stocks, HttpServletRequest request) {
-        User user = JwtUtils.getSub(request);
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getDetails();
         for (var stock: stocks) {
             var _stock = stockService.getOne(
                     new QueryWrapper<Stock>()

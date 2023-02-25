@@ -8,16 +8,14 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.snow.storeapi.entity.User;
 import com.snow.storeapi.entity.Vip;
 import com.snow.storeapi.service.IVipService;
-import com.snow.storeapi.util.JwtUtils;
 import com.snow.storeapi.util.ResponseUtil;
 import io.swagger.annotations.ApiOperation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -32,15 +30,11 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/vip")
+@RequiredArgsConstructor
 public class VipController {
-
-    private static final Logger logger = LoggerFactory.getLogger(VipController.class);
-
-    @Autowired
-    private IVipService vipService;
-
+    private final IVipService vipService;
     @ApiOperation("会员列表查询")
-    @GetMapping("/findByPage")
+    @GetMapping("/page")
     public Map list(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "phone", required = false) String phone,
@@ -48,7 +42,7 @@ public class VipController {
             @RequestParam(value = "limit", defaultValue = "10") Integer limit,
             HttpServletRequest request
     ) {
-        User user = JwtUtils.getSub(request);
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getDetails();
         IPage<Vip> page = new Page<>(pageNum, limit);
         QueryWrapper<Vip> queryWrapper = new QueryWrapper<>();
         if (!StrUtil.isEmpty(name)) {
@@ -74,7 +68,7 @@ public class VipController {
             @RequestParam(value = "phone", required = false) String phone,
             HttpServletRequest request
     ) {
-        User user = JwtUtils.getSub(request);
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getDetails();
         QueryWrapper<Vip> queryWrapper = new QueryWrapper<>();
         if (!StrUtil.isEmpty(name)) {
             queryWrapper.eq("name", name);
@@ -92,16 +86,16 @@ public class VipController {
     }
 
     @ApiOperation("添加会员")
-    @PutMapping("/create")
+    @PutMapping("")
     public int create(@Valid @RequestBody Vip vip, HttpServletRequest request) {
-        User user = JwtUtils.getSub(request);
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getDetails();
         vip.setDeptId(user.getDeptId());
         vipService.save(vip);
         return vip.getId();
     }
 
     @ApiOperation("修改会员")
-    @PatchMapping("/update/{id}")
+    @PatchMapping("/{id}")
     public void update(@Valid @RequestBody Vip vip) {
         vip.setModifyTime(LocalDateTime.now());
         vipService.updateById(vip);
@@ -109,7 +103,7 @@ public class VipController {
 
 
     @ApiOperation("批量删除会员")
-    @DeleteMapping("/delete")
+    @DeleteMapping("")
     public void delete(@RequestBody List<Integer> ids) {
         vipService.removeByIds(ids);
     }

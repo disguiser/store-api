@@ -4,14 +4,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.snow.storeapi.entity.Dept;
 import com.snow.storeapi.service.IDeptService;
 import io.swagger.annotations.ApiOperation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.validation.Valid;
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -19,13 +15,9 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/dept")
+@RequiredArgsConstructor
 public class DeptController {
-
-    private static final Logger logger = LoggerFactory.getLogger(DeptController.class);
-
-    @Autowired
-    private IDeptService deptService;
-
+    private final IDeptService deptService;
     @ApiOperation("全部部门查询")
     @GetMapping("/all")
     public List list() {

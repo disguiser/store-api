@@ -5,19 +5,18 @@ import com.snow.storeapi.entity.Goods;
 import com.snow.storeapi.entity.MyPage;
 import com.snow.storeapi.mapper.GoodsMapper;
 import com.snow.storeapi.service.IGoodsService;
-import com.snow.storeapi.util.TransformCamelUtil;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class GoodsServiceImpl extends ServiceImpl<GoodsMapper,Goods> implements IGoodsService {
-    @Autowired
-    private GoodsMapper goodsMapper;
+    private final GoodsMapper goodsMapper;
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public MyPage findByDept(
             String sort,
             String deptId,

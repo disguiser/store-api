@@ -6,23 +6,22 @@ import com.snow.storeapi.entity.Size;
 import com.snow.storeapi.service.ISizeService;
 import com.snow.storeapi.service.IVersionService;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
 @RequestMapping("/size")
+@RequiredArgsConstructor
 public class SizeController {
-    @Autowired
-    private ISizeService sizeService;
-    @Autowired
-    private IVersionService versionService;
+    private final ISizeService sizeService;
+    private final IVersionService versionService;
 
     @ApiOperation("全部尺码查询")
-    @GetMapping("/find-all")
+    @GetMapping("/all")
     public List findAll(
             @RequestParam(value = "itemName", required = false)String itemName
     ) {
@@ -35,7 +34,7 @@ public class SizeController {
     }
     
     @ApiOperation("添加尺码")
-    @PostMapping("/create")
+    @PostMapping("")
     public int create(@Valid @RequestBody Size size) {
         versionService.addOne("size");
         sizeService.save(size);
@@ -43,8 +42,8 @@ public class SizeController {
     }
 
     @ApiOperation("修改尺码")
-    @PatchMapping("/update")
-    @Transactional
+    @PatchMapping("")
+    @Transactional(rollbackFor = Exception.class)
     public void update(@Valid @RequestBody Size size) {
         versionService.addOne("size");
         sizeService.updateById(size);
@@ -52,7 +51,7 @@ public class SizeController {
 
 
     @ApiOperation("删除尺码")
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public void delete(@PathVariable Integer id) {
         versionService.addOne("size");
         sizeService.removeById(id);

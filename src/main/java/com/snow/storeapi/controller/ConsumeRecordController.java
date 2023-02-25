@@ -8,15 +8,15 @@ import com.snow.storeapi.entity.User;
 import com.snow.storeapi.entity.Vip;
 import com.snow.storeapi.service.IConsumeRecordService;
 import com.snow.storeapi.service.IVipService;
-import com.snow.storeapi.util.JwtUtils;
 import com.snow.storeapi.util.ResponseUtil;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
@@ -24,17 +24,13 @@ import java.util.Map;
  * 消费记录
  */
 @RestController
-@RequestMapping("/consumeRecord")
+@RequestMapping("/consume-record")
+@RequiredArgsConstructor
 public class ConsumeRecordController {
-
-    @Autowired
-    private IConsumeRecordService consumeRecordService;
-
-    @Autowired
-    private IVipService vipService;
-
+    private final IConsumeRecordService consumeRecordService;
+    private final IVipService vipService;
     @ApiOperation("列表查询")
-    @GetMapping("/findByPage")
+    @GetMapping("/page")
     public Map list(
             @RequestParam(value = "vipId", required = false)String vipId,
             @RequestParam(value = "createDate", required = false)String createDate,
@@ -51,7 +47,7 @@ public class ConsumeRecordController {
             queryWrapper.like("create_time", createDate);
         }
         //不是老板,只能查自己门店下的
-        /*User user = JwtUtils.getSub(request);
+        /*User user = (User) SecurityContextHolder.getContext().getAuthentication().getDetails();
         if(!"".equals(user.getRoles())) {
             queryWrapper.eq("dept_id", user.getDeptId());
         }
@@ -64,11 +60,11 @@ public class ConsumeRecordController {
     }
 
     @ApiOperation("添加")
-    @PutMapping("/create")
-    @Transactional
+    @PutMapping("")
+    @Transactional(rollbackFor = Exception.class)
     public int create(@Valid @RequestBody ConsumeRecord consumeRecord,
                       HttpServletRequest request) {
-        User user = JwtUtils.getSub(request);
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getDetails();
         consumeRecord.setCreator(user.getId());
         consumeRecordService.save(consumeRecord);
         Vip vip = vipService.getById(consumeRecord.getVipId());
@@ -80,7 +76,7 @@ public class ConsumeRecordController {
     }
 
     @ApiOperation("批量删除")
-    @DeleteMapping("/delete")
+    @DeleteMapping("")
     public void delete(@RequestParam(value = "ids") List<Integer> ids) {
         consumeRecordService.removeByIds(ids);
     }

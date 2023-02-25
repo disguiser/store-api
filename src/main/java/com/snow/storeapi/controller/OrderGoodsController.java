@@ -2,7 +2,7 @@ package com.snow.storeapi.controller;
 
 import com.snow.storeapi.service.IOrderGoodsService;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -15,10 +15,9 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/order-goods")
+@RequiredArgsConstructor
 public class OrderGoodsController {
-
-    @Autowired
-    private IOrderGoodsService orderGoodsService;
+    private final IOrderGoodsService orderGoodsService;
 
     @ApiOperation("列表查询")
     @GetMapping("/daily-list")

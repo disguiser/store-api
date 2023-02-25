@@ -4,26 +4,24 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.snow.storeapi.entity.*;
+import com.snow.storeapi.entity.Goods;
+import com.snow.storeapi.entity.MyPage;
+import com.snow.storeapi.entity.Stock;
+import com.snow.storeapi.entity.User;
 import com.snow.storeapi.service.IGoodsService;
-import com.snow.storeapi.service.IPurchaseService;
 import com.snow.storeapi.service.IStockService;
 import com.snow.storeapi.service.IVersionService;
-import com.snow.storeapi.util.JwtUtils;
 import com.snow.storeapi.util.ResponseUtil;
 import com.snow.storeapi.util.TransformCamelUtil;
 import io.swagger.annotations.ApiOperation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
-import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 
@@ -32,25 +30,15 @@ import java.util.Optional;
  */
 @RestController
 @RequestMapping("/goods")
+@RequiredArgsConstructor
 public class GoodsController {
-
-    private static final Logger logger = LoggerFactory.getLogger(GoodsController.class);
-    
-    @Autowired
-    private IGoodsService goodsService;
-
-    @Autowired
-    private IPurchaseService purchaseService;
-
-    @Autowired
-    private IStockService stockService;
-
-    @Autowired
-    private IVersionService versionService;
-
+//    private static final Logger logger = LoggerFactory.getLogger(GoodsController.class);
+    private final IGoodsService goodsService;
+    private final IStockService stockService;
+    private final IVersionService versionService;
 
     @ApiOperation("列表查询")
-    @GetMapping("/findByPage")
+    @GetMapping("/page")
     public Map findByPage(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "preSku", required = false) String preSku,
@@ -77,7 +65,7 @@ public class GoodsController {
 
     // 包含明细 sql手写
     @ApiOperation("列表查询")
-    @GetMapping("/findByDept")
+    @GetMapping("/dept")
     public Map findByDept(
             @RequestParam(value = "deptId", required = false)String deptId,
             @RequestParam(value = "name", required = false)String name,
@@ -92,8 +80,8 @@ public class GoodsController {
 
     @ApiOperation("添加")
     @PostMapping("")
-    public Goods create(@Valid @RequestBody Goods goods, HttpServletRequest request) {
-        User user = JwtUtils.getSub(request);
+    public Goods create(@Valid @RequestBody Goods goods) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getDetails();
         goods.setInputUser(user.getId());
         // generate sku
         var version = versionService.addOne("sku");
@@ -152,7 +140,7 @@ public class GoodsController {
         return goods.getId();
     }
 
-    @GetMapping("/findOneBySku/{sku}")
+    @GetMapping("/sku/{sku}")
     public ResponseEntity findOneBySku(@PathVariable String sku){
         if (sku == null || StrUtil.isEmpty(sku)){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("sku不能为空！");

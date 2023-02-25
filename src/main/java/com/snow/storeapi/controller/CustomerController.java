@@ -6,17 +6,13 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.snow.storeapi.entity.Customer;
 import com.snow.storeapi.service.ICustomerService;
-import com.snow.storeapi.service.IOrderService;
 import com.snow.storeapi.util.ResponseUtil;
 import com.snow.storeapi.util.TransformCamelUtil;
 import io.swagger.annotations.ApiOperation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.validation.Valid;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -24,12 +20,9 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/customer")
+@RequiredArgsConstructor
 public class CustomerController {
-    @Autowired
-    private ICustomerService customerService;
-
-    @Autowired
-    private IOrderService orderService;
+    private final ICustomerService customerService;
 
     @ApiOperation("客户列表查询")
     @GetMapping("/page")
@@ -39,7 +32,6 @@ public class CustomerController {
             @RequestParam(value = "page", defaultValue = "1") Integer pageNum,
             @RequestParam(value = "limit", defaultValue = "10") Integer limit
     ) {
-        System.out.println(limit);
         IPage<Customer> page = new Page<>(pageNum, limit);
         QueryWrapper<Customer> queryWrapper = new QueryWrapper<>();
         if (!StrUtil.isEmpty(searchText)) {

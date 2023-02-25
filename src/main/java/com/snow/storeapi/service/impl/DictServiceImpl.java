@@ -5,24 +5,15 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.snow.storeapi.entity.Dict;
 import com.snow.storeapi.mapper.DictMapper;
 import com.snow.storeapi.service.IDictService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements IDictService {
-    @Autowired
-    private DictMapper dictMapper;
-//    @Override
-//    public Integer insert(Dict dict) {
-//        return dictMapper.insert(dict);
-//    }
-//
-//    @Override
-//    public void deleteById(Integer id) {
-//        dictMapper.deleteById(id);
-//    }
+    private final DictMapper dictMapper;
 
     @Override
     public Integer modifyById(Dict dict) {

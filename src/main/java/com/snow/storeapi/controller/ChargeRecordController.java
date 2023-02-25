@@ -9,15 +9,15 @@ import com.snow.storeapi.entity.User;
 import com.snow.storeapi.entity.Vip;
 import com.snow.storeapi.service.IChargeRecordService;
 import com.snow.storeapi.service.IVipService;
-import com.snow.storeapi.util.JwtUtils;
 import com.snow.storeapi.util.ResponseUtil;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
@@ -27,16 +27,12 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/chargeRecord")
+@RequiredArgsConstructor
 public class ChargeRecordController {
-
-    @Autowired
-    private IChargeRecordService chargeRecordService;
-
-    @Autowired
-    private IVipService vipService;
-
+    private final IChargeRecordService chargeRecordService;
+    private final IVipService vipService;
     @ApiOperation("列表查询")
-    @GetMapping("/findByPage")
+    @GetMapping("/page")
     public Map list(
             @RequestParam(value = "vipId", required = false)String vipId,
             @RequestParam(value = "startDate", required = false)String startDate,
@@ -54,7 +50,7 @@ public class ChargeRecordController {
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             queryWrapper.between("create_time", startDate,endDate);
         }
-        /*User user = JwtUtils.getSub(request);
+        /*User user = (User) SecurityContextHolder.getContext().getAuthentication().getDetails();
         //不是老板,只能查自己门店下的
         if(!"".equals(user.getRoles())) {
             queryWrapper.eq("dept_id", user.getDeptId());
@@ -68,11 +64,10 @@ public class ChargeRecordController {
     }
 
     @ApiOperation("添加")
-    @PutMapping("/create")
-    @Transactional
-    public int create(@Valid @RequestBody ChargeRecord chargeRecord,
-                      HttpServletRequest request) {
-        User user = JwtUtils.getSub(request);
+    @PutMapping("")
+    @Transactional(rollbackFor = Exception.class)
+    public int create(@Valid @RequestBody ChargeRecord chargeRecord) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getDetails();
         chargeRecord.setCreator(user.getId());
         chargeRecordService.save(chargeRecord);
         Vip vip = vipService.getById(chargeRecord.getVipId());
@@ -84,7 +79,7 @@ public class ChargeRecordController {
     }
 
     @ApiOperation("批量删除")
-    @DeleteMapping("/delete")
+    @DeleteMapping("")
     public void delete(@RequestParam(value = "ids") List<Integer> ids) {
         chargeRecordService.removeByIds(ids);
     }

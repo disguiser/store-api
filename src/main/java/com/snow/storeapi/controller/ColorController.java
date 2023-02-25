@@ -6,21 +6,19 @@ import com.snow.storeapi.entity.Color;
 import com.snow.storeapi.service.IColorService;
 import com.snow.storeapi.service.IVersionService;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
 @RequestMapping("/color")
+@RequiredArgsConstructor
 public class ColorController {
-    @Autowired
-    private IColorService colorService;
-    @Autowired
-    private IVersionService versionService;
-
+    private final IColorService colorService;
+    private final IVersionService versionService;
     @ApiOperation("全部颜色查询")
     @GetMapping("/all")
     public List findAll(
@@ -44,7 +42,7 @@ public class ColorController {
 
     @ApiOperation("修改颜色")
     @PatchMapping("")
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void update(@Valid @RequestBody Color color) {
         versionService.addOne("color");
         colorService.updateById(color);

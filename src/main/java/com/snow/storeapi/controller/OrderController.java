@@ -5,15 +5,15 @@ import com.snow.storeapi.entity.User;
 import com.snow.storeapi.enums.Role;
 import com.snow.storeapi.service.ICustomerService;
 import com.snow.storeapi.service.IOrderService;
-import com.snow.storeapi.util.JwtUtils;
 import com.snow.storeapi.util.ResponseUtil;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
@@ -22,18 +22,12 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/order")
+@RequiredArgsConstructor
 public class OrderController {
-
-    @Autowired
-    private IOrderService orderService;
-
-    @Autowired
-    private ICustomerService customerService;
-
-    private Object HashMap;
-
+    private final IOrderService orderService;
+    private final ICustomerService customerService;
     @ApiOperation("列表查询")
-    @GetMapping("/findByPage")
+    @GetMapping("/page")
     public Map list(
             @RequestParam(value = "page", defaultValue = "1") Integer page,
             @RequestParam(value = "limit", defaultValue = "10") Integer limit,
@@ -47,7 +41,7 @@ public class OrderController {
     }
 
     @ApiOperation("根据订单id查询详情")
-    @GetMapping("/getDetailByOrderId/{orderId}")
+    @GetMapping("/details/{orderId}")
     public Map getDetailByOrderId(@PathVariable Integer orderId) {
         return ResponseUtil.listRes(orderService.getDetailByOrderId(orderId));
     }
@@ -56,7 +50,7 @@ public class OrderController {
     @PostMapping("")
     @Transactional(rollbackFor = Exception.class)
     public int create(@Valid @RequestBody Order order, HttpServletRequest request) {
-        User user = JwtUtils.getSub(request);
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getDetails();
         order.setInputUser(user.getId());
         order.setDeptId(user.getDeptId());
         var orderId = orderService.create(order);
@@ -67,25 +61,6 @@ public class OrderController {
         }
         return orderId;
     }
-
-//    @ApiOperation("修改")
-//    @PatchMapping("/update/{id}")
-//    @Transactional(rollbackFor = Exception.class)
-//    public int update(@PathVariable Integer id, @Valid @RequestBody Order order) {
-//        var customer = customerService.getById(order.getBuyer());
-//        switch (order.getPaymentStatus()) {
-//            case PaymentStatus.UNDONE:
-//                customer.setDebt(customer.getDebt().add(order.getTotalMoney()));
-//                break;
-//            case PaymentStatus.DONE:
-//                customer.setDebt(customer.getDebt().subtract(order.getTotalMoney()));
-//                break;
-//        }
-//        customerService.updateById(customer);
-//        orderService.updateById(order);
-//        return order.getId();
-//    }
-
 
     @ApiOperation("批量删除")
     @DeleteMapping("/{id}")
@@ -102,7 +77,7 @@ public class OrderController {
 
     @GetMapping("/daily/money")
     public Integer dailyMoney(HttpServletRequest request) {
-        User user = JwtUtils.getSub(request);
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getDetails();
         if (null != user.getDeptId()) {
             return orderService.sumMoney(user.getDeptId());
         } else {
@@ -115,7 +90,7 @@ public class OrderController {
             @RequestParam(value = "category") Integer category,
             HttpServletRequest request
     ) {
-        User user = JwtUtils.getSub(request);
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getDetails();
         if (null != user.getDeptId()) {
             return orderService.sumAmount(category, user.getDeptId());
         } else {
@@ -128,7 +103,7 @@ public class OrderController {
             @RequestParam(value = "category") Integer category,
             HttpServletRequest request
     ) {
-        User user = JwtUtils.getSub(request);
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getDetails();
         if (user.getRoles().contains(Role.BOSS)) {
 
         }
@@ -144,7 +119,7 @@ public class OrderController {
             @RequestParam(value = "category") Integer category,
             HttpServletRequest request
     ) {
-        User user = JwtUtils.getSub(request);
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getDetails();
         if (null != user.getDeptId()) {
             return orderService.chartAmount(category, user.getDeptId());
         } else {

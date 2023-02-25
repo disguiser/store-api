@@ -9,21 +9,6 @@ import org.springframework.web.servlet.config.annotation.*;
 public class WebAppConfigurer implements WebMvcConfigurer {
 
     /**
-     * 排除以下url进入拦截器
-     */
-	@Override
-	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(new SysInterceptor())
-                .excludePathPatterns("/user/sendPhoneCode/**")
-                .excludePathPatterns("/user/QRCode")
-				.excludePathPatterns("/user/login")
-                .excludePathPatterns("/order/test")
-                .excludePathPatterns("/*.html")
-                .excludePathPatterns("/swagger-resources/**")
-		        .addPathPatterns("/**");
-	}
-
-    /**
      * swagger2配置,引入资源
      */
     @Override
@@ -37,13 +22,13 @@ public class WebAppConfigurer implements WebMvcConfigurer {
     /**
      * Cors跨域访问配置
      */
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOriginPatterns("*")
-                .allowedMethods("POST", "GET", "PUT", "PATCH", "OPTIONS", "DELETE")
-                .maxAge(3600)
-                .allowCredentials(true);
-    }
+//    @Override
+//    public void addCorsMappings(CorsRegistry registry) {
+//        registry.addMapping("/**")
+//                .allowedOriginPatterns("*")
+//                .allowedMethods("POST", "GET", "PUT", "PATCH", "OPTIONS", "DELETE")
+//                .maxAge(3600)
+//                .allowCredentials(true);
+//    }
 
 }

@@ -4,17 +4,17 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.snow.storeapi.entity.PrintTemplate;
 import com.snow.storeapi.service.IPrintTemplateService;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
 @RequestMapping("/print-template")
+@RequiredArgsConstructor
 public class PrintTemplateController {
-    @Autowired
-    private IPrintTemplateService printTemplateService;
+    private final IPrintTemplateService printTemplateService;
 
     @ApiOperation("列表查询")
     @GetMapping("/all")

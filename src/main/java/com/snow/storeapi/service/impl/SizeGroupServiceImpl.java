@@ -10,6 +10,7 @@ import com.snow.storeapi.mapper.DictMapper;
 import com.snow.storeapi.mapper.SizeGroupMapper;
 import com.snow.storeapi.mapper.SizeMapper;
 import com.snow.storeapi.service.ISizeGroupService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,11 +19,10 @@ import java.util.HashMap;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class SizeGroupServiceImpl extends ServiceImpl<SizeGroupMapper, SizeGroup> implements ISizeGroupService {
-    @Autowired
-    private SizeGroupMapper sizeGroupMapper;
-    @Autowired
-    private SizeMapper sizeMapper;
+    private final SizeGroupMapper sizeGroupMapper;
+    private final SizeMapper sizeMapper;
     @Override
     public List<SizeGroup> findAll() {
         var sizeGroups = sizeGroupMapper.selectList(null);
