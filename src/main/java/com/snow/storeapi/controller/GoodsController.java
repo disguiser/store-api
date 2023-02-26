@@ -81,7 +81,7 @@ public class GoodsController {
     @ApiOperation("添加")
     @PostMapping("")
     public Goods create(@Valid @RequestBody Goods goods) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         goods.setInputUser(user.getId());
         // generate sku
         var version = versionService.addOne("sku");

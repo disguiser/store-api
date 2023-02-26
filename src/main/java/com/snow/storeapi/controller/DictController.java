@@ -12,13 +12,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin/dict")
+@RequestMapping("/dict")
 @RequiredArgsConstructor
 public class DictController {
     private final IDictService dictService;
     private final IVersionService versionService;
     @ApiOperation("字典查询")
-    @GetMapping("/all")
+    @GetMapping("/admin/all")
     public List<Dict> findAll(
             @RequestParam(value = "dictName", required = false)String dictName,
             @RequestParam(value = "sort", required = false) String sort
@@ -44,7 +44,7 @@ public class DictController {
     }
 
     @ApiOperation("修改字典")
-    @PatchMapping("")
+    @PatchMapping("/admin")
     public void update(@Valid @RequestBody Dict dict) {
         versionService.addOne("dict");
         dictService.updateById(dict);
@@ -52,7 +52,7 @@ public class DictController {
 
 
     @ApiOperation("删除字典")
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/admin/{id}")
     public void delete(@PathVariable Integer id) {
         dictService.removeById(id);
     }

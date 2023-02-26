@@ -50,7 +50,7 @@ public class OrderController {
     @PostMapping("")
     @Transactional(rollbackFor = Exception.class)
     public int create(@Valid @RequestBody Order order, HttpServletRequest request) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         order.setInputUser(user.getId());
         order.setDeptId(user.getDeptId());
         var orderId = orderService.create(order);
@@ -77,7 +77,7 @@ public class OrderController {
 
     @GetMapping("/daily/money")
     public Integer dailyMoney(HttpServletRequest request) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (null != user.getDeptId()) {
             return orderService.sumMoney(user.getDeptId());
         } else {
@@ -90,7 +90,7 @@ public class OrderController {
             @RequestParam(value = "category") Integer category,
             HttpServletRequest request
     ) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (null != user.getDeptId()) {
             return orderService.sumAmount(category, user.getDeptId());
         } else {
@@ -103,7 +103,7 @@ public class OrderController {
             @RequestParam(value = "category") Integer category,
             HttpServletRequest request
     ) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (user.getRoles().contains(Role.BOSS)) {
 
         }
@@ -119,7 +119,7 @@ public class OrderController {
             @RequestParam(value = "category") Integer category,
             HttpServletRequest request
     ) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (null != user.getDeptId()) {
             return orderService.chartAmount(category, user.getDeptId());
         } else {

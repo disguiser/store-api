@@ -9,10 +9,12 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -23,8 +25,6 @@ import java.util.List;
 @Accessors(chain = true)
 @TableName(value = "user", autoResultMap = true)
 public class User implements UserDetails, Serializable {
-    private static final long serialVersionUID = 1711736924363048847L;
-
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
@@ -63,7 +63,9 @@ public class User implements UserDetails, Serializable {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        this.roles.forEach(role -> authorities.add(new SimpleGrantedAuthority("ROLE_" + role)));
+        return authorities;
     }
 
     public String getUserName() {

@@ -30,7 +30,8 @@ jobs:
         with:
           command: |
             cd store-api
-            ./deploy.sh
+            ./stop.sh
+            nohup java -jar store-api-2.0.jar --jasypt.encryptor.password=${{ secret.JASYPT_PASSWORD }}
           host: ${{ secrets.HOST }}
           user: ${{ secrets.USER_NAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}

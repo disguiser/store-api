@@ -5,11 +5,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.core.GrantedAuthorityDefaults;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -32,9 +32,24 @@ public class SecurityConfig {
                 .headers().cacheControl().disable().and()
                 // 认证失败处理类
                 .exceptionHandling()
+                .authenticationEntryPoint(((request, response, authException) -> {
+//                    System.out.println("==================");
+//                    System.out.println(authException);
+//                    System.out.println("==================");
+                    if (authException instanceof InsufficientAuthenticationException) {
+                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                        response.getWriter().print("未认证");
+                    } else {
+                        response.sendError(
+                                HttpServletResponse.SC_UNAUTHORIZED,
+                                authException.getMessage()
+                        );
+                    }
+                }))
                 .accessDeniedHandler((request, response, exception) -> {
+                    System.out.println("----------");
+                    exception.printStackTrace();
                     response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                    response.setCharacterEncoding("UTF-8");
                     response.getWriter().print("权限不足");
                 })
                 .and()
@@ -43,7 +58,7 @@ public class SecurityConfig {
                 // 过滤请求
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/user/login", "/*.html", "/swagger-resources/**").permitAll()
-                        .requestMatchers("/admin/**").hasRole("Admin")
+                        .requestMatchers("/*/admin/**").hasRole("Admin")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
@@ -74,12 +89,14 @@ public class SecurityConfig {
      * 为了更明确地区分这两个术语，Spring Security 框架ROLE_默认为角色名称添加前缀。因此，它不会检查名为 的角色BOOK_ADMIN，而是检查ROLE_BOOK_ADMIN.
      *
      * 就个人而言，我发现这种行为令人困惑，并且更愿意在我的应用程序中禁用它。它可以在 Spring Security 配置中禁用，如下所示：
+     *
+     * 目前还有bug,对requestMatchers不起作用,只对注解起作用
      * @return
      */
-    @Bean
-    GrantedAuthorityDefaults grantedAuthorityDefaults() {
-        return new GrantedAuthorityDefaults(""); // Remove the ROLE_ prefix
-    }
+//    @Bean
+//    public GrantedAuthorityDefaults grantedAuthorityDefaults() {
+//        return new GrantedAuthorityDefaults(""); // Remove the ROLE_ prefix
+//    }
     // Used by Spring Security if CORS is enabled.
 //    @Bean
 //    public CorsFilter corsFilter() {

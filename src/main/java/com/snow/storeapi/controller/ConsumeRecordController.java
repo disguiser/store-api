@@ -47,7 +47,7 @@ public class ConsumeRecordController {
             queryWrapper.like("create_time", createDate);
         }
         //不是老板,只能查自己门店下的
-        /*User user = (User) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        /*User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if(!"".equals(user.getRoles())) {
             queryWrapper.eq("dept_id", user.getDeptId());
         }
@@ -64,7 +64,7 @@ public class ConsumeRecordController {
     @Transactional(rollbackFor = Exception.class)
     public int create(@Valid @RequestBody ConsumeRecord consumeRecord,
                       HttpServletRequest request) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         consumeRecord.setCreator(user.getId());
         consumeRecordService.save(consumeRecord);
         Vip vip = vipService.getById(consumeRecord.getVipId());

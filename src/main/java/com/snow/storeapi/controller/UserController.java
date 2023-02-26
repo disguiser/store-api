@@ -90,6 +90,7 @@ public class UserController {
         var token = jwtComponent.generateToken(sub);
         return UserLoginDTO
                 .builder()
+                .id(userInfo.getId())
                 .userName(userInfo.getUserName())
                 .accountName(userInfo.getAccountName())
                 .deptId(userInfo.getDeptId())
@@ -174,7 +175,7 @@ public class UserController {
     @ApiOperation("手机端确认登录")
     @PostMapping("/phone-confirm")
     public void confirm(@RequestBody Sse req) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         var result = sseEmitterMap.get(req.getClientId());
         if (result.getServerId().equals(req.getServerId())) {
             User userInfo = userService.getById(user.getId());
@@ -202,7 +203,7 @@ public class UserController {
             @RequestParam(value = "limit", defaultValue = "10")Integer limit,
             HttpServletRequest request
     ) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         IPage<User> page = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(pageNum, limit);
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         if (!StrUtil.isEmpty(name)) {
@@ -221,21 +222,14 @@ public class UserController {
     }
 
     @ApiOperation("添加用户")
-    @PutMapping("/create")
+    @PostMapping("")
     public int addUser(@RequestBody User user){
         userService.save(user);
         return user.getId();
     }
 
-    @ApiOperation("批量删除用户")
-    @DeleteMapping("/delete")
-    public void delete(@RequestParam(value = "ids") List<Integer> ids) {
-        userService.removeByIds(ids);
-    }
-
-
     @ApiOperation("更新用户")
-    @PatchMapping("/update/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity update(@PathVariable Integer id,@RequestBody UpdateUserDTO updateUserDTO){
         if(!StrUtil.isEmpty(updateUserDTO.getNewPassword())){
             //校验旧密码是否一致
@@ -253,7 +247,7 @@ public class UserController {
     }
 
     @ApiOperation("更新用户头像")
-    @PatchMapping("/update-avatar/{id}")
+    @PatchMapping("/avatar/{id}")
     public ResponseEntity updateAvatar(@PathVariable Integer id, @RequestBody User user){
         Map<String, Object> res = new HashMap<>();
         var _user = new User();
@@ -274,7 +268,4 @@ public class UserController {
         }
         return true;
     }
-
-    @GetMapping("/check-auth")
-    public void checkAuth() {}
 }

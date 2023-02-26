@@ -50,7 +50,7 @@ public class ChargeRecordController {
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             queryWrapper.between("create_time", startDate,endDate);
         }
-        /*User user = (User) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        /*User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         //不是老板,只能查自己门店下的
         if(!"".equals(user.getRoles())) {
             queryWrapper.eq("dept_id", user.getDeptId());
@@ -67,7 +67,7 @@ public class ChargeRecordController {
     @PutMapping("")
     @Transactional(rollbackFor = Exception.class)
     public int create(@Valid @RequestBody ChargeRecord chargeRecord) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         chargeRecord.setCreator(user.getId());
         chargeRecordService.save(chargeRecord);
         Vip vip = vipService.getById(chargeRecord.getVipId());

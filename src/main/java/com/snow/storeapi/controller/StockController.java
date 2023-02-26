@@ -24,7 +24,7 @@ public class StockController {
     private final IStockService stockService;
     @GetMapping("/sum")
     public Integer sumByDept(HttpServletRequest request) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return stockService.sumByDept(user.getDeptId());
     }
 
@@ -54,7 +54,7 @@ public class StockController {
     @ApiOperation("添加")
     @PostMapping("/single")
     public Integer create(@Valid @RequestBody Stock stock, HttpServletRequest request) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         stock.setInputUser(user.getId());
         stockService.save(stock);
         return stock.getId();
@@ -63,7 +63,7 @@ public class StockController {
     @ApiOperation("批量添加")
     @PostMapping("/multi")
     public void multiCreate(@RequestBody Stock[] stocks, HttpServletRequest request) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         for (var stock: stocks) {
             var _stock = stockService.getOne(
                     new QueryWrapper<Stock>()

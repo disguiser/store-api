@@ -42,7 +42,7 @@ public class VipController {
             @RequestParam(value = "limit", defaultValue = "10") Integer limit,
             HttpServletRequest request
     ) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         IPage<Vip> page = new Page<>(pageNum, limit);
         QueryWrapper<Vip> queryWrapper = new QueryWrapper<>();
         if (!StrUtil.isEmpty(name)) {
@@ -68,7 +68,7 @@ public class VipController {
             @RequestParam(value = "phone", required = false) String phone,
             HttpServletRequest request
     ) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         QueryWrapper<Vip> queryWrapper = new QueryWrapper<>();
         if (!StrUtil.isEmpty(name)) {
             queryWrapper.eq("name", name);
@@ -88,7 +88,7 @@ public class VipController {
     @ApiOperation("添加会员")
     @PutMapping("")
     public int create(@Valid @RequestBody Vip vip, HttpServletRequest request) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         vip.setDeptId(user.getDeptId());
         vipService.save(vip);
         return vip.getId();
