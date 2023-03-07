@@ -18,7 +18,7 @@ public class DictController {
     private final IDictService dictService;
     private final IVersionService versionService;
     @ApiOperation("字典查询")
-    @GetMapping("/admin/all")
+    @GetMapping("/all")
     public List<Dict> findAll(
             @RequestParam(value = "dictName", required = false)String dictName,
             @RequestParam(value = "sort", required = false) String sort

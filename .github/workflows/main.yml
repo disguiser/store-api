@@ -31,7 +31,7 @@ jobs:
           command: |
             cd store-api
             ./stop.sh
-            nohup java -jar store-api-2.0.jar --jasypt.encryptor.password=${{ secrets.JASYPT_PASSWORD }}
+            nohup java -jar store-api-2.0.jar --jasypt.encryptor.password=${{ secrets.JASYPT_PASSWORD }} > log.log 2>&1 &
           host: ${{ secrets.HOST }}
           user: ${{ secrets.USER_NAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
