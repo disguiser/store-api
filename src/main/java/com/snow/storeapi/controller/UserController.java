@@ -52,7 +52,7 @@ public class UserController {
 
     @ApiOperation(value = "登录")
     @PostMapping(value = "/login")
-    public ResponseEntity userLogin(@RequestBody User loginDto) throws JsonProcessingException {
+    public ResponseEntity userLogin(@RequestBody User loginDto) {
         QueryWrapper<User> queryWrapper = new QueryWrapper();
         var accountName = loginDto.getAccountName();
         var phoneNumber = loginDto.getPhoneNumber();
@@ -268,4 +268,5 @@ public class UserController {
         }
         return true;
     }
+
 }

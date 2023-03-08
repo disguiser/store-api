@@ -42,6 +42,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     filterChain.doFilter(request,response);
                     return;
                 } else {
+                    response.setContentType("text/plain;charset=UTF-8");
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     response.getWriter().print(jwtCheckResult.getErrMsg());
                 }

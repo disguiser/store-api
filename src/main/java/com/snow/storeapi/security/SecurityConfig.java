@@ -38,6 +38,7 @@ public class SecurityConfig {
 //                    System.out.println("==================");
                     if (authException instanceof InsufficientAuthenticationException) {
                         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                        response.setContentType("text/plain;charset=UTF-8");
                         response.getWriter().print("未认证");
                     } else {
                         response.sendError(
@@ -48,8 +49,9 @@ public class SecurityConfig {
                 }))
                 .accessDeniedHandler((request, response, exception) -> {
                     System.out.println("----------");
-                    exception.printStackTrace();
+//                    exception.printStackTrace();
                     response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    response.setContentType("text/plain;charset=UTF-8");
                     response.getWriter().print("权限不足");
                 })
                 .and()
