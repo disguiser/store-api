@@ -1,9 +1,6 @@
 package com.snow.storeapi.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.snow.storeapi.config.DictItemTypeHandler;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -24,6 +21,6 @@ public class Dict {
     private List<DictItem> data;
 
     private Boolean moreOption;
-
-    private LocalDateTime modifyTime;
+    @TableField(fill = FieldFill.INSERT_UPDATE)
+    private LocalDateTime updateTime;
 }

@@ -7,7 +7,7 @@
         <result column="data" property="data" typeHandler="com.snow.storeapi.config.JsonTypeHandler"/>
     </resultMap>
     <sql id="Base_Column_List">
-        id, dict_name, data, more_option, modify_time
+        id, dict_name, data, more_option, update_time
     </sql>
     <select id="selectAll" resultMap="BaseResultMap">
         select
@@ -19,7 +19,7 @@
         order by
         <choose>
             <when test="'id'.equals(sort)">id</when>
-            <otherwise>modify_time desc</otherwise>
+            <otherwise>update_time desc</otherwise>
         </choose>
         <if test="desc">
             desc

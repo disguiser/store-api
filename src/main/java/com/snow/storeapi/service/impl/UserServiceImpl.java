@@ -7,23 +7,20 @@ import com.snow.storeapi.entity.User;
 import com.snow.storeapi.mapper.UserMapper;
 import com.snow.storeapi.service.IUserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IUserService, UserDetailsService {
+public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IUserService {
     private final UserMapper userMapper;
 
-    @Override
-    public User loadUserByUsername(String accountName) throws UsernameNotFoundException {
+    public User loadUserByUsername(String accountName) throws Exception {
         LambdaQueryWrapper<User> wrapper = Wrappers.lambdaQuery(User.class).eq(User::getAccountName, accountName);
         User user = userMapper.selectOne(wrapper);
         return Optional.ofNullable(user)
 //                .map(CustomerUserDetails::new)
-                .orElseThrow(() -> new UsernameNotFoundException("Username not found"));
+                .orElseThrow(() -> new Exception("Username not found"));
     }
 }

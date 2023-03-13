@@ -19,7 +19,7 @@
         c.address_detail as addressDetail,
         c.mobile,
         c.open_id AS openId,
-        o.order_time AS orderTime,
+        o.create_time AS createTime,
         o.payment_status as paymentStatus
         FROM
         `order` o
@@ -38,17 +38,17 @@
             </if>
             <choose>
                 <when test="startDate != null and endDate != null">
-                    AND o.order_time <![CDATA[>= ]]> #{startDate}
-                    AND o.order_time <![CDATA[<= ]]> #{endDate}
+                    AND o.create_time <![CDATA[>= ]]> #{startDate}
+                    AND o.create_time <![CDATA[<= ]]> #{endDate}
                 </when>
 <!--                <when test="customerName == null">-->
-<!--                    AND o.order_time <![CDATA[>= ]]> DATE_FORMAT(NOW(),'%Y-%m-%d 00:00:00')-->
-<!--                    AND o.order_time <![CDATA[<= ]]> DATE_FORMAT(NOW(),'%Y-%m-%d 23:59:59')-->
+<!--                    AND o.create_time <![CDATA[>= ]]> DATE_FORMAT(NOW(),'%Y-%m-%d 00:00:00')-->
+<!--                    AND o.create_time <![CDATA[<= ]]> DATE_FORMAT(NOW(),'%Y-%m-%d 23:59:59')-->
 <!--                </when>-->
             </choose>
         </trim>
         ORDER BY
-        o.order_time DESC
+        o.create_time DESC
         LIMIT #{start},#{end}
     </select>
 
@@ -109,35 +109,35 @@
         select sum(total_money) from
         `order` where deleted = 0
         and dept_id = #{deptId}
-        AND order_time <![CDATA[>= ]]> DATE_FORMAT(NOW(),'%Y-%m-%d 00:00:00')
-        AND order_time <![CDATA[<= ]]> DATE_FORMAT(NOW(),'%Y-%m-%d 23:59:59')
+        AND create_time <![CDATA[>= ]]> DATE_FORMAT(NOW(),'%Y-%m-%d 00:00:00')
+        AND create_time <![CDATA[<= ]]> DATE_FORMAT(NOW(),'%Y-%m-%d 23:59:59')
     </select>
     <select id="sumAmount" resultType="java.lang.Integer">
         select sum(total) from
         `order` where deleted = 0
         and dept_id = #{deptId}
         and category = #{category}
-        AND order_time <![CDATA[>= ]]> DATE_FORMAT(NOW(),'%Y-%m-%d 00:00:00')
-        AND order_time <![CDATA[<= ]]> DATE_FORMAT(NOW(),'%Y-%m-%d 23:59:59')
+        AND create_time <![CDATA[>= ]]> DATE_FORMAT(NOW(),'%Y-%m-%d 00:00:00')
+        AND create_time <![CDATA[<= ]]> DATE_FORMAT(NOW(),'%Y-%m-%d 23:59:59')
     </select>
 
     <select id="chartMoney" resultType="hashmap">
-        select sum(total_money) total, date(order_time) orderTime from `order`
+        select sum(total_money) total, date(create_time) createTime from `order`
         where deleted = 0
         and dept_id = #{deptId}
         and category = #{category}
-        and DATE_SUB(CURDATE(), INTERVAL 6 DAY) <![CDATA[<= ]]> date(order_time)
-        group by date(order_time)
-        order by date(order_time);
+        and DATE_SUB(CURDATE(), INTERVAL 6 DAY) <![CDATA[<= ]]> date(create_time)
+        group by date(create_time)
+        order by date(create_time);
     </select>
 
     <select id="chartAmount" resultType="hashmap">
-        select sum(total) total, date(order_time) orderTime from `order`
+        select sum(total) total, date(create_time) createTime from `order`
         where deleted = 0
         and dept_id = #{deptId}
         and category = #{category}
-        and DATE_SUB(CURDATE(), INTERVAL 6 DAY) <![CDATA[<= ]]> date(order_time)
-        group by date(order_time)
-        order by date(order_time);
+        and DATE_SUB(CURDATE(), INTERVAL 6 DAY) <![CDATA[<= ]]> date(create_time)
+        group by date(create_time)
+        order by date(create_time);
     </select>
 </mapper>

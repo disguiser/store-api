@@ -1,8 +1,6 @@
 package com.snow.storeapi.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 import lombok.NonNull;
 import lombok.experimental.Accessors;
@@ -15,8 +13,6 @@ import java.time.LocalDateTime;
 @TableName("charge_record")
 public class ChargeRecord implements Serializable {
 
-    private static final long serialVersionUID = 6049091661620210844L;
-
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
@@ -28,7 +24,8 @@ public class ChargeRecord implements Serializable {
 
     private Integer giveAmount;
 
-    private Integer creator;
-
+    @TableField(fill = FieldFill.INSERT)
+    private Integer createBy;
+    @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 }

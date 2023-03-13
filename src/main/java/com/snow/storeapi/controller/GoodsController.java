@@ -3,25 +3,24 @@ package com.snow.storeapi.controller;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.snow.storeapi.entity.Goods;
 import com.snow.storeapi.entity.MyPage;
 import com.snow.storeapi.entity.Stock;
-import com.snow.storeapi.entity.User;
 import com.snow.storeapi.service.IGoodsService;
 import com.snow.storeapi.service.IStockService;
 import com.snow.storeapi.service.IVersionService;
 import com.snow.storeapi.util.ResponseUtil;
 import com.snow.storeapi.util.TransformCamelUtil;
-import io.swagger.annotations.ApiOperation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -32,17 +31,15 @@ import java.util.Optional;
 @RequestMapping("/goods")
 @RequiredArgsConstructor
 public class GoodsController {
-//    private static final Logger logger = LoggerFactory.getLogger(GoodsController.class);
     private final IGoodsService goodsService;
     private final IStockService stockService;
     private final IVersionService versionService;
 
-    @ApiOperation("列表查询")
     @GetMapping("/page")
     public Map findByPage(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "preSku", required = false) String preSku,
-            @RequestParam(value = "sort", defaultValue = "-modifyTime") String sort,
+            @RequestParam(value = "sort", defaultValue = "-updateTime") String sort,
             @RequestParam(value = "page", defaultValue = "1") Integer pageNum,
             @RequestParam(value = "limit", defaultValue = "10") Integer limit
     ) {
@@ -63,8 +60,6 @@ public class GoodsController {
         return ResponseUtil.pageRes(goodss);
     }
 
-    // 包含明细 sql手写
-    @ApiOperation("列表查询")
     @GetMapping("/dept")
     public Map findByDept(
             @RequestParam(value = "deptId", required = false)String deptId,
@@ -78,11 +73,8 @@ public class GoodsController {
         return ResponseUtil.pageRes(goodss);
     }
 
-    @ApiOperation("添加")
     @PostMapping("")
     public Goods create(@Valid @RequestBody Goods goods) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        goods.setInputUser(user.getId());
         // generate sku
         var version = versionService.addOne("sku");
         goods.setSku(StrUtil.fillBefore(version.getV().toString(), '0', 4).toString());
@@ -118,7 +110,6 @@ public class GoodsController {
         return goods;
     }
 
-    @ApiOperation("删除")
     @DeleteMapping({"/{goodsId}", "/{goodsId}/{deptId}"})
     @Transactional(rollbackFor = Exception.class)
     public void delete(
@@ -133,7 +124,6 @@ public class GoodsController {
         goodsService.removeById(goodsId);
     }
 
-    @ApiOperation("更新")
     @PatchMapping("/{id}")
     public int update(@PathVariable Integer id,@Valid @RequestBody Goods goods){
         goodsService.updateById(goods);
@@ -141,12 +131,22 @@ public class GoodsController {
     }
 
     @GetMapping("/sku/{sku}")
-    public ResponseEntity findOneBySku(@PathVariable String sku){
-        if (sku == null || StrUtil.isEmpty(sku)){
+    public ResponseEntity findOneBySku(@PathVariable String sku) {
+        if (StrUtil.isEmpty(sku)){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("sku不能为空！");
         }
         QueryWrapper<Goods> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("sku",sku.toUpperCase());
         return  ResponseEntity.ok(goodsService.getOne(queryWrapper));
+    }
+
+    @GetMapping("/check/pre-sku/{preSku}")
+    public ResponseEntity checkPreSku(@PathVariable String preSku) {
+        List<Goods> goodsList = goodsService.list(Wrappers.lambdaQuery(Goods.class).eq(Goods::getPreSku, preSku));
+        if (goodsList.size() > 0) {
+            return ResponseEntity.ok(true);
+        } else {
+            return ResponseEntity.ok(false);
+        }
     }
 }

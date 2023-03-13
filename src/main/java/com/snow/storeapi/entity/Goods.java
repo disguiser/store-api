@@ -15,7 +15,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Goods implements Serializable {
-    private static final long serialVersionUID = 5327492187818698583L;
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
@@ -36,12 +35,12 @@ public class Goods implements Serializable {
     private String preSku;
 
     private Integer discount;
-
-    private LocalDateTime modifyTime;
-
+    @TableField(fill = FieldFill.INSERT_UPDATE)
+    private LocalDateTime updateTime;
+    @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
-
-    private Integer inputUser;
+    @TableField(fill = FieldFill.INSERT)
+    private Integer createBy;
     @TableLogic
     private Integer deleted;
 

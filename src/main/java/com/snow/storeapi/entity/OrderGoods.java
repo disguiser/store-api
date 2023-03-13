@@ -12,7 +12,6 @@ import java.io.Serializable;
 @Accessors(chain = true)
 @TableName("order_goods")
 public class OrderGoods implements Serializable {
-    private static final long serialVersionUID = 1986775620366512211L;
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 

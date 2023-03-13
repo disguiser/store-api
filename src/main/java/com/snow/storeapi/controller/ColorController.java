@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.snow.storeapi.entity.Color;
 import com.snow.storeapi.service.IColorService;
 import com.snow.storeapi.service.IVersionService;
-import io.swagger.annotations.ApiOperation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +18,6 @@ import java.util.List;
 public class ColorController {
     private final IColorService colorService;
     private final IVersionService versionService;
-    @ApiOperation("全部颜色查询")
     @GetMapping("/all")
     public List findAll(
             @RequestParam(value = "itemName", required = false)String itemName
@@ -32,7 +30,6 @@ public class ColorController {
         return colors;
     }
     
-    @ApiOperation("添加颜色")
     @PostMapping("")
     public int create(@Valid @RequestBody Color color) {
         versionService.addOne("color");
@@ -40,7 +37,6 @@ public class ColorController {
         return color.getId();
     }
 
-    @ApiOperation("修改颜色")
     @PatchMapping("")
     @Transactional(rollbackFor = Exception.class)
     public void update(@Valid @RequestBody Color color) {
@@ -49,7 +45,6 @@ public class ColorController {
     }
 
 
-    @ApiOperation("删除颜色")
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Integer id) {
         colorService.removeById(id);

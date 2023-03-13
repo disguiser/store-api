@@ -1,21 +1,13 @@
 package com.snow.storeapi.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.Accessors;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 @Data
@@ -24,80 +16,30 @@ import java.util.List;
 @AllArgsConstructor
 @Accessors(chain = true)
 @TableName(value = "user", autoResultMap = true)
-public class User implements UserDetails, Serializable {
+public class User implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
-
     @NotNull
     private String userName;
-
     @NotNull
     private String accountName;
-
     @NotNull
     private String password;
-
     private String avatar;
-
     @NotNull
     private Integer deptId;
-
     @Singular
     @NotNull
     @TableField(typeHandler = JacksonTypeHandler.class)
     private List<String> roles;
-
     @NotNull
     private String status;
-
-    private LocalDateTime modifyTime;
-
+    @TableField(fill = FieldFill.INSERT_UPDATE)
+    private LocalDateTime updateTime;
+    @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
-
     @NotNull
     private String phoneNumber;
-
     private String phoneCode;
-
     private LocalDateTime codeExpTime;
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        this.roles.forEach(role -> authorities.add(new SimpleGrantedAuthority("ROLE_" + role)));
-        return authorities;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    @Override
-    public String getUsername() {
-        return userName;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
 }

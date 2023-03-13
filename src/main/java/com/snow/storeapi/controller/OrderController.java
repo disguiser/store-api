@@ -5,12 +5,10 @@ import com.snow.storeapi.entity.User;
 import com.snow.storeapi.enums.Role;
 import com.snow.storeapi.service.ICustomerService;
 import com.snow.storeapi.service.IOrderService;
+import com.snow.storeapi.util.BaseContext;
 import com.snow.storeapi.util.ResponseUtil;
-import io.swagger.annotations.ApiOperation;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,12 +24,11 @@ import java.util.Map;
 public class OrderController {
     private final IOrderService orderService;
     private final ICustomerService customerService;
-    @ApiOperation("列表查询")
     @GetMapping("/page")
     public Map list(
             @RequestParam(value = "page", defaultValue = "1") Integer page,
             @RequestParam(value = "limit", defaultValue = "10") Integer limit,
-            @RequestParam(value = "category", required = true) Integer category,
+            @RequestParam(value = "category") Integer category,
             @RequestParam(value = "address", required = false) String address,
             @RequestParam(value = "customerName", required = false) String customerName,
             @RequestParam(value = "startDate", required = false) Long startDate,
@@ -40,19 +37,14 @@ public class OrderController {
         return ResponseUtil.listRes(orderService.findByPage(page, limit, category, address, customerName, startDate, endDate));
     }
 
-    @ApiOperation("根据订单id查询详情")
     @GetMapping("/details/{orderId}")
     public Map getDetailByOrderId(@PathVariable Integer orderId) {
         return ResponseUtil.listRes(orderService.getDetailByOrderId(orderId));
     }
 
-    @ApiOperation("添加")
     @PostMapping("")
     @Transactional(rollbackFor = Exception.class)
-    public int create(@Valid @RequestBody Order order, HttpServletRequest request) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        order.setInputUser(user.getId());
-        order.setDeptId(user.getDeptId());
+    public int create(@Valid @RequestBody Order order) {
         var orderId = orderService.create(order);
         if (order.getBuyer() != null) {
             var customer = customerService.getById(order.getBuyer());
@@ -62,7 +54,6 @@ public class OrderController {
         return orderId;
     }
 
-    @ApiOperation("批量删除")
     @DeleteMapping("/{id}")
     @Transactional(rollbackFor = Exception.class)
     public void delete(@PathVariable Integer id) {
@@ -76,8 +67,8 @@ public class OrderController {
     }
 
     @GetMapping("/daily/money")
-    public Integer dailyMoney(HttpServletRequest request) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public Integer dailyMoney() {
+        User user = BaseContext.getCurrentUser();
         if (null != user.getDeptId()) {
             return orderService.sumMoney(user.getDeptId());
         } else {
@@ -86,11 +77,8 @@ public class OrderController {
     }
 
     @GetMapping("/daily/amount")
-    public Integer dailyAmount(
-            @RequestParam(value = "category") Integer category,
-            HttpServletRequest request
-    ) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public Integer dailyAmount(@RequestParam(value = "category") Integer category) {
+        User user = BaseContext.getCurrentUser();
         if (null != user.getDeptId()) {
             return orderService.sumAmount(category, user.getDeptId());
         } else {
@@ -99,11 +87,8 @@ public class OrderController {
     }
 
     @GetMapping("/chart/money")
-    public List<Map<String, Object>> chartMoney(
-            @RequestParam(value = "category") Integer category,
-            HttpServletRequest request
-    ) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public List<Map<String, Object>> chartMoney(@RequestParam(value = "category") Integer category) {
+        User user = BaseContext.getCurrentUser();
         if (user.getRoles().contains(Role.BOSS)) {
 
         }
@@ -115,11 +100,8 @@ public class OrderController {
     }
 
     @GetMapping("/chart/amount")
-    public List<Map<String, Object>> chartAmount(
-            @RequestParam(value = "category") Integer category,
-            HttpServletRequest request
-    ) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public List<Map<String, Object>> chartAmount(@RequestParam(value = "category") Integer category) {
+        User user = BaseContext.getCurrentUser();
         if (null != user.getDeptId()) {
             return orderService.chartAmount(category, user.getDeptId());
         } else {

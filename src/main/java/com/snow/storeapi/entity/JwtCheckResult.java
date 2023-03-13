@@ -11,5 +11,5 @@ public class JwtCheckResult {
 
 	private boolean success;
 
-	private String subject;
+	private User user;
 }

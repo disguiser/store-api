@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.snow.storeapi.mapper.GoodsMapper">
-    <resultMap id="BaseResultMap" type="com.snow.storeapi.entity.GoodsStock">
+    <resultMap id="BaseResultMap" type="com.snow.storeapi.DTO.goods.GoodsStockDTO">
         <id column="id" jdbcType="INTEGER" property="id" />
         <result column="sku" jdbcType="VARCHAR" property="sku" />
         <result column="name" jdbcType="VARCHAR" property="name" />
@@ -16,7 +16,7 @@
     </resultMap>
     <select id="findByDept" resultMap="BaseResultMap">
         SELECT
-        g.id, sku, name, size_group, img_url, sale_price, cost_price, pre_sku, g.modify_time,
+        g.id, sku, name, size_group, img_url, sale_price, cost_price, pre_sku, g.update_time,
         s.color, s.size, s.current_stock
         FROM
              (
@@ -37,7 +37,7 @@
                         #{sort}
                     </when>
                     <otherwise>
-                        modify_time desc
+                        update_time desc
                     </otherwise>
                 </choose>
 

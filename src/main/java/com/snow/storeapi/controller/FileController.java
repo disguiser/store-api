@@ -2,7 +2,6 @@ package com.snow.storeapi.controller;
 
 import cn.hutool.core.util.StrUtil;
 import com.snow.storeapi.util.COSUtil;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +32,6 @@ public class FileController {
     @Value("${COS.FILE_HOST}")
     private String FILE_HOST;
 
-    @ApiOperation("上传文件")
     @PostMapping("/upload/{folder}")
     public ResponseEntity upload(@RequestParam("file") MultipartFile multipartFile, @PathVariable String folder){
         Map<String, Object> res = new HashMap<>();

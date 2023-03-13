@@ -1,7 +1,6 @@
 package com.snow.storeapi.controller;
 
 import com.snow.storeapi.service.IOrderGoodsService;
-import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +18,6 @@ import java.util.List;
 public class OrderGoodsController {
     private final IOrderGoodsService orderGoodsService;
 
-    @ApiOperation("列表查询")
     @GetMapping("/daily-list")
     public List dailyList(
             @RequestParam(value = "sort", required = false) String sort

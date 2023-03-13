@@ -1,10 +1,9 @@
 package com.snow.storeapi.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.experimental.Accessors;
 
@@ -14,9 +13,8 @@ import java.time.LocalDateTime;
 @Data
 @Accessors(chain = true)
 @TableName("dept")
+@NoArgsConstructor
 public class Dept implements Serializable {
-
-    private static final long serialVersionUID = 1L;
 
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
@@ -27,11 +25,8 @@ public class Dept implements Serializable {
     private Integer stockCount;
 
     private Integer goodsCount;
-
+    @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
-
-    private LocalDateTime modifyTime;
-
-    public Dept() {
-    }
+    @TableField(fill = FieldFill.INSERT_UPDATE)
+    private LocalDateTime updateTime;
 }

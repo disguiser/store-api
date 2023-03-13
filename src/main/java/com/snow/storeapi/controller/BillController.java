@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.snow.storeapi.entity.Bill;
 import com.snow.storeapi.service.IBillService;
 import com.snow.storeapi.service.ICustomerService;
-import io.swagger.annotations.ApiOperation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +17,6 @@ import java.util.List;
 public class BillController {
     private final IBillService billService;
     private final ICustomerService customerService;
-    @ApiOperation("全部查询")
     @GetMapping("/all")
     public List findAll(
             @RequestParam(value = "customerId", required = false)Integer customerId

@@ -2,57 +2,62 @@ package com.snow.storeapi.controller;
 
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.crypto.digest.DigestUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.snow.storeapi.DTO.user.UpdateUserDTO;
 import com.snow.storeapi.DTO.user.UserLoginDTO;
 import com.snow.storeapi.entity.ErrorMsg;
 import com.snow.storeapi.entity.Sse;
 import com.snow.storeapi.entity.User;
-import com.snow.storeapi.service.impl.UserServiceImpl;
 import com.snow.storeapi.security.JwtComponent;
+import com.snow.storeapi.service.impl.UserServiceImpl;
+import com.snow.storeapi.util.BaseContext;
 import com.snow.storeapi.util.ResponseUtil;
 import com.xkzhangsan.time.calculator.DateTimeCalculatorUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Api(value = "UserController",  tags="用户管理")
 @RestController
 @RequestMapping(value = "/user")
 @Slf4j
-@RequiredArgsConstructor
 public class UserController {
     private Map<String, Sse> sseEmitterMap = new ConcurrentHashMap<>();
     private final UserServiceImpl userService;
     private final JwtComponent jwtComponent;
 
     private final ObjectMapper objectMapper;
-    private final PasswordEncoder passwordEncoder;
+    private final String SALT;
 
-    @ApiOperation(value = "登录")
+    public UserController(
+            UserServiceImpl userService,
+            JwtComponent jwtComponent,
+            ObjectMapper objectMapper,
+            @Value("${SALT}") String SALT
+    ) {
+        this.userService = userService;
+        this.jwtComponent = jwtComponent;
+        this.objectMapper = objectMapper;
+        this.SALT = SALT;
+    }
+
     @PostMapping(value = "/login")
-    public ResponseEntity userLogin(@RequestBody User loginDto) {
+    public ResponseEntity userLogin(@RequestBody User loginDto) throws Exception {
         QueryWrapper<User> queryWrapper = new QueryWrapper();
         var accountName = loginDto.getAccountName();
         var phoneNumber = loginDto.getPhoneNumber();
@@ -65,7 +70,8 @@ public class UserController {
         }
         User userInfo = userService.loadUserByUsername(accountName);
         if (userInfo != null){
-            var hexPw = passwordEncoder.encode(loginDto.getPassword());
+//            var hexPw = passwordEncoder.encode(loginDto.getPassword());
+            var hexPw = DigestUtil.md5Hex(loginDto.getPassword() + SALT);
             if (!StrUtil.isEmpty(accountName) && !userInfo.getPassword().equals(hexPw)){
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg("密码不正确!"));
             }
@@ -100,7 +106,6 @@ public class UserController {
                 .build();
     }
 
-    @ApiOperation("获取短信验证码")
     @GetMapping("/sendPhoneCode/{phoneNumber}")
     public ResponseEntity sendPhoneCode(@PathVariable String phoneNumber) {
         var userInfo = userService.getOne(
@@ -125,7 +130,6 @@ public class UserController {
         }
     }
 
-    @ApiOperation("获取二维码")
     @GetMapping("/QRCode")
     public SseEmitter getBarcode(String clientId) {
         final SseEmitter emitter = new SseEmitter(0L);
@@ -154,7 +158,6 @@ public class UserController {
         });
         return emitter;
     }
-    @ApiOperation("已扫码")
     @PostMapping("/scanned")
     public ResponseEntity scanned(@RequestBody Sse req) {
         var result = sseEmitterMap.get(req.getClientId());
@@ -172,13 +175,13 @@ public class UserController {
             return new ResponseEntity(new ErrorMsg("二维码已过期"), HttpStatus.UNAUTHORIZED);
         }
     }
-    @ApiOperation("手机端确认登录")
     @PostMapping("/phone-confirm")
-    public void confirm(@RequestBody Sse req) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        var result = sseEmitterMap.get(req.getClientId());
-        if (result.getServerId().equals(req.getServerId())) {
+    public void confirm(@RequestBody Sse sse) {
+        User user = BaseContext.getCurrentUser();
+        var result = sseEmitterMap.get(sse.getClientId());
+        if (result.getServerId().equals(sse.getServerId())) {
             User userInfo = userService.getById(user.getId());
+            // TO-DO
             var res = buildLoginResponse(userInfo);
             try {
                 result.getSseEmitter()
@@ -194,17 +197,14 @@ public class UserController {
         }
     }
 
-    @ApiOperation("用户列表查询")
     @GetMapping("/findByPage")
     public Map list(
             @RequestParam(value = "name", required = false)String name,
             @RequestParam(value = "accountName", required = false)String accountName,
             @RequestParam(value = "page", defaultValue = "1")Integer pageNum,
-            @RequestParam(value = "limit", defaultValue = "10")Integer limit,
-            HttpServletRequest request
+            @RequestParam(value = "limit", defaultValue = "10")Integer limit
     ) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        IPage<User> page = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(pageNum, limit);
+        IPage<User> page = new Page<>(pageNum, limit);
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         if (!StrUtil.isEmpty(name)) {
             queryWrapper.eq("name", name);
@@ -216,19 +216,17 @@ public class UserController {
         /*if(!"".equals(userInfo.getRole())) {
             queryWrapper.eq("dept_id", userInfo.getDeptId());
         }*/
-        queryWrapper.orderByDesc("modify_time");
+        queryWrapper.orderByDesc("update_time");
         IPage<User> usrInfos = userService.page(page, queryWrapper);
         return ResponseUtil.pageRes(usrInfos);
     }
 
-    @ApiOperation("添加用户")
     @PostMapping("")
     public int addUser(@RequestBody User user){
         userService.save(user);
         return user.getId();
     }
 
-    @ApiOperation("更新用户")
     @PatchMapping("/{id}")
     public ResponseEntity update(@PathVariable Integer id,@RequestBody UpdateUserDTO updateUserDTO){
         if(!StrUtil.isEmpty(updateUserDTO.getNewPassword())){
@@ -246,7 +244,6 @@ public class UserController {
         return ResponseEntity.ok("");
     }
 
-    @ApiOperation("更新用户头像")
     @PatchMapping("/avatar/{id}")
     public ResponseEntity updateAvatar(@PathVariable Integer id, @RequestBody User user){
         Map<String, Object> res = new HashMap<>();
@@ -257,7 +254,6 @@ public class UserController {
         return ResponseEntity.ok(res);
     }
 
-    @ApiOperation("校验登录名唯一性")
     @GetMapping("/checkAccountNameUinque/{accountName}")
     public Boolean checkAccountNameUinque(@PathVariable String accountName){
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();

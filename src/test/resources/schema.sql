@@ -15,8 +15,8 @@ CREATE TABLE `charge_record` (
   `vip_id` int DEFAULT NULL,
   `charge_amount` int DEFAULT NULL COMMENT '充值金额',
   `give_amount` int DEFAULT '0' COMMENT '赠送金额',
-  `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
-  `creator` int DEFAULT NULL COMMENT '创建人,同user_id',
+  `create_time` datetime DEFAULT NULL,
+  `create_by` int DEFAULT NULL COMMENT '创建人,同user_id',
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='充值记录表';
@@ -34,8 +34,8 @@ CREATE TABLE `consume_record` (
   `id` int NOT NULL AUTO_INCREMENT,
   `vip_id` int DEFAULT NULL,
   `consume_amount` int DEFAULT NULL COMMENT '消费金额',
-  `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
-  `creator` int DEFAULT NULL COMMENT '创建人,同user_id',
+  `create_time` datetime DEFAULT NULL,
+  `create_by` int DEFAULT NULL COMMENT '创建人,同user_id',
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='消费记录表';
@@ -48,7 +48,7 @@ CREATE TABLE `customer` (
   `address` json DEFAULT NULL COMMENT '地址',
   `address_detail` varchar(255) DEFAULT NULL,
   `open_id` varchar(255) DEFAULT NULL COMMENT '微信openid',
-  `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
+  `create_time` datetime DEFAULT NULL,
   `debt` int DEFAULT '0' COMMENT '欠款',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='批发客户表';
@@ -59,8 +59,8 @@ CREATE TABLE `dept` (
   `name` varchar(45) DEFAULT NULL,
   `stock_count` int DEFAULT NULL,
   `goods_count` int DEFAULT NULL,
-  `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
-  `modify_time` datetime DEFAULT CURRENT_TIMESTAMP,
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='门店表';
@@ -76,8 +76,8 @@ CREATE TABLE `goods` (
   `cost_price` int DEFAULT NULL COMMENT '成本单价',
   `pre_sku` varchar(50) DEFAULT NULL COMMENT '上家货号',
   `discount` int DEFAULT NULL COMMENT '折扣',
-  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `modify_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL COMMENT '修改时间',
   `input_user` int DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT '0' COMMENT '删除标志 0：未删除 1已删除',
   PRIMARY KEY (`id`),
@@ -89,7 +89,7 @@ CREATE TABLE `order` (
   `id` int NOT NULL AUTO_INCREMENT,
   `total` int DEFAULT NULL COMMENT '总计',
   `total_money` int DEFAULT NULL COMMENT '总计金额',
-  `order_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '下单时间',
+  `create_time` datetime DEFAULT NULL COMMENT '下单时间',
   `buyer` int DEFAULT NULL COMMENT '客户表id',
   `input_user` int DEFAULT NULL COMMENT '录入员，user主键',
   `deleted` tinyint DEFAULT '0',
@@ -119,7 +119,7 @@ CREATE TABLE `print_template` (
   `data` json DEFAULT NULL,
   `width` int DEFAULT NULL,
   `height` int DEFAULT NULL,
-  `modify_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `update_time` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -128,7 +128,7 @@ CREATE TABLE `purchase` (
   `id` int NOT NULL AUTO_INCREMENT,
   `stock_id` int DEFAULT NULL,
   `purchase_amount` int DEFAULT NULL COMMENT '进货数量',
-  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '录入时间',
+  `create_time` datetime DEFAULT NULL COMMENT '录入时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='进货记录表';
 
@@ -142,7 +142,7 @@ CREATE TABLE `sale` (
   `sale_user_id` int DEFAULT NULL COMMENT '销售人员',
   `dept_id` int DEFAULT NULL COMMENT '所属部门id',
   `remake` varchar(100) DEFAULT NULL COMMENT '备注',
-  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='销售记录表';
 
@@ -171,8 +171,8 @@ CREATE TABLE `stock` (
   `color` int NOT NULL COMMENT '颜色',
   `size` int NOT NULL COMMENT '尺码',
   `current_stock` int NOT NULL COMMENT '当前库存',
-  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `modify_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `create_time` datetime NOT NULL DEFAULT NULL,
+  `update_time` datetime NOT NULL DEFAULT NULL,
   `deleted` tinyint(1) NOT NULL DEFAULT '0' COMMENT '删除标志 0：未删除 1已删除',
   `input_user` int DEFAULT NULL,
   PRIMARY KEY (`id`)
@@ -184,7 +184,7 @@ CREATE TABLE `sys_dict` (
   `dict_name` varchar(45) DEFAULT NULL,
   `data` json DEFAULT NULL,
   `more_option` tinyint(1) DEFAULT '0',
-  `modify_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `update_time` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='系统字典表';
@@ -207,8 +207,8 @@ CREATE TABLE `user` (
   `avatar` varchar(100) DEFAULT NULL,
   `dept_id` int DEFAULT NULL,
   `roles` json DEFAULT NULL,
-  `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
-  `modify_time` datetime DEFAULT CURRENT_TIMESTAMP,
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
   `status` varchar(45) DEFAULT 'Enabled',
   `phone_number` char(11) DEFAULT NULL COMMENT '手机号',
   `phone_code` char(6) DEFAULT NULL COMMENT '手机验证码',
@@ -228,8 +228,8 @@ CREATE TABLE `vip` (
   `birth_discount` int DEFAULT NULL COMMENT '''生日折扣''',
   `vip_discount` int DEFAULT NULL COMMENT '终身折扣',
   `balance` int DEFAULT '0' COMMENT '当前余额',
-  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `modify_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '修改时间',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL COMMENT '修改时间',
   `dept_id` int DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`)

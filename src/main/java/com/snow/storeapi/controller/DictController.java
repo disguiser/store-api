@@ -2,9 +2,9 @@ package com.snow.storeapi.controller;
 
 import cn.hutool.core.util.StrUtil;
 import com.snow.storeapi.entity.Dict;
+import com.snow.storeapi.security.HasRoles;
 import com.snow.storeapi.service.IDictService;
 import com.snow.storeapi.service.IVersionService;
-import io.swagger.annotations.ApiOperation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +17,6 @@ import java.util.List;
 public class DictController {
     private final IDictService dictService;
     private final IVersionService versionService;
-    @ApiOperation("字典查询")
     @GetMapping("/all")
     public List<Dict> findAll(
             @RequestParam(value = "dictName", required = false)String dictName,
@@ -27,7 +26,7 @@ public class DictController {
             dictName = null;
         }
 //        if (StrUtil.isEmpty(sort)) {
-//            sort = "-modify_time";
+//            sort = "-update_time";
 //        } else {
 //            sort = TransformCamelUtil.underline(sort);
 //        }
@@ -35,7 +34,6 @@ public class DictController {
         return dicts;
     }
 
-    @ApiOperation("添加字典")
     @PostMapping("")
     public int create(@Valid @RequestBody Dict dict) {
         versionService.addOne("dict");
@@ -43,16 +41,15 @@ public class DictController {
         return dict.getId();
     }
 
-    @ApiOperation("修改字典")
-    @PatchMapping("/admin")
+    @HasRoles({"Admin"})
+    @PatchMapping("")
     public void update(@Valid @RequestBody Dict dict) {
         versionService.addOne("dict");
         dictService.updateById(dict);
     }
 
-
-    @ApiOperation("删除字典")
-    @DeleteMapping("/admin/{id}")
+    @HasRoles({"Admin"})
+    @DeleteMapping("/{id}")
     public void delete(@PathVariable Integer id) {
         dictService.removeById(id);
     }

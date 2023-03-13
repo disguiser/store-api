@@ -36,6 +36,8 @@ public class JwtComponent {
 	private final String secret;
 
 	private final Long ttl;
+
+	private final ObjectMapper objectMapper2 = new ObjectMapper();
 	/**
 	 * 签发JWT
 	 * @param subject 可以是JSON数据 尽可能少
@@ -114,7 +116,7 @@ public class JwtComponent {
 		try {
 			Claims claims = getAllClaimsFromToken(token, secret);
 			jwtCheckResult.setSuccess(true);
-			jwtCheckResult.setSubject(claims.getSubject());
+			jwtCheckResult.setUser(objectMapper.readValue(claims.getSubject(), User.class));
 		} catch (SignatureException e) {
 			jwtCheckResult.setErrMsg("Invalid JWT signature.");
 		} catch (MalformedJwtException e) {
@@ -125,6 +127,8 @@ public class JwtComponent {
 			jwtCheckResult.setErrMsg("Unsupported JWT token.");
 		} catch (IllegalArgumentException e) {
 			jwtCheckResult.setErrMsg("JWT token compact of handler are invalid.");
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException(e);
 		}
 		return jwtCheckResult;
 	}

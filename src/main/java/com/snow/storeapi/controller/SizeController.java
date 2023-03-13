@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.snow.storeapi.entity.Size;
 import com.snow.storeapi.service.ISizeService;
 import com.snow.storeapi.service.IVersionService;
-import io.swagger.annotations.ApiOperation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +19,6 @@ public class SizeController {
     private final ISizeService sizeService;
     private final IVersionService versionService;
 
-    @ApiOperation("全部尺码查询")
     @GetMapping("/all")
     public List findAll(
             @RequestParam(value = "itemName", required = false)String itemName
@@ -33,7 +31,6 @@ public class SizeController {
         return sizes;
     }
     
-    @ApiOperation("添加尺码")
     @PostMapping("")
     public int create(@Valid @RequestBody Size size) {
         versionService.addOne("size");
@@ -41,7 +38,6 @@ public class SizeController {
         return size.getId();
     }
 
-    @ApiOperation("修改尺码")
     @PatchMapping("")
     @Transactional(rollbackFor = Exception.class)
     public void update(@Valid @RequestBody Size size) {
@@ -49,8 +45,6 @@ public class SizeController {
         sizeService.updateById(size);
     }
 
-
-    @ApiOperation("删除尺码")
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Integer id) {
         versionService.addOne("size");

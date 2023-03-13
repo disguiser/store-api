@@ -8,7 +8,6 @@ import com.snow.storeapi.entity.Customer;
 import com.snow.storeapi.service.ICustomerService;
 import com.snow.storeapi.util.ResponseUtil;
 import com.snow.storeapi.util.TransformCamelUtil;
-import io.swagger.annotations.ApiOperation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +23,6 @@ import java.util.Map;
 public class CustomerController {
     private final ICustomerService customerService;
 
-    @ApiOperation("客户列表查询")
     @GetMapping("/page")
     public Map findByPage(
             @RequestParam(value = "searchText", required = false) String searchText,
@@ -54,27 +52,23 @@ public class CustomerController {
         return ResponseUtil.pageRes(customers);
     }
 
-    @ApiOperation("添加客户")
     @PostMapping("")
     public int create(@Valid @RequestBody Customer customer) {
         customerService.save(customer);
         return customer.getId();
     }
 
-    @ApiOperation("修改客户")
     @PatchMapping("/{id}")
     public void update(@PathVariable Integer id, @Valid @RequestBody Customer customer) {
         customer.setId(id);
         customerService.updateById(customer);
     }
 
-    @ApiOperation("删除")
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Integer id) {
         customerService.removeById(id);
     }
 
-    @ApiOperation("id查找客户")
     @GetMapping("/{id}")
     public Customer findOne(@PathVariable Integer id) {
         return customerService.getById(id);

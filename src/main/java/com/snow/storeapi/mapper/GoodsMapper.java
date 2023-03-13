@@ -2,7 +2,6 @@ package com.snow.storeapi.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.snow.storeapi.entity.Goods;
-import com.snow.storeapi.entity.MyPage;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

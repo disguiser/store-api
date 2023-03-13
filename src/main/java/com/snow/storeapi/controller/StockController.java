@@ -4,12 +4,11 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.snow.storeapi.entity.Stock;
 import com.snow.storeapi.entity.User;
 import com.snow.storeapi.service.IStockService;
-import io.swagger.annotations.ApiOperation;
-import jakarta.servlet.http.HttpServletRequest;
+import com.snow.storeapi.util.BaseContext;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,12 +22,11 @@ import java.util.List;
 public class StockController {
     private final IStockService stockService;
     @GetMapping("/sum")
-    public Integer sumByDept(HttpServletRequest request) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public Integer sumByDept() {
+        User user = BaseContext.getCurrentUser();
         return stockService.sumByDept(user.getDeptId());
     }
 
-    @ApiOperation("list查询")
     @GetMapping("/list")
     public ResponseEntity list(
             @RequestParam(value = "goodsId", required = false) Integer goodsId,
@@ -51,19 +49,14 @@ public class StockController {
         return ResponseEntity.ok(stocks);
     }
 
-    @ApiOperation("添加")
     @PostMapping("/single")
-    public Integer create(@Valid @RequestBody Stock stock, HttpServletRequest request) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        stock.setInputUser(user.getId());
+    public Integer create(@Valid @RequestBody Stock stock) {
         stockService.save(stock);
         return stock.getId();
     }
 
-    @ApiOperation("批量添加")
     @PostMapping("/multi")
-    public void multiCreate(@RequestBody Stock[] stocks, HttpServletRequest request) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public void multiCreate(@RequestBody Stock[] stocks) {
         for (var stock: stocks) {
             var _stock = stockService.getOne(
                     new QueryWrapper<Stock>()
@@ -76,19 +69,16 @@ public class StockController {
                 _stock.setCurrentStock(_stock.getCurrentStock() + stock.getCurrentStock());
                 stockService.updateById(_stock);
             } else {
-                stock.setInputUser(user.getId());
                 stockService.save(stock);
             }
         }
     }
 
-    @ApiOperation("批量删除")
     @DeleteMapping("")
     public void delete(@RequestBody List<Integer> ids) {
         stockService.removeByIds(ids);
     }
 
-    @ApiOperation("更新")
     @PatchMapping("/{id}")
     public Integer update(@PathVariable Integer id,@Valid @RequestBody Stock stock){
         stockService.updateById(stock);
