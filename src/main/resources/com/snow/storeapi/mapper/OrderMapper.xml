@@ -87,7 +87,7 @@
         INNER JOIN order_goods og ON o.id = og.order_id
         LEFT JOIN stock s on s.id = og.stock_id
         LEFT JOIN goods g ON s.goods_id = g.id
-        LEFT JOIN `user` u ON o.input_user = u.id
+        LEFT JOIN `user` u ON o.create_by = u.id
         LEFT JOIN customer c on o.buyer  = c.id
         WHERE o.id = #{orderId} and o.deleted = 0
     </select>
@@ -99,7 +99,7 @@
             INNER JOIN order_goods og ON o.id = og.order_id
             LEFT JOIN stock s ON s.id = og.stock_id
             LEFT JOIN goods g ON s.goods_id = g.id
-            LEFT JOIN `user` u ON o.input_user = u.id
+            LEFT JOIN `user` u ON o.create_by = u.id
             LEFT JOIN customer c ON o.buyer = c.id
             WHERE o.id = #{orderId} and o.deleted = 0
         GROUP BY g.sku,g.name,s.color
