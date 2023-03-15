@@ -2,7 +2,7 @@ package com.snow.storeapi.config;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.snow.storeapi.entity.DictItem;
-import com.snow.storeapi.util.MyUtils;
+import com.snow.storeapi.util.JsonParseUtil;
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.MappedJdbcTypes;
@@ -20,7 +20,7 @@ public class DictItemTypeHandler extends BaseTypeHandler<Object> {
     @Override
     public void setNonNullParameter(PreparedStatement preparedStatement, int i, Object object, JdbcType jdbcType) throws SQLException {
         try {
-            preparedStatement.setString(i, MyUtils.objectMapper.writeValueAsString(object));
+            preparedStatement.setString(i, JsonParseUtil.objectMapper.writeValueAsString(object));
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -29,18 +29,18 @@ public class DictItemTypeHandler extends BaseTypeHandler<Object> {
     @Override
     public Object getNullableResult(ResultSet resultSet, String s) throws SQLException {
         String sqlJson = resultSet.getString(s);
-        return MyUtils.parseJson(sqlJson, DictItem.class);
+        return JsonParseUtil.parseJson(sqlJson, DictItem.class);
     }
 
     @Override
     public Object getNullableResult(ResultSet resultSet, int i) throws SQLException {
         String sqlJson = resultSet.getString(i);
-        return MyUtils.parseJson(sqlJson, DictItem.class);
+        return JsonParseUtil.parseJson(sqlJson, DictItem.class);
     }
 
     @Override
     public Object getNullableResult(CallableStatement callableStatement, int i) throws SQLException {
         String sqlJson = callableStatement.getString(i);
-        return MyUtils.parseJson(sqlJson, DictItem.class);
+        return JsonParseUtil.parseJson(sqlJson, DictItem.class);
     }
 }

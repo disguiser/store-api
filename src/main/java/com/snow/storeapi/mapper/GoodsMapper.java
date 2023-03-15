@@ -16,5 +16,9 @@ public interface GoodsMapper extends BaseMapper<Goods> {
             @Param("limit")Integer limit
     );
 
-    Integer count();
+    Integer countByDept(
+            @Param("deptId")String deptId,
+            @Param("name")String name,
+            @Param("preSku")String preSku
+    );
 }

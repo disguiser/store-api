@@ -2,13 +2,12 @@ package com.snow.storeapi.controller;
 
 import com.snow.storeapi.entity.Order;
 import com.snow.storeapi.entity.User;
-import com.snow.storeapi.enums.Role;
 import com.snow.storeapi.service.ICustomerService;
 import com.snow.storeapi.service.IOrderService;
 import com.snow.storeapi.util.BaseContext;
-import com.snow.storeapi.util.ResponseUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +24,7 @@ public class OrderController {
     private final IOrderService orderService;
     private final ICustomerService customerService;
     @GetMapping("/page")
-    public Map list(
+    public ResponseEntity<?> list(
             @RequestParam(value = "page", defaultValue = "1") Integer page,
             @RequestParam(value = "limit", defaultValue = "10") Integer limit,
             @RequestParam(value = "category") Integer category,
@@ -34,12 +33,14 @@ public class OrderController {
             @RequestParam(value = "startDate", required = false) Long startDate,
             @RequestParam(value = "endDate", required = false) Long endDate
     ) {
-        return ResponseUtil.listRes(orderService.findByPage(page, limit, category, address, customerName, startDate, endDate));
+        return ResponseEntity.ok(
+            orderService.findByPage(page, limit, category, address, customerName, startDate, endDate)
+        );
     }
 
     @GetMapping("/details/{orderId}")
-    public Map getDetailByOrderId(@PathVariable Integer orderId) {
-        return ResponseUtil.listRes(orderService.getDetailByOrderId(orderId));
+    public ResponseEntity<?> getDetailByOrderId(@PathVariable Integer orderId) {
+        return ResponseEntity.ok(orderService.getDetailByOrderId(orderId));
     }
 
     @PostMapping("")
@@ -89,9 +90,9 @@ public class OrderController {
     @GetMapping("/chart/money")
     public List<Map<String, Object>> chartMoney(@RequestParam(value = "category") Integer category) {
         User user = BaseContext.getCurrentUser();
-        if (user.getRoles().contains(Role.BOSS)) {
-
-        }
+//        if (user.getRoles().contains(Role.BOSS)) {
+//
+//        }
         if (null != user.getDeptId()) {
             return orderService.chartMoney(user.getDeptId(), category);
         } else {

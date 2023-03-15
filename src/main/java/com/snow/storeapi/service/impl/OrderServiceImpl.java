@@ -5,20 +5,19 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.snow.storeapi.entity.Order;
 import com.snow.storeapi.entity.OrderGoods;
+import com.snow.storeapi.entity.PageResponse;
 import com.snow.storeapi.entity.Stock;
 import com.snow.storeapi.mapper.OrderMapper;
 import com.snow.storeapi.service.IOrderGoodsService;
 import com.snow.storeapi.service.IOrderService;
 import com.snow.storeapi.service.IStockService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +54,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,Order> implements 
     }
 
     @Override
-    public List<Map<String, ?>> findByPage(Integer page, Integer limit, Integer category, String address, String customerName, Long startDate, Long endDate) {
+    public PageResponse findByPage(Integer page, Integer limit, Integer category, String address, String customerName, Long startDate, Long endDate) {
         if (StrUtil.isEmpty(address)) {
             address = null;
         }
@@ -64,9 +63,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,Order> implements 
         }
         int start = (page - 1) * limit;
         int end = limit;
-        LocalDateTime _startDate = null;
-        LocalDateTime _endDate = null;
-        DateTimeFormatter dtf =  DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime _startDate;
+        LocalDateTime _endDate;
         if (startDate != null) {
             _startDate =LocalDateTime.ofEpochSecond(startDate/1000,0, ZoneOffset.ofHours(8));
         } else {
@@ -77,7 +75,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,Order> implements 
         } else {
             _endDate = LocalDateTime.of(LocalDate.now(), LocalTime.MAX);
         }
-        return orderMapper.findByPage(start,end,address,_startDate,_endDate, category, customerName);
+        var list = orderMapper.findByPage(start,end,address,_startDate,_endDate, category, customerName);
+        var total = orderMapper.count(address,_startDate,_endDate, category, customerName);
+        return new PageResponse(total, list);
     }
 
     @Override

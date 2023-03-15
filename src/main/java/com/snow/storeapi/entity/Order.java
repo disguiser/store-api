@@ -31,9 +31,6 @@ public class Order implements Serializable {
     // goods may with stock
     @TableField(exist = false)
     private List<Map<String, Object>> itemList;
-    @TableField(exist = false)
-    // TO-DO
-    private String deptName;
     private Integer category;
     private Integer paymentStatus;
     @TableLogic

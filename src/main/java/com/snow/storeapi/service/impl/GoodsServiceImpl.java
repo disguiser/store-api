@@ -2,7 +2,7 @@ package com.snow.storeapi.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.snow.storeapi.entity.Goods;
-import com.snow.storeapi.entity.MyPage;
+import com.snow.storeapi.entity.PageResponse;
 import com.snow.storeapi.mapper.GoodsMapper;
 import com.snow.storeapi.service.IGoodsService;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper,Goods> implements 
     private final GoodsMapper goodsMapper;
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public MyPage findByDept(
+    public PageResponse findByDept(
             String sort,
             String deptId,
             String name,
@@ -30,10 +30,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper,Goods> implements 
             sort = sort.substring(1) + "DESC";
         }
         List<Goods> goodss = goodsMapper.findByDept(sort, deptId, name, preSku, offset, limit);
-        var myPage = new MyPage();
-        myPage.setItems(goodss);
-        var total = goodsMapper.count();
-        myPage.setTotal(total);
-        return myPage;
+        var total = goodsMapper.countByDept(deptId, name, preSku);
+        return new PageResponse(total, goodss);
     }
 }

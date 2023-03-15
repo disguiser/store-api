@@ -4,17 +4,17 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.snow.storeapi.entity.ConsumeRecord;
+import com.snow.storeapi.entity.PageResponse;
 import com.snow.storeapi.entity.Vip;
 import com.snow.storeapi.service.IConsumeRecordService;
 import com.snow.storeapi.service.IVipService;
-import com.snow.storeapi.util.ResponseUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * 消费记录
@@ -26,7 +26,7 @@ public class ConsumeRecordController {
     private final IConsumeRecordService consumeRecordService;
     private final IVipService vipService;
     @GetMapping("/page")
-    public Map list(
+    public ResponseEntity<?> list(
             @RequestParam(value = "vipId", required = false)String vipId,
             @RequestParam(value = "createDate", required = false)String createDate,
             @RequestParam(value = "page", defaultValue = "1")Integer pageNum,
@@ -50,7 +50,7 @@ public class ConsumeRecordController {
         }*/
         queryWrapper.orderByDesc("create_time");
         IPage<ConsumeRecord> consumeRecords = consumeRecordService.page(page, queryWrapper);
-        return ResponseUtil.pageRes(consumeRecords);
+        return ResponseEntity.ok(new PageResponse(consumeRecords.getTotal(), consumeRecords.getRecords()));
     }
 
     @PutMapping("")

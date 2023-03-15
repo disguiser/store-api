@@ -6,12 +6,11 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.snow.storeapi.entity.Goods;
-import com.snow.storeapi.entity.MyPage;
+import com.snow.storeapi.entity.PageResponse;
 import com.snow.storeapi.entity.Stock;
 import com.snow.storeapi.service.IGoodsService;
 import com.snow.storeapi.service.IStockService;
 import com.snow.storeapi.service.IVersionService;
-import com.snow.storeapi.util.ResponseUtil;
 import com.snow.storeapi.util.TransformCamelUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 /**
  * 商品
@@ -36,7 +33,7 @@ public class GoodsController {
     private final IVersionService versionService;
 
     @GetMapping("/page")
-    public Map findByPage(
+    public ResponseEntity<?> findByPage(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "preSku", required = false) String preSku,
             @RequestParam(value = "sort", defaultValue = "-updateTime") String sort,
@@ -57,11 +54,13 @@ public class GoodsController {
             queryWrapper.orderByAsc(TransformCamelUtil.underline(sort));
         }
         IPage<Goods> goodss = goodsService.page(page, queryWrapper);
-        return ResponseUtil.pageRes(goodss);
+        return ResponseEntity.ok(
+                new PageResponse(goodss.getTotal(), goodss.getRecords())
+        );
     }
 
     @GetMapping("/dept")
-    public Map findByDept(
+    public ResponseEntity<?> findByDept(
             @RequestParam(value = "deptId", required = false)String deptId,
             @RequestParam(value = "name", required = false)String name,
             @RequestParam(value = "preSku", required = false)String preSku,
@@ -69,15 +68,15 @@ public class GoodsController {
             @RequestParam(value = "page")Integer page,
             @RequestParam(value = "limit")Integer limit
     ) {
-        MyPage goodss = goodsService.findByDept(sort, deptId, name, preSku, page, limit);
-        return ResponseUtil.pageRes(goodss);
+        PageResponse pageResponse = goodsService.findByDept(sort, deptId, name, preSku, page, limit);
+        return ResponseEntity.ok(pageResponse);
     }
 
     @PostMapping("")
     public Goods create(@Valid @RequestBody Goods goods) {
         // generate sku
         var version = versionService.addOne("sku");
-        goods.setSku(StrUtil.fillBefore(version.getV().toString(), '0', 4).toString());
+        goods.setSku(StrUtil.fillBefore(version.getV().toString(), '0', 4));
 
         if(goods.getId() == null){
             goodsService.save(goods);
@@ -114,10 +113,10 @@ public class GoodsController {
     @Transactional(rollbackFor = Exception.class)
     public void delete(
             @PathVariable Integer goodsId,
-            @PathVariable(required = false) Optional<Integer> deptId
+            @PathVariable(required = false) Integer deptId
     ) {
         var queryWrapper = new QueryWrapper<Stock>().eq("goods_id", goodsId);
-        if (deptId.isPresent()) {
+        if (deptId > 0) {
             queryWrapper.eq("dept_id", deptId);
         }
         stockService.remove(queryWrapper);
@@ -125,13 +124,13 @@ public class GoodsController {
     }
 
     @PatchMapping("/{id}")
-    public int update(@PathVariable Integer id,@Valid @RequestBody Goods goods){
+    public int update(@Valid @RequestBody Goods goods){
         goodsService.updateById(goods);
         return goods.getId();
     }
 
     @GetMapping("/sku/{sku}")
-    public ResponseEntity findOneBySku(@PathVariable String sku) {
+    public ResponseEntity<?> findOneBySku(@PathVariable String sku) {
         if (StrUtil.isEmpty(sku)){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("sku不能为空！");
         }
@@ -141,7 +140,7 @@ public class GoodsController {
     }
 
     @GetMapping("/check/pre-sku/{preSku}")
-    public ResponseEntity checkPreSku(@PathVariable String preSku) {
+    public ResponseEntity<?> checkPreSku(@PathVariable String preSku) {
         List<Goods> goodsList = goodsService.list(Wrappers.lambdaQuery(Goods.class).eq(Goods::getPreSku, preSku));
         if (goodsList.size() > 0) {
             return ResponseEntity.ok(true);

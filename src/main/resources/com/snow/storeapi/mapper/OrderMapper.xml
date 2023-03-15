@@ -2,27 +2,14 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.snow.storeapi.mapper.OrderMapper">
     <resultMap id="orderMap" type="map">
-        <result property="address" column="address" typeHandler="com.snow.storeapi.config.JsonTypeHandler"></result>
+        <result property="address" column="address" typeHandler="com.snow.storeapi.config.JsonTypeHandler" />
     </resultMap>
 
     <resultMap id="orderData" type="map">
-        <result property="customerAddress" column="customerAddress" typeHandler="com.snow.storeapi.config.JsonTypeHandler"></result>
+        <result property="customerAddress" column="customerAddress" typeHandler="com.snow.storeapi.config.JsonTypeHandler" />
     </resultMap>
-    <select id="findByPage" resultMap="orderMap">
-        SELECT
-        o.id,
-        o.total,
-        o.total_money AS totalMoney,
-        o.buyer,
-        c.`name`,
-        c.address,
-        c.address_detail as addressDetail,
-        c.mobile,
-        c.open_id AS openId,
-        o.create_time AS createTime,
-        o.payment_status as paymentStatus
-        FROM
-        `order` o
+    <sql id="tableAndWhere">
+        FROM `order` o
         LEFT JOIN customer c ON o.buyer = c.id
         WHERE
         deleted = 0
@@ -36,22 +23,31 @@
             <if test="customerName != null">
                 AND c.name LIKE CONCAT(CONCAT('%', #{customerName}), '%')
             </if>
-            <choose>
-                <when test="startDate != null and endDate != null">
-                    AND o.create_time <![CDATA[>= ]]> #{startDate}
-                    AND o.create_time <![CDATA[<= ]]> #{endDate}
-                </when>
-<!--                <when test="customerName == null">-->
-<!--                    AND o.create_time <![CDATA[>= ]]> DATE_FORMAT(NOW(),'%Y-%m-%d 00:00:00')-->
-<!--                    AND o.create_time <![CDATA[<= ]]> DATE_FORMAT(NOW(),'%Y-%m-%d 23:59:59')-->
-<!--                </when>-->
-            </choose>
+            AND o.create_time <![CDATA[>= ]]> #{startDate}
+            AND o.create_time <![CDATA[<= ]]> #{endDate}
         </trim>
+    </sql>
+    <select id="findByPage" resultMap="orderMap">
+        SELECT
+        o.id,
+        o.total,
+        o.total_money AS totalMoney,
+        o.buyer,
+        c.`name`,
+        c.address,
+        c.address_detail as addressDetail,
+        c.mobile,
+        c.open_id AS openId,
+        o.create_time AS createTime,
+        o.payment_status as paymentStatus
+        <include refid="tableAndWhere" />
         ORDER BY
         o.create_time DESC
         LIMIT #{start},#{end}
     </select>
-
+    <select id="count" resultType="int">
+        select count(1) <include refid="tableAndWhere" />
+    </select>
     <select id="getDetailByOrderId" resultType="map">
         SELECT
             g.pre_sku as preSku,

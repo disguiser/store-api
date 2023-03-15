@@ -25,11 +25,19 @@ public interface OrderMapper extends BaseMapper<Order> {
             @Param("customerName")String customerName
     );
 
+    Integer count(
+            @Param("address")String address,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate")LocalDateTime endDate,
+            @Param("category")Integer category,
+            @Param("customerName")String customerName
+    );
+
     List<Map<String,Object>> getDetailByOrderId(@Param("orderId")Integer orderId);
 
-    List<Map<String,Object>> getOrderDataById(@Param(value = "orderId")Integer orderId);
+//    List<Map<String,Object>> getOrderDataById(@Param(value = "orderId")Integer orderId);
 
-    List<Map<String,Object>> getGroupBy(@Param(value = "orderId")Integer orderId);
+//    List<Map<String,Object>> getGroupBy(@Param(value = "orderId")Integer orderId);
 
 //    Double debt(@Param(value = "buyer")Integer buyer);
 
