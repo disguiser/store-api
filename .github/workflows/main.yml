@@ -25,13 +25,3 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "target/store-api-2.0.jar"
           target: "store-api"
-      - name: run
-        uses: fifsky/ssh-action@master
-        with:
-          command: |
-            cd store-api
-            ./stop.sh
-            nohup java -jar ./target/store-api-2.0.jar --jasypt.encryptor.password=${{ secrets.JASYPT_PASSWORD }} > log.log 2>&1 &
-          host: ${{ secrets.HOST }}
-          user: ${{ secrets.USER_NAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
