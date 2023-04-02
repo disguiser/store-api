@@ -10,7 +10,6 @@ import com.snow.storeapi.entity.PageResponse;
 import com.snow.storeapi.entity.Stock;
 import com.snow.storeapi.service.IGoodsService;
 import com.snow.storeapi.service.IStockService;
-import com.snow.storeapi.service.IVersionService;
 import com.snow.storeapi.util.TransformCamelUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +29,6 @@ import java.util.List;
 public class GoodsController {
     private final IGoodsService goodsService;
     private final IStockService stockService;
-    private final IVersionService versionService;
 
     @GetMapping("/page")
     public ResponseEntity<?> findByPage(
@@ -73,40 +71,9 @@ public class GoodsController {
     }
 
     @PostMapping("")
-    public Goods create(@Valid @RequestBody Goods goods) {
-        // generate sku
-        var version = versionService.addOne("sku");
-        goods.setSku(StrUtil.fillBefore(version.getV().toString(), '0', 4));
-
-        if(goods.getId() == null){
-            goodsService.save(goods);
-        }
-//        goods.getStocks().forEach(stock -> {
-//            stock.setGoodsId(goods.getId());
-//            //对stock表操作
-//            //根据颜色和尺码查询，库存表中是否存在
-//            QueryWrapper<Stock> queryWrapper = new QueryWrapper<>();
-//            queryWrapper.eq("color",stock.getColor());
-//            queryWrapper.eq("size",stock.getSize());
-//            queryWrapper.eq("goods_id",stock.getGoodsId());
-//            Stock s = stockService.getOne(queryWrapper);
-//            if (s == null){
-//                //没有库存
-//                stock.setCurrentStock(stock.getAmount());
-//                stockService.save(stock);
-//            }else {
-//                stock.setId(s.getId());
-//                //更新库存数量
-//                s.setCurrentStock(s.getCurrentStock() + stock.getAmount());
-//                stockService.updateById(s);
-//            }
-//            //对purchase表进行操作
-//            Purchase purchase = new Purchase();
-//            purchase.setStockId(stock.getId());
-//            purchase.setPurchaseAmount(stock.getAmount());
-//            purchaseService.save(purchase);
-//        });
-        return goods;
+    public ResponseEntity<?> create(@Valid @RequestBody Goods goods) {
+        goodsService.save(goods);
+        return ResponseEntity.ok(goods.getId());
     }
 
     @DeleteMapping({"/{goodsId}", "/{goodsId}/{deptId}"})
@@ -129,6 +96,11 @@ public class GoodsController {
         return goods.getId();
     }
 
+    /**
+     * 历史遗留 旧条码需要用到
+     * @param sku 废弃遗留字段
+     * @return goods
+     */
     @GetMapping("/sku/{sku}")
     public ResponseEntity<?> findOneBySku(@PathVariable String sku) {
         if (StrUtil.isEmpty(sku)){
@@ -137,6 +109,11 @@ public class GoodsController {
         QueryWrapper<Goods> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("sku",sku.toUpperCase());
         return  ResponseEntity.ok(goodsService.getOne(queryWrapper));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> findOne(@PathVariable String id) {
+        return ResponseEntity.ok(goodsService.getById(id));
     }
 
     @GetMapping("/check/pre-sku/{preSku}")

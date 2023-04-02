@@ -18,8 +18,6 @@ public class Goods implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
-    private String sku;
-
     @NonNull
     private String name;
 
