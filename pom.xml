@@ -16,7 +16,7 @@
 	<packaging>jar</packaging>
 
 	<name>store-api</name>
-	<description></description>
+	<description>自家门店供销存后端</description>
 
 
 	<properties>
@@ -56,6 +56,12 @@
 			<artifactId>mysql-connector-java</artifactId>
 			<scope>runtime</scope>
 			<version>8.0.30</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>transmittable-thread-local</artifactId>
+			<version>2.14.2</version>
 		</dependency>
 
 		<dependency>
