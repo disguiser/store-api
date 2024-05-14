@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.snow.storeapi.mapper.ReturnMapper">
+    <resultMap id="returnMap" type="map">
+        <result property="address" column="address" typeHandler="com.snow.storeapi.config.JsonTypeHandler" />
+    </resultMap>
+
+    <resultMap id="returnData" type="map">
+        <result property="customerAddress" column="customerAddress" typeHandler="com.snow.storeapi.config.JsonTypeHandler" />
+    </resultMap>
+    <sql id="tableAndWhere">
+        FROM `return` o
+        LEFT JOIN customer c ON o.buyer = c.id
+        WHERE
+        deleted = 0
+        <trim>
+
+            <if test="address != null">
+                AND c.address LIKE CONCAT(CONCAT('%', #{address}), '%')
+            </if>
+            <if test="customerName != null">
+                AND c.name LIKE CONCAT(CONCAT('%', #{customerName}), '%')
+            </if>
+            AND o.create_time <![CDATA[>= ]]> #{startDate}
+            AND o.create_time <![CDATA[<= ]]> #{endDate}
+        </trim>
+    </sql>
+    <select id="findByPage" resultMap="returnMap">
+        SELECT
+        o.id,
+        o.total,
+        o.buyer,
+        c.`name`,
+        c.address,
+        c.address_detail as addressDetail,
+        c.mobile,
+        c.open_id AS openId,
+        o.create_time AS createTime
+        <include refid="tableAndWhere" />
+        ORDER BY
+        o.create_time DESC
+        LIMIT #{start},#{end}
+    </select>
+    <select id="count" resultType="int">
+        select count(1) <include refid="tableAndWhere" />
+    </select>
+    <select id="getDetailByReturnId" resultType="map">
+        SELECT
+            g.pre_sku as preSku,
+            g.`name`,
+            s.color,
+            s.size,
+            og.amount,
+        FROM
+            return_goods og
+            LEFT JOIN stock s ON og.stock_id = s.id
+            LEFT JOIN goods g ON s.goods_id = g.id
+            where og.deleted = 0 and og.return_id = #{returnId}
+    </select>
+
+    <select id="getReturnDataById" resultMap="returnData">
+    SELECT
+        g.sku,
+        g.`name`,
+        s.color,
+        s.size,
+        og.amount,
+        g.discount,
+        c.`name` as customerName,
+        c.address as customerAddress,
+        c.address_detail as addressDetail,
+        c.mobile as customerMoblie,
+        u.user_name
+    FROM
+        `return` o
+        INNER JOIN return_goods og ON o.id = og.return_id
+        LEFT JOIN stock s on s.id = og.stock_id
+        LEFT JOIN goods g ON s.goods_id = g.id
+        LEFT JOIN `user` u ON o.create_by = u.id
+        LEFT JOIN customer c on o.buyer  = c.id
+        WHERE o.id = #{returnId} and o.deleted = 0
+    </select>
+
+</mapper>

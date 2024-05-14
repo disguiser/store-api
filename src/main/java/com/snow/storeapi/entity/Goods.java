@@ -28,6 +28,8 @@ public class Goods implements Serializable {
     @NonNull
     private Integer salePrice;
 
+    private Integer wholesalePrice;
+
     private Integer costPrice;
 
     private String preSku;

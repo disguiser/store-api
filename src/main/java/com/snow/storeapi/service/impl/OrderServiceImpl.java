@@ -3,6 +3,7 @@ package com.snow.storeapi.service.impl;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.snow.storeapi.DTO.order.OrderItemDTO;
 import com.snow.storeapi.entity.Order;
 import com.snow.storeapi.entity.OrderGoods;
 import com.snow.storeapi.entity.PageResponse;
@@ -34,18 +35,18 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,Order> implements 
         save(order);
         var orderGoodsList = new ArrayList<OrderGoods>();
         var stockList = new ArrayList<Stock>();
-        for (Map<String, Object> map : order.getItemList()) {
+        for (OrderItemDTO orderItemDTO : order.getItemList()) {
             OrderGoods orderGoods = new OrderGoods();
-            orderGoods.setStockId((Integer) map.get("stockId"));
+            orderGoods.setStockId(orderItemDTO.getStockId());
             orderGoods.setOrderId(order.getId());
-            orderGoods.setAmount((Integer) map.get("amount"));
-            orderGoods.setSalePrice((Integer) map.get("salePrice"));
-            orderGoods.setSubtotalMoney((Integer) map.get("subtotalMoney"));
+            orderGoods.setAmount(orderItemDTO.getAmount());
+            orderGoods.setSalePrice(orderItemDTO.getSalePrice());
+            orderGoods.setSubtotalMoney(orderItemDTO.getSubtotalMoney());
             orderGoodsList.add(orderGoods);
             // 更新商品现有库存
             Stock stock = new Stock();
-            stock.setId((Integer) map.get("stockId"));
-            stock.setCurrentStock((Integer) map.get("currentStock") - (Integer) map.get("amount"));
+            stock.setId(orderGoods.getId());
+            stock.setCurrentStock(orderItemDTO.getCurrentStock() - orderItemDTO.getAmount());
             stockList.add(stock);
         }
         stockService.updateBatchById(stockList);

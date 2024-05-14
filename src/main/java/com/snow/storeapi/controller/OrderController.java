@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 商品
+ * 订单
  */
 @RestController
 @RequestMapping("/order")
