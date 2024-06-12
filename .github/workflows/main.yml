@@ -18,5 +18,6 @@ jobs:
             cd ~/prod/store-api
             ./stop.sh
             git pull origin master
+            mvn clean package -Dmaven.test.skip=true
             ./deploy.sh
           
