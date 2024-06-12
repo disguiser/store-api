@@ -9,12 +9,14 @@ jobs:
 
     steps:
       - name: run
-        uses: fifsky/ssh-action@master
+        uses: appleboy/ssh-action@master
         with:
-          command: |
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER_NAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
             cd ~/prod/store-api
             ./stop.sh
+            git pull origin master
             ./deploy.sh
-          host: ${{ secrets.HOST }}
-          user: ${{ secrets.USER_NAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          
