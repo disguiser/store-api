@@ -14,7 +14,4 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER_NAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            cd ~/prod/store-api
-            ./stop.sh
-            ./deploy.sh
+          script: sh ~/prod/store-api/deploy.sh
