@@ -17,6 +17,4 @@ jobs:
           script: |
             cd ~/prod/store-api
             ./stop.sh
-            git pull origin master
-            mvn clean package -DskipTests
-            ./start.sh
+            ./deploy.sh
