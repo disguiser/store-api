@@ -31,6 +31,7 @@ public class CustomerControllerTest extends BaseControllerTest {
 
     @Order(1)
     @Test
+    @RepeatedTest(2)
     public void testCreate() throws Exception {
         var customer = Customer.builder()
                 .name(TestConstant.CUSTOMER_CREATE_NAME)
@@ -54,24 +55,6 @@ public class CustomerControllerTest extends BaseControllerTest {
     @Order(2)
     @Test
     public void testFindByPage() throws Exception {
-        var customer1 = Customer.builder()
-                .name(TestConstant.CUSTOMER_CREATE_NAME)
-                .mobile(TestConstant.CUSTOMER_CREATE_MOBILE)
-                .address(TestConstant.CUSTOMER_CREATE_ADDRESS)
-                .addressDetail(TestConstant.CUSTOMER_CREATE_ADDRESS_DETAIL)
-                .debt(TestConstant.CUSTOMER_CREATE_DEBT)
-                .build();
-        customerMapper.insert(customer1);
-        customer1.setId(null);
-        customerMapper.insert(customer1);
-        var customer2 = Customer.builder()
-                .name("123")
-                .mobile("123")
-                .address(TestConstant.CUSTOMER_CREATE_ADDRESS)
-                .addressDetail(TestConstant.CUSTOMER_CREATE_ADDRESS_DETAIL)
-                .debt(TestConstant.CUSTOMER_CREATE_DEBT)
-                .build();
-        customerMapper.insert(customer2);
         mockMvc.perform(
                         MockMvcRequestBuilders.get(BASE_URL + "/page")
                                 .accept(MediaType.APPLICATION_JSON)
@@ -145,7 +128,7 @@ public class CustomerControllerTest extends BaseControllerTest {
 
     @AfterAll
     public void afterAll() {
-        jdbc.execute("truncate table customer;");
+//        jdbc.execute("truncate table customer;");
     }
 
 }
